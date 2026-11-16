@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="PulseLab" />
-  <title>PulseLab v3.0 — Pocket Multi-Track Studio</title>
+  <title>PulseLab v4.0 — Pocket Multi-Track Studio</title>
 
   <!-- Dynamic PWA Manifest Link -->
   <link id="pwa-manifest-link" rel="manifest" href="" />
@@ -78,11 +78,11 @@
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 12px;
-      height: 12px;
+      width: 11px;
+      height: 11px;
       border-radius: 50%;
       background: #f4f4f5;
-      margin-top: -4.25px;
+      margin-top: -3.75px;
       box-shadow: 0 0 8px rgba(139, 92, 246, 0.7);
       transition: transform 0.1s ease, background-color 0.1s ease;
     }
@@ -91,7 +91,7 @@
       background: #06b6d4;
     }
 
-    /* Hardware-accelerated clip region elements (Zero-lag touch/pointer drag) */
+    /* Hardware-accelerated clip region elements (60fps zero-lag touch/pointer drag) */
     .clip-region-el {
       touch-action: none;
       user-select: none;
@@ -108,7 +108,7 @@
       touch-action: none;
       user-select: none;
       -webkit-user-select: none;
-      width: 22px;
+      width: 20px;
       cursor: ew-resize;
     }
 
@@ -189,7 +189,7 @@
         <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-white via-violet-200 to-cyan-300 bg-clip-text text-transparent">
           PulseLab
         </h1>
-        <span class="px-2 py-0.5 rounded-md bg-violet-500/20 border border-violet-500/40 text-violet-300 font-mono text-xs font-bold">v3.0</span>
+        <span class="px-2 py-0.5 rounded-md bg-violet-500/20 border border-violet-500/40 text-violet-300 font-mono text-xs font-bold">v4.0</span>
       </div>
       <p class="mt-2 text-[11px] sm:text-xs font-mono uppercase tracking-[0.28em] text-cyan-400/90 font-semibold">
         Pocket Multi-Track Studio
@@ -219,48 +219,6 @@
         </button>
         <button id="dialog-confirm-btn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 hover:from-violet-500 hover:to-cyan-400 text-white text-xs font-semibold transition">
           Confirm
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- PWA / Android APK Install Instructions Modal -->
-  <div id="install-modal" class="fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-studio-panel border border-studio-border rounded-3xl max-w-md w-full p-6 shadow-2xl">
-      <div class="flex items-center justify-between pb-4 border-b border-studio-border">
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-cyan-500 flex items-center justify-center text-white font-bold">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-          </div>
-          <div>
-            <h3 class="text-base font-bold text-white">Install PulseLab App</h3>
-            <p class="text-[11px] text-cyan-400 font-mono">Offline PWA & Android APK Ready</p>
-          </div>
-        </div>
-        <button id="install-modal-close" class="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-      </div>
-
-      <div class="mt-4 space-y-3 text-xs sm:text-sm text-zinc-300">
-        <div class="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800">
-          <p class="font-bold text-white flex items-center gap-2">
-            <span class="px-2 py-0.5 rounded bg-violet-500/20 text-violet-300 font-mono text-[11px]">Android / Chrome</span>
-          </p>
-          <p class="text-xs text-zinc-400 mt-1.5">Tap the browser menu (<strong class="text-zinc-200">⋮</strong>) in the top right corner and select <strong class="text-cyan-300">"Install App"</strong> or <strong class="text-cyan-300">"Add to Home screen"</strong>.</p>
-        </div>
-
-        <div class="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800">
-          <p class="font-bold text-white flex items-center gap-2">
-            <span class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono text-[11px]">Google Play / APK Package</span>
-          </p>
-          <p class="text-xs text-zinc-400 mt-1.5">Host this file on GitHub Pages and enter your URL at <strong class="text-cyan-300">pwabuilder.com</strong> to generate a native Android <code class="text-violet-300">.apk</code> or Play Store <code class="text-violet-300">.aab</code> bundle.</p>
-        </div>
-      </div>
-
-      <div class="mt-5 flex justify-end">
-        <button id="install-modal-done" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold text-xs sm:text-sm">
-          Got It
         </button>
       </div>
     </div>
@@ -326,7 +284,7 @@
           </div>
         </div>
         <h2 class="text-2xl font-extrabold tracking-tight text-white">Welcome to PulseLab</h2>
-        <p class="text-xs sm:text-sm text-zinc-400 mt-1.5">Sign in to sync multi-track sessions, vocal takes, and mixes.</p>
+        <p class="text-xs sm:text-sm text-zinc-400 mt-1.5">Sign in to sync multi-track sessions, vocal stems, and mixes.</p>
         
         <div class="mt-3 flex items-center gap-2">
           <span id="oauth-mode-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-zinc-400">
@@ -368,10 +326,10 @@
       </button>
 
       <div class="mt-4 flex justify-center">
-        <button id="btn-auth-install" class="inline-flex items-center gap-1.5 text-xs font-semibold text-violet-400 hover:text-violet-300 transition">
+        <a href="https://github.com/tresscutie/pulselab/releases/latest/download/PulseLab.apk" target="_blank" rel="noopener noreferrer" download="PulseLab.apk" class="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-          <span>Install PulseLab App on Device</span>
-        </button>
+          <span>Download Android .APK</span>
+        </a>
       </div>
     </div>
 
@@ -444,7 +402,7 @@
           <span class="font-extrabold text-sm sm:text-lg tracking-tight bg-gradient-to-r from-white via-violet-200 to-cyan-300 bg-clip-text text-transparent">
             PulseLab
           </span>
-          <span class="hidden lg:inline-block ml-1.5 text-[10px] font-mono uppercase tracking-widest text-zinc-500">v3.0 Studio</span>
+          <span class="hidden lg:inline-block ml-1.5 text-[10px] font-mono uppercase tracking-widest text-zinc-500">v4.0 Studio</span>
         </div>
       </div>
 
@@ -464,12 +422,12 @@
         </button>
       </div>
 
-      <!-- Right Controls: Install App + User Pill -->
+      <!-- Right Controls: Download Android .APK + User Pill -->
       <div class="flex items-center gap-2">
-        <button id="btn-install-top" class="px-2.5 sm:px-3 py-1 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95">
+        <a href="https://github.com/tresscutie/pulselab/releases/latest/download/PulseLab.apk" target="_blank" rel="noopener noreferrer" download="PulseLab.apk" class="px-2.5 sm:px-3 py-1 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-          <span>Install App</span>
-        </button>
+          <span>Download .APK</span>
+        </a>
 
         <button data-nav="profile" class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 pl-1.5 pr-2.5 py-1 rounded-full transition">
           <div id="nav-avatar" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gradient-to-tr from-violet-600 to-cyan-500 flex items-center justify-center text-xs font-bold text-white overflow-hidden">
@@ -492,13 +450,13 @@
           <div>
             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-500/15 border border-violet-500/30 text-violet-300 text-[11px] font-mono font-semibold mb-3">
               <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-              60FPS ZERO-LAG TIMELINE ENGINE
+              REAL-TIME VOCAL / INSTRUMENTAL STEM DSP + CLEAN OVERDUB
             </span>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
               Welcome back, <span id="home-user-name" class="bg-gradient-to-r from-violet-300 to-cyan-300 bg-clip-text text-transparent">Producer</span>
             </h1>
             <p class="text-xs sm:text-sm text-zinc-400 mt-1.5 max-w-xl">
-              Record multi-track vocals, glide audio clips smoothly across the timeline with zero lag, trim edges with wide touch handles, and export stereo WAV mixes.
+              Isolate instrumentals or vocals from any imported song in real time, split tracks into separate beat & lyric stems, and record crisp overdubs without background bleed.
             </p>
           </div>
 
@@ -512,7 +470,7 @@
       <div class="flex items-center justify-between mb-4">
         <div>
           <h2 class="text-lg font-bold text-white">My Projects</h2>
-          <p class="text-xs text-zinc-400">Saved multi-track recordings with clip positions, trims, fades, and mixer settings</p>
+          <p class="text-xs text-zinc-400">Saved multi-track recordings with stem isolation modes, clip trims, fades, and mixer settings</p>
         </div>
         <span id="projects-count-badge" class="px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-300">
           0 Projects
@@ -537,25 +495,25 @@
 
       <!-- Studio Help Modal -->
       <div id="help-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
-        <div class="bg-studio-panel border border-studio-border rounded-2xl max-w-lg w-full p-6 shadow-2xl">
+        <div class="bg-studio-panel border border-studio-border rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
           <div class="flex items-center justify-between border-b border-studio-border pb-4 mb-4">
-            <h2 class="text-lg font-bold text-white">PulseLab v3.0 Studio Controls</h2>
+            <h2 class="text-lg font-bold text-white">PulseLab v4.0 Studio Guide</h2>
             <button id="close-help-btn" class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
           </div>
           <div class="space-y-3 text-sm text-zinc-300">
-            <div class="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/25 text-cyan-100">
-              <p class="font-semibold text-cyan-300 text-xs sm:text-sm">1. Smooth 60fps Clip Dragging</p>
-              <p class="text-xs text-cyan-200/80 mt-1">Touch and drag the center of any clip region to slide it smoothly along the timeline with live timecode feedback. Toggle <strong>Snap</strong> on/off for beat-aligned placement.</p>
-            </div>
             <div class="p-3 rounded-xl bg-violet-500/10 border border-violet-500/25 text-violet-100">
-              <p class="font-semibold text-violet-300 text-xs sm:text-sm">2. Wide Left & Right Edge Trim Handles</p>
-              <p class="text-xs text-violet-200/80 mt-1">Tap any clip to highlight its wide <strong>Left & Right Trim Handles</strong>—drag either side handle to trim start or end points cleanly without glitching.</p>
+              <p class="font-semibold text-violet-300 text-xs sm:text-sm">1. Vocal & Instrumental Stem Isolation</p>
+              <p class="text-xs text-violet-200/80 mt-1">Each track has a 3-mode Stem Switcher: <strong>Mix</strong> (full stereo), <strong>Inst</strong> (removes center vocals/lyrics while preserving low-end bass below 160Hz), and <strong>Vox</strong> (isolates center lyrics & vocals). Tap <strong>Split Stems</strong> to duplicate an imported song into separate Beat and Vocal tracks.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/25 text-cyan-100">
+              <p class="font-semibold text-cyan-300 text-xs sm:text-sm">2. Clean Overdub Recording (Zero Bleed)</p>
+              <p class="text-xs text-cyan-200/80 mt-1">Hardware Acoustic Echo Cancellation & Noise Suppression filter out backing track playback from entering your microphone. Adjust the <strong>Rec Monitor</strong> slider to balance backing music volume while singing, and use earphones for studio-grade isolation.</p>
             </div>
             <div class="p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300">
-              <p class="font-semibold text-white text-xs sm:text-sm">3. Split, Duplicate & Fade</p>
-              <p class="text-xs text-zinc-400 mt-1">Position the cyan playhead inside a clip and tap <strong>Split (S)</strong> to cut it into independent movable regions.</p>
+              <p class="font-semibold text-white text-xs sm:text-sm">3. 60fps Clip Dragging, Trimming & Timeline Split</p>
+              <p class="text-xs text-zinc-400 mt-1">Slide any audio clip along the timeline with GPU-accelerated touch dragging, trim edges with the 20px side handles, or tap <strong>Split (S)</strong> to cut a clip at the playhead.</p>
             </div>
           </div>
         </div>
@@ -571,7 +529,7 @@
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
             </button>
             <input id="project-title" type="text" value="Untitled Session" aria-label="Project Title"
-              class="bg-zinc-900/80 font-bold text-xs sm:text-sm text-white focus:outline-none focus:bg-zinc-800 px-2.5 py-1 rounded-lg border border-zinc-800 focus:border-violet-500 w-32 sm:w-44 truncate" />
+              class="bg-zinc-900/80 font-bold text-xs sm:text-sm text-white focus:outline-none focus:bg-zinc-800 px-2.5 py-1 rounded-lg border border-zinc-800 focus:border-violet-500 w-28 sm:w-44 truncate" />
             <button id="btn-save-project" class="px-2.5 py-1 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold flex items-center gap-1 shadow-md shadow-violet-500/20 transition active:scale-95">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
               <span>Save</span>
@@ -601,7 +559,7 @@
               </button>
             </div>
 
-            <!-- Digital Timecode Display -->
+            <!-- Digital Timecode Display + Master & Mic Input Meters -->
             <div class="flex items-center gap-2.5 bg-zinc-950 border border-zinc-800/90 px-2.5 py-1 rounded-xl">
               <div class="text-right">
                 <div id="timecode-display" class="font-mono text-sm sm:text-base font-bold tracking-wider text-cyan-400 leading-none">
@@ -610,11 +568,13 @@
                 <div class="text-[8px] font-mono uppercase tracking-widest text-zinc-500 mt-0.5">MIN : SEC</div>
               </div>
               <div class="flex flex-col gap-0.5">
-                <canvas id="master-meter" width="54" height="12" class="rounded bg-zinc-900 border border-zinc-800"></canvas>
-                <div class="flex justify-between text-[7px] font-mono text-zinc-500 leading-none">
-                  <span>-36</span>
-                  <span>-12</span>
-                  <span>0dB</span>
+                <div class="flex items-center gap-1">
+                  <span class="text-[7px] font-mono text-zinc-500 w-5">OUT</span>
+                  <canvas id="master-meter" width="48" height="6" class="rounded bg-zinc-900 border border-zinc-800"></canvas>
+                </div>
+                <div class="flex items-center gap-1">
+                  <span class="text-[7px] font-mono text-red-400 w-5">MIC</span>
+                  <canvas id="mic-input-meter" width="48" height="6" class="rounded bg-zinc-900 border border-zinc-800"></canvas>
                 </div>
               </div>
             </div>
@@ -675,7 +635,7 @@
         </div>
       </div>
 
-      <!-- Studio Workspace Toolbar + Direct Clip Editing Bar -->
+      <!-- Studio Workspace Toolbar + Stem Split + Clean Overdub Monitor -->
       <div class="bg-studio-panel/75 border-b border-studio-border px-3 sm:px-5 py-1.5">
         <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-2">
           <!-- Track & Direct Music/Downloads Import Actions -->
@@ -692,7 +652,7 @@
             </button>
           </div>
 
-          <!-- Non-Destructive Audio Clip Editor Toolbar -->
+          <!-- Non-Destructive Audio Clip & Stem Editor Toolbar -->
           <div class="flex flex-wrap items-center gap-1 bg-zinc-950 border border-zinc-800 px-2 py-1 rounded-xl">
             <button id="btn-snap-toggle" title="Toggle Beat Grid Snapping when dragging clips" class="px-2 py-0.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[11px] font-mono font-semibold transition">
               Snap: ON
@@ -701,6 +661,11 @@
             <button id="btn-clip-split" title="Split selected clip at Playhead (S)" class="px-2 py-0.5 rounded-lg bg-zinc-900 hover:bg-violet-600/30 text-zinc-200 hover:text-violet-200 border border-zinc-800 text-[11px] font-semibold flex items-center gap-1 transition">
               <svg class="w-3 h-3 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"/></svg>
               <span>Split</span>
+            </button>
+
+            <button id="btn-split-stems-toolbar" title="Duplicate selected song into separate Instrumental (Beat) and Vocals (Lyrics) tracks" class="px-2 py-0.5 rounded-lg bg-violet-600/25 hover:bg-violet-600/40 text-violet-200 border border-violet-500/40 text-[11px] font-semibold flex items-center gap-1 transition">
+              <svg class="w-3 h-3 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+              <span>Split Stems</span>
             </button>
 
             <button id="btn-clip-duplicate" title="Duplicate selected clip" class="px-2 py-0.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 text-[11px] font-medium transition">
@@ -712,30 +677,53 @@
             </button>
           </div>
 
-          <!-- Zoom Slider (50% to 300%) + Mic Status -->
-          <div class="flex items-center gap-2 text-xs text-zinc-400">
+          <!-- Rec Monitor / Backing Level Slider + Zoom Slider + Mic Status -->
+          <div class="flex flex-wrap items-center gap-2 text-xs text-zinc-400">
+            <!-- Rec Monitor / Backing Level during overdub recording -->
+            <div class="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded-lg" title="Backing Track Monitor Level during Overdub Recording (Prevents Speaker Bleed)">
+              <span class="text-[10px] font-mono text-cyan-300">Rec Monitor</span>
+              <input id="rec-monitor-slider" type="range" min="0" max="100" step="5" value="65" class="w-14 sm:w-16" />
+              <span id="rec-monitor-label" class="font-mono text-[10px] text-zinc-300 w-7 text-right">65%</span>
+            </div>
+
             <div class="hidden md:flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-zinc-900 border border-zinc-800 text-[11px]">
               <span class="w-2 h-2 rounded-full bg-zinc-500" id="mic-status-dot"></span>
-              <span id="mic-status-text">Mic Standby</span>
+              <span id="mic-status-text">Mic Echo-Cancel Ready</span>
             </div>
 
             <div class="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded-lg">
               <span class="text-[10px] text-zinc-500">Zoom</span>
-              <input id="zoom-slider" type="range" min="50" max="300" step="10" value="100" class="w-16 sm:w-20" />
-              <span id="zoom-label" class="font-mono text-[10px] text-cyan-400 w-9 text-right">100%</span>
+              <input id="zoom-slider" type="range" min="50" max="300" step="10" value="100" class="w-14 sm:w-16" />
+              <span id="zoom-label" class="font-mono text-[10px] text-cyan-400 w-8 text-right">100%</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Selected Clip Inspector Strip -->
+      <!-- Active Recording Acoustic Isolation Banner -->
+      <div id="recording-isolation-banner" class="hidden bg-red-950/45 border-b border-red-500/40 px-3 sm:px-5 py-1.5">
+        <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+            <span class="font-bold text-red-200">Clean Overdub Active:</span>
+            <span class="text-red-300/90 text-[11px]">Acoustic Echo Cancellation &amp; Noise Suppression enabled to block backing music bleed.</span>
+          </div>
+          <span class="px-2.5 py-0.5 rounded-full bg-zinc-950/80 border border-cyan-500/40 text-cyan-300 font-mono text-[11px] font-semibold">
+            🎧 Use earphones for zero mic bleed
+          </span>
+        </div>
+      </div>
+
+      <!-- Selected Clip & Stem Inspector Strip -->
       <div id="clip-inspector-bar" class="hidden bg-violet-950/35 border-b border-violet-500/35 px-3 sm:px-5 py-1.5">
         <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
             <span id="inspector-clip-name" class="font-semibold text-white">Selected Clip</span>
             <span id="inspector-clip-duration" class="font-mono text-[11px] text-cyan-300">(0.00s)</span>
-            <span class="hidden lg:inline text-[10px] text-zinc-400 ml-1">• Drag clip body to slide, or drag 22px left/right edge handles to trim</span>
+            <button id="btn-inspector-split-stems" class="ml-1 px-2.5 py-0.5 rounded-lg bg-gradient-to-r from-violet-600 to-cyan-500 hover:from-violet-500 hover:to-cyan-400 text-white font-semibold text-[11px] shadow transition">
+              Split Track into Stems
+            </button>
           </div>
 
           <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
@@ -765,8 +753,8 @@
         
         <!-- Sticky Timeline Header Row -->
         <div class="flex border-b border-studio-border bg-studio-panel/95 select-none shrink-0">
-          <div class="w-36 sm:w-56 md:w-64 shrink-0 px-3 py-1.5 border-r border-studio-border flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-zinc-500">
-            <span>Tracks</span>
+          <div class="w-44 sm:w-64 md:w-72 shrink-0 px-3 py-1.5 border-r border-studio-border flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+            <span>Tracks &amp; Stems</span>
             <span class="hidden sm:inline">Vol / Pan</span>
           </div>
           <!-- Horizontal Scrollable Ruler Viewport -->
@@ -778,7 +766,7 @@
         </div>
 
         <!-- Vertically Scrollable Tracks Body (Compact 76px Track Rows) -->
-        <div id="tracks-vertical-scroller" class="flex-1 overflow-y-auto max-h-[calc(100vh-14.5rem)] divide-y divide-studio-border">
+        <div id="tracks-vertical-scroller" class="flex-1 overflow-y-auto max-h-[calc(100vh-15rem)] divide-y divide-studio-border">
           <!-- Track rows dynamically injected here -->
         </div>
 
@@ -788,7 +776,7 @@
             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
           </div>
           <h3 class="text-base font-semibold text-zinc-200">No Active Tracks</h3>
-          <p class="text-xs text-zinc-400 mt-1 max-w-xs">Add a new audio track to record vocals, instruments, or import a backing beat.</p>
+          <p class="text-xs text-zinc-400 mt-1 max-w-xs">Add a new audio track to record vocals, instruments, or import a song to isolate stems.</p>
           <button onclick="studio.addTrack()" class="mt-4 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-xs font-semibold transition">
             + Create New Track
           </button>
@@ -830,10 +818,10 @@
         </div>
 
         <div class="space-y-3 pt-2">
-          <button id="btn-profile-install" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-violet-600/20 to-cyan-500/20 hover:from-violet-600/30 hover:to-cyan-500/30 text-cyan-300 border border-cyan-500/30 text-sm font-semibold flex items-center justify-between transition">
-            <span>Install PulseLab App / Export APK Guide</span>
+          <a href="https://github.com/tresscutie/pulselab/releases/latest/download/PulseLab.apk" target="_blank" rel="noopener noreferrer" download="PulseLab.apk" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-violet-600/20 to-cyan-500/20 hover:from-violet-600/30 hover:to-cyan-500/30 text-cyan-300 border border-cyan-500/30 text-sm font-semibold flex items-center justify-between transition">
+            <span>Download Official Android .APK Release</span>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-          </button>
+          </a>
 
           <button id="btn-profile-edit" class="w-full py-3 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-800 text-sm font-semibold flex items-center justify-between transition">
             <span>Edit Producer Display Name</span>
@@ -868,7 +856,7 @@
   <!-- CORE APPLICATION SCRIPT -->
   <script>
     /**
-     * 1. Dynamic PWA Manifest & Inline Service Worker Registration (APK / Play Store Ready)
+     * 1. Dynamic PWA Manifest & Inline Service Worker Registration
      */
     (function setupPWAAndServiceWorker() {
       const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -890,9 +878,9 @@
       const iconUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgIcon);
       const manifest = {
         id: './',
-        name: 'PulseLab — Pocket Multi-Track Studio',
+        name: 'PulseLab v4.0 — Pocket Multi-Track Studio',
         short_name: 'PulseLab',
-        description: 'Pocket multi-track audio recorder, waveform editor, and studio mixer.',
+        description: 'Pocket multi-track audio recorder with real-time Vocal/Instrumental Stem Separation and Clean Overdub Recording.',
         start_url: './',
         scope: './',
         display: 'standalone',
@@ -911,20 +899,12 @@
       const linkEl = document.getElementById('pwa-manifest-link');
       if (linkEl) linkEl.setAttribute('href', manifestURL);
 
-      // Register inline Service Worker if supported over HTTPS / localhost
       if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
         const swCode = `
-          const CACHE_NAME = 'pulselab-v3-cache';
-          self.addEventListener('install', (e) => {
-            self.skipWaiting();
-          });
-          self.addEventListener('activate', (e) => {
-            e.waitUntil(self.clients.claim());
-          });
+          self.addEventListener('install', () => self.skipWaiting());
+          self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
           self.addEventListener('fetch', (e) => {
-            e.respondWith(
-              fetch(e.request).catch(() => caches.match(e.request))
-            );
+            e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
           });
         `;
         try {
@@ -940,7 +920,7 @@
      */
     class ProjectStorage {
       constructor() {
-        this.dbName = 'PulseLabStudioDB_v30';
+        this.dbName = 'PulseLabStudioDB_v40';
         this.storeName = 'projects';
         this.db = null;
       }
@@ -1037,7 +1017,7 @@
     }
 
     /**
-     * 4. PulseLab v3.0 Multi-Track Studio & GPU-Accelerated Clip Engine
+     * 4. PulseLab v4.0 Multi-Track Studio, Real-Time Stem Separation DSP & Clean Overdub Engine
      */
     class PulseLabApp {
       constructor() {
@@ -1051,9 +1031,6 @@
         this.firebaseReady = false;
         this.pendingOAuthProvider = 'Google';
         this.savedAccounts = [];
-
-        // PWA Install Prompt
-        this.deferredInstallPrompt = null;
 
         // Web Audio Engine
         this.audioCtx = null;
@@ -1081,6 +1058,7 @@
         this.playbackStartCtxTime = 0;
         this.playbackStartOffset = 0;
         this.activeSources = [];
+        this.recMonitorLevel = 0.65; // Default 65% backing monitor level during overdub recording
 
         // Recording State
         this.mediaStream = null;
@@ -1089,6 +1067,7 @@
         this.recordingTrackId = null;
         this.recordingStartTime = 0;
         this.micAnalyser = null;
+        this.micSourceNode = null;
         this.liveWaveformPeaks = [];
 
         // Metronome State
@@ -1115,7 +1094,6 @@
         this.loadSavedAccounts();
         this.initDOM();
         this.bindEvents();
-        this.setupPWAListeners();
         this.loadUserSession();
         this.startRenderLoop();
 
@@ -1136,6 +1114,7 @@
         this.rulerCanvas = document.getElementById('ruler-canvas');
         this.timecodeDisplay = document.getElementById('timecode-display');
         this.masterMeterCanvas = document.getElementById('master-meter');
+        this.micInputMeterCanvas = document.getElementById('mic-input-meter');
         this.dragTooltip = document.getElementById('drag-tooltip');
         this.btnPlay = document.getElementById('btn-play');
         this.iconPlay = document.getElementById('icon-play');
@@ -1145,35 +1124,6 @@
         this.btnRecord = document.getElementById('btn-record');
         this.btnLoop = document.getElementById('btn-loop');
         this.recDot = document.getElementById('rec-dot');
-      }
-
-      /* ==========================
-         PWA INSTALL PROMPT HANDLER
-      =========================== */
-      setupPWAListeners() {
-        window.addEventListener('beforeinstallprompt', (e) => {
-          e.preventDefault();
-          this.deferredInstallPrompt = e;
-        });
-
-        window.addEventListener('appinstalled', () => {
-          this.deferredInstallPrompt = null;
-          this.showToast('PulseLab installed on your device!', 'success');
-        });
-      }
-
-      async triggerInstallApp() {
-        if (this.deferredInstallPrompt) {
-          this.deferredInstallPrompt.prompt();
-          const { outcome } = await this.deferredInstallPrompt.userChoice;
-          if (outcome === 'accepted') {
-            this.showToast('Installing PulseLab App...', 'success');
-          }
-          this.deferredInstallPrompt = null;
-        } else {
-          document.getElementById('install-modal').classList.remove('hidden');
-          document.getElementById('install-modal').classList.add('flex');
-        }
       }
 
       /* ==========================
@@ -1431,17 +1381,17 @@
       =========================== */
       async ensureStarterProject() {
         const existing = await this.storage.getAllProjects();
-        if (existing.length === 0 && !localStorage.getItem('pulselab_seeded_v30')) {
-          localStorage.setItem('pulselab_seeded_v30', 'true');
+        if (existing.length === 0 && !localStorage.getItem('pulselab_seeded_v40')) {
+          localStorage.setItem('pulselab_seeded_v40', 'true');
           const demoProject = {
             id: 'proj_demo_1',
-            title: 'Midnight Lo-Fi Demo',
+            title: 'Midnight Lo-Fi Cover',
             bpm: 95,
             duration: 0,
             updatedAt: Date.now(),
             tracks: [
-              { id: 1, name: 'Lead Vocals', color: '#8b5cf6', armed: true, muted: false, solo: false, volume: 1.0, pan: 0.0, clips: [] },
-              { id: 2, name: 'Backing Beat', color: '#06b6d4', armed: false, muted: false, solo: false, volume: 0.9, pan: 0.0, clips: [] }
+              { id: 1, name: 'Lead Vocals (Overdub)', color: '#8b5cf6', stemMode: 'mix', armed: true, muted: false, solo: false, volume: 1.0, pan: 0.0, clips: [] },
+              { id: 2, name: 'Backing Song (Inst)', color: '#06b6d4', stemMode: 'instrumental', armed: false, muted: false, solo: false, volume: 0.9, pan: 0.0, clips: [] }
             ]
           };
           await this.storage.saveProject(demoProject);
@@ -1548,9 +1498,9 @@
 
         this.tracks = [];
         this.nextTrackId = 1;
-        this.addTrack('Vocals 1', true);
-        this.addTrack('Backing Beat', false);
-        this.addTrack('Harmony / Adlibs', false);
+        this.addTrack('Vocals (Overdub)', true, 'mix');
+        this.addTrack('Song / Backing Track', false, 'mix');
+        this.addTrack('Harmony / Adlibs', false, 'mix');
         this.switchView('studio');
       }
 
@@ -1602,6 +1552,7 @@
             id: savedTrack.id,
             name: savedTrack.name,
             color: savedTrack.color || '#8b5cf6',
+            stemMode: savedTrack.stemMode || 'mix', // 'mix' | 'instrumental' | 'vocals'
             armed: !!savedTrack.armed,
             muted: !!savedTrack.muted,
             solo: !!savedTrack.solo,
@@ -1617,7 +1568,7 @@
 
         this.nextTrackId = maxId + 1;
         if (this.tracks.length === 0) {
-          this.addTrack('Vocals 1', true);
+          this.addTrack('Vocals 1', true, 'mix');
         }
 
         this.renderTracksDOM();
@@ -1648,6 +1599,7 @@
             id: track.id,
             name: track.name,
             color: track.color,
+            stemMode: track.stemMode || 'mix',
             armed: track.armed,
             muted: track.muted,
             solo: track.solo,
@@ -1759,19 +1711,6 @@
         });
 
         document.getElementById('btn-replay-intro').addEventListener('click', () => triggerSplashAnimation());
-
-        // Install App Triggers
-        document.getElementById('btn-install-top').addEventListener('click', () => this.triggerInstallApp());
-        document.getElementById('btn-auth-install').addEventListener('click', () => this.triggerInstallApp());
-        document.getElementById('btn-profile-install').addEventListener('click', () => this.triggerInstallApp());
-        document.getElementById('install-modal-close').addEventListener('click', () => {
-          document.getElementById('install-modal').classList.add('hidden');
-          document.getElementById('install-modal').classList.remove('flex');
-        });
-        document.getElementById('install-modal-done').addEventListener('click', () => {
-          document.getElementById('install-modal').classList.add('hidden');
-          document.getElementById('install-modal').classList.remove('flex');
-        });
 
         // Firebase Config Modal
         const openFbCfg = () => {
@@ -1902,6 +1841,15 @@
           }
         });
 
+        // Rec Monitor / Backing Level Slider
+        const recMonSlider = document.getElementById('rec-monitor-slider');
+        recMonSlider.addEventListener('input', (e) => {
+          const pct = parseInt(e.target.value, 10);
+          this.recMonitorLevel = pct / 100;
+          document.getElementById('rec-monitor-label').textContent = `${pct}%`;
+          this.applyActiveMonitorGain();
+        });
+
         // Snap Toggle Button
         const snapBtn = document.getElementById('btn-snap-toggle');
         snapBtn.addEventListener('click', () => {
@@ -1912,8 +1860,10 @@
             : 'px-2 py-0.5 rounded-lg bg-zinc-900 text-zinc-400 border border-zinc-800 text-[11px] font-mono font-semibold transition';
         });
 
-        // Clip Editor Toolbar Buttons
+        // Clip & Stem Editor Toolbar Buttons
         document.getElementById('btn-clip-split').addEventListener('click', () => this.splitSelectedClipAtPlayhead());
+        document.getElementById('btn-split-stems-toolbar').addEventListener('click', () => this.splitTrackIntoStems());
+        document.getElementById('btn-inspector-split-stems').addEventListener('click', () => this.splitTrackIntoStems());
         document.getElementById('btn-clip-duplicate').addEventListener('click', () => this.duplicateSelectedClip());
         document.getElementById('btn-clip-delete').addEventListener('click', () => this.deleteSelectedClip());
 
@@ -2057,13 +2007,180 @@
       }
 
       /* =====================================================================
+         REAL-TIME & OFFLINE VOCAL / INSTRUMENTAL STEM ISOLATION DSP GRAPH
+         - 'mix'          : Normal full stereo passthrough
+         - 'instrumental' : Removes center-panned vocals/lyrics via ChannelSplitter
+                            phase inversion (L - R) on highs while preserving
+                            stereo bass/kick below 160Hz via BiquadFilter lowpass!
+         - 'vocals'       : Isolates center-panned vocals/lyrics via Mid-channel
+                            sum (L + R) + 180Hz-4500Hz vocal bandpass filter!
+      ====================================================================== */
+      connectSourceWithStemDSP(ctx, sourceNode, track, destinationNode) {
+        const mode = track.stemMode || 'mix';
+
+        const trackGain = ctx.createGain();
+        const monitorFactor = (this.isRecording && !track.armed && ctx === this.audioCtx)
+          ? this.recMonitorLevel
+          : 1.0;
+        trackGain.gain.value = track.volume * monitorFactor;
+
+        const panNode = ctx.createStereoPanner();
+        panNode.pan.value = track.pan;
+
+        trackGain.connect(panNode);
+        panNode.connect(destinationNode);
+
+        if (ctx === this.audioCtx) {
+          track.liveGainNode = trackGain;
+          track.livePanNode = panNode;
+        }
+
+        if (mode === 'mix') {
+          sourceNode.connect(trackGain);
+          return;
+        }
+
+        // Split stereo into Left (ch 0) and Right (ch 1)
+        const splitter = ctx.createChannelSplitter(2);
+        sourceNode.connect(splitter);
+
+        if (mode === 'instrumental') {
+          // 1. Low-end Bass/Kick Crossover (< 160Hz) preserved from L+R
+          const bassSum = ctx.createGain();
+          bassSum.gain.value = 0.7;
+          splitter.connect(bassSum, 0);
+          splitter.connect(bassSum, 1);
+
+          const lowpass = ctx.createBiquadFilter();
+          lowpass.type = 'lowpass';
+          lowpass.frequency.value = 160;
+          lowpass.Q.value = 0.707;
+          bassSum.connect(lowpass);
+
+          // 2. Side Signal (L - R) above 160Hz cancels center-panned vocals/lyrics
+          const sideDiff = ctx.createGain();
+          sideDiff.gain.value = 0.95;
+
+          const invertR = ctx.createGain();
+          invertR.gain.value = -1.0;
+
+          splitter.connect(sideDiff, 0);     // +L
+          splitter.connect(invertR, 1);      // R -> -R
+          invertR.connect(sideDiff);         // + (-R) => L - R
+
+          const highpass = ctx.createBiquadFilter();
+          highpass.type = 'highpass';
+          highpass.frequency.value = 160;
+          highpass.Q.value = 0.707;
+          sideDiff.connect(highpass);
+
+          // Sum preserved low-end + vocal-cancelled stereo instruments
+          const merger = ctx.createChannelMerger(2);
+          lowpass.connect(merger, 0, 0);
+          lowpass.connect(merger, 0, 1);
+          highpass.connect(merger, 0, 0);
+          highpass.connect(merger, 0, 1);
+
+          merger.connect(trackGain);
+        } else if (mode === 'vocals') {
+          // Mid-Channel (L + R) emphasizes center-panned lead vocals/lyrics
+          const midSum = ctx.createGain();
+          midSum.gain.value = 0.85;
+          splitter.connect(midSum, 0);
+          splitter.connect(midSum, 1);
+
+          // Vocal Formant Bandpass (180Hz - 4500Hz) strips sub-bass & hi-hat shimmer
+          const vocalHighpass = ctx.createBiquadFilter();
+          vocalHighpass.type = 'highpass';
+          vocalHighpass.frequency.value = 180;
+          vocalHighpass.Q.value = 0.8;
+
+          const vocalLowpass = ctx.createBiquadFilter();
+          vocalLowpass.type = 'lowpass';
+          vocalLowpass.frequency.value = 4500;
+          vocalLowpass.Q.value = 0.8;
+
+          midSum.connect(vocalHighpass);
+          vocalHighpass.connect(vocalLowpass);
+
+          const merger = ctx.createChannelMerger(2);
+          vocalLowpass.connect(merger, 0, 0);
+          vocalLowpass.connect(merger, 0, 1);
+          merger.connect(trackGain);
+        }
+      }
+
+      setTrackStemMode(trackId, newMode) {
+        const track = this.tracks.find(t => t.id === trackId);
+        if (!track || track.stemMode === newMode) return;
+        track.stemMode = newMode;
+        this.renderTracksDOM();
+        if (this.isPlaying) {
+          this.restartPlaybackFromCurrent();
+        }
+        const labels = {
+          mix: 'Full Mix (Stereo)',
+          instrumental: 'Instrumental Only (Vocals Removed)',
+          vocals: 'Vocals Only (Lyrics Isolated)'
+        };
+        this.showToast(`${track.name}: ${labels[newMode]}`, 'info');
+      }
+
+      splitTrackIntoStems() {
+        let sourceTrack = null;
+        if (this.selectedClipRef) {
+          sourceTrack = this.tracks.find(t => t.id === this.selectedClipRef.trackId);
+        }
+        if (!sourceTrack) {
+          sourceTrack = this.tracks.find(t => t.clips && t.clips.length > 0);
+        }
+        if (!sourceTrack || sourceTrack.clips.length === 0) {
+          this.showToast('Import or select a track with audio first to split into stems.', 'warning');
+          return;
+        }
+
+        const baseName = sourceTrack.name.replace(/\s*\((Inst|Vox|Full Mix)\)\s*/gi, '').trim();
+        const instTrack = this.addTrack(`${baseName} (Instrumental)`, false, 'instrumental');
+        const voxTrack = this.addTrack(`${baseName} (Vocals)`, false, 'vocals');
+
+        // Clone clips into both separated stem tracks
+        sourceTrack.clips.forEach(c => {
+          instTrack.clips.push({
+            ...c,
+            id: this.nextClipId++,
+            name: `${c.name} [Beat]`
+          });
+          voxTrack.clips.push({
+            ...c,
+            id: this.nextClipId++,
+            name: `${c.name} [Lyrics]`
+          });
+        });
+
+        // Mute original unsplit track so the two separated stems play cleanly without doubling
+        sourceTrack.muted = true;
+        this.renderTracksDOM();
+        if (this.isPlaying) {
+          this.restartPlaybackFromCurrent();
+        }
+        this.showToast(`Split "${baseName}" into Instrumental & Vocals tracks!`, 'success');
+      }
+
+      applyActiveMonitorGain() {
+        this.tracks.forEach(t => {
+          if (t.liveGainNode) {
+            const monitorFactor = (this.isRecording && !t.armed) ? this.recMonitorLevel : 1.0;
+            t.liveGainNode.gain.value = t.volume * monitorFactor;
+          }
+        });
+      }
+
+      /* =====================================================================
          ZERO-LAG GPU-ACCELERATED CLIP REGION DOM & POINTER CAPTURE ENGINE
-         - Never re-renders DOM or redraws canvases during pointermove!
-         - Uses setPointerCapture + requestAnimationFrame + translate3d
       ====================================================================== */
       snapTimeIfEnabled(seconds) {
         if (!this.snapEnabled) return Math.max(0, seconds);
-        const beatStep = (60 / this.bpm) / 2; // 8th-note snap resolution
+        const beatStep = (60 / this.bpm) / 2;
         return Math.max(0, Math.round(seconds / beatStep) * beatStep);
       }
 
@@ -2094,7 +2211,6 @@
             this.selectedClipRef.trackId === track.id &&
             this.selectedClipRef.clipId === clip.id;
 
-          // Hardware-accelerated DOM clip box
           const clipEl = document.createElement('div');
           clipEl.className = `clip-region-el absolute rounded-lg overflow-hidden border transition-shadow ${
             isSelected ? 'ring-2 ring-white border-cyan-300 z-20' : 'border-white/20 z-10'
@@ -2106,7 +2222,6 @@
           clipEl.style.backgroundColor = audible ? `${track.color}2e` : 'rgba(63, 63, 70, 0.25)';
           clipEl.style.borderColor = isSelected ? '#ffffff' : (audible ? `${track.color}aa` : '#3f3f4e');
 
-          // Static pre-rendered waveform canvas inside the clip (drawn ONLY once on commit)
           const waveCanvas = document.createElement('canvas');
           const dpr = Math.min(window.devicePixelRatio || 1, 2);
           waveCanvas.width = Math.max(1, Math.floor(clipWidthPx * dpr));
@@ -2116,7 +2231,6 @@
           const ctx = waveCanvas.getContext('2d');
           ctx.scale(dpr, dpr);
 
-          // Draw Waveform Peaks within [trimStart, trimEnd]
           const peaks = clip.peaks;
           const startRatio = trimStart / totalBufDur;
           const endRatio = trimEnd / totalBufDur;
@@ -2138,7 +2252,6 @@
             ctx.fillRect(i * stepPx, centerY - amp, barWidth, amp * 2);
           }
 
-          // Fade-In / Fade-Out visual shading
           const fadeInPx = Math.min(clipWidthPx, (clip.fadeIn || 0) * pps);
           const fadeOutPx = Math.min(clipWidthPx, (clip.fadeOut || 0) * pps);
           if (fadeInPx > 2) {
@@ -2162,13 +2275,12 @@
 
           clipEl.appendChild(waveCanvas);
 
-          // Clip title pill
           const titleTag = document.createElement('div');
           titleTag.className = 'absolute top-0.5 left-2 right-2 pointer-events-none truncate font-mono text-[9px] font-semibold text-white/90 drop-shadow';
           titleTag.textContent = clip.name || 'Audio Clip';
           clipEl.appendChild(titleTag);
 
-          // Wide 22px Left Trim Handle
+          // Wide 20px Left Trim Handle
           const leftHandle = document.createElement('div');
           leftHandle.title = 'Drag to trim start';
           leftHandle.className = `clip-trim-handle absolute left-0 top-0 bottom-0 flex items-center justify-start pl-0.5 ${
@@ -2177,7 +2289,7 @@
           leftHandle.innerHTML = `<div class="w-1.5 h-7 rounded-full bg-cyan-400 shadow-md shadow-cyan-400/60"></div>`;
           clipEl.appendChild(leftHandle);
 
-          // Wide 22px Right Trim Handle
+          // Wide 20px Right Trim Handle
           const rightHandle = document.createElement('div');
           rightHandle.title = 'Drag to trim end';
           rightHandle.className = `clip-trim-handle absolute right-0 top-0 bottom-0 flex items-center justify-end pr-0.5 ${
@@ -2186,9 +2298,7 @@
           rightHandle.innerHTML = `<div class="w-1.5 h-7 rounded-full bg-cyan-400 shadow-md shadow-cyan-400/60"></div>`;
           clipEl.appendChild(rightHandle);
 
-          // Bind GPU-Accelerated Pointer Events
           this.attachClipPointerHandlers(clipEl, leftHandle, rightHandle, track, clip);
-
           track.clipsLayerEl.appendChild(clipEl);
         });
       }
@@ -2199,7 +2309,6 @@
           e.stopPropagation();
           e.preventDefault();
 
-          // Select clip without tearing down DOM mid-gesture
           const selectionChanged = !this.selectedClipRef ||
             this.selectedClipRef.trackId !== track.id ||
             this.selectedClipRef.clipId !== clip.id;
@@ -2284,7 +2393,6 @@
             clipEl.classList.remove('is-dragging');
 
             if (session.moved) {
-              // Commit final coordinates to state & redraw waveform once
               session.clip.startTime = session.finalStartTime;
               session.clip.trimStart = session.finalTrimStart;
               session.clip.trimEnd = session.finalTrimEnd;
@@ -2328,7 +2436,6 @@
           s.finalStartTime = snappedStart;
 
           const visualDx = (snappedStart * pps) - s.origLeftPx;
-          // Pure GPU transform — zero layout reflow, zero canvas redraw!
           s.clipEl.style.transform = `translate3d(${visualDx}px, 0, 0)`;
           this.updateDragTooltip(s.latestClientX, s.latestClientY, `Pos: ${snappedStart.toFixed(2)}s`);
         } else if (s.mode === 'trim-left') {
@@ -2557,7 +2664,7 @@
       }
 
       /* ==========================
-         WEB AUDIO ENGINE & COMPACT TRACKS (76px HEIGHT)
+         WEB AUDIO ENGINE & COMPACT TRACKS (76px HEIGHT + 3-MODE STEM SWITCHER)
       =========================== */
       ensureAudioContext() {
         if (!this.audioCtx) {
@@ -2577,7 +2684,7 @@
         }
       }
 
-      addTrack(name = null, armed = false) {
+      addTrack(name = null, armed = false, stemMode = 'mix') {
         const id = this.nextTrackId++;
         const color = this.trackColors[(id - 1) % this.trackColors.length];
         if (armed) this.tracks.forEach(t => t.armed = false);
@@ -2586,6 +2693,7 @@
           id,
           name: name || `Track ${id}`,
           color,
+          stemMode, // 'mix' | 'instrumental' | 'vocals'
           armed,
           muted: false,
           solo: false,
@@ -2661,43 +2769,60 @@
         const widthPx = Math.max(1200, Math.ceil(totalSec * this.pixelsPerSecond));
 
         this.tracks.forEach(track => {
+          const mode = track.stemMode || 'mix';
           const row = document.createElement('div');
-          // Compact 76px track height
           row.className = `flex h-[76px] bg-studio-panel/40 hover:bg-studio-panel/70 transition-colors ${track.armed ? 'bg-red-950/15' : ''}`;
 
           row.innerHTML = `
-            <!-- Compact Left Track Controls & Mixer -->
-            <div class="w-36 sm:w-56 md:w-64 shrink-0 px-2 sm:px-2.5 py-1.5 border-r border-studio-border flex flex-col justify-between relative select-none bg-studio-panel/95 z-10" style="border-left: 3px solid ${track.color}">
+            <!-- Compact Left Track Controls, 3-Mode Stem Switcher & Mixer -->
+            <div class="w-44 sm:w-64 md:w-72 shrink-0 px-2 sm:px-2.5 py-1 border-r border-studio-border flex flex-col justify-between relative select-none bg-studio-panel/95 z-10" style="border-left: 3px solid ${track.color}">
               <div class="flex items-center justify-between gap-1">
                 <input type="text" value="${track.name}" data-track-name="${track.id}"
                   class="bg-transparent text-xs font-semibold text-zinc-100 focus:outline-none focus:bg-zinc-800 px-1 py-0.5 rounded w-full truncate border border-transparent focus:border-zinc-700" />
                 
                 <div class="flex items-center gap-0.5 shrink-0">
-                  <button data-arm="${track.id}" title="Arm Track"
-                    class="w-5 h-5 rounded text-[10px] font-mono font-bold border transition flex items-center justify-center ${
+                  <button data-arm="${track.id}" title="Arm Track for Recording"
+                    class="w-4 h-4 sm:w-5 sm:h-5 rounded text-[9px] sm:text-[10px] font-mono font-bold border transition flex items-center justify-center ${
                       track.armed ? 'bg-red-500 text-white border-red-400' : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-red-400'
                     }">R</button>
 
                   <button data-mute="${track.id}" title="Mute Track"
-                    class="w-5 h-5 rounded text-[10px] font-mono font-bold border transition flex items-center justify-center ${
+                    class="w-4 h-4 sm:w-5 sm:h-5 rounded text-[9px] sm:text-[10px] font-mono font-bold border transition flex items-center justify-center ${
                       track.muted ? 'bg-amber-500 text-zinc-950 border-amber-400' : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-zinc-200'
                     }">M</button>
 
                   <button data-solo="${track.id}" title="Solo Track"
-                    class="w-5 h-5 rounded text-[10px] font-mono font-bold border transition flex items-center justify-center ${
+                    class="w-4 h-4 sm:w-5 sm:h-5 rounded text-[9px] sm:text-[10px] font-mono font-bold border transition flex items-center justify-center ${
                       track.solo ? 'bg-cyan-400 text-zinc-950 border-cyan-300' : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-zinc-200'
                     }">S</button>
 
                   <button data-delete="${track.id}" title="Delete Track"
-                    class="w-5 h-5 rounded text-zinc-500 hover:text-red-400 hover:bg-zinc-800/80 transition flex items-center justify-center">
+                    class="w-4 h-4 sm:w-5 sm:h-5 rounded text-zinc-500 hover:text-red-400 hover:bg-zinc-800/80 transition flex items-center justify-center">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                   </button>
                 </div>
               </div>
 
+              <!-- 3-Mode Real-Time Stem Isolation Switcher Pill -->
+              <div class="grid grid-cols-3 gap-0.5 bg-zinc-950 p-0.5 rounded-md border border-zinc-800/90" title="Real-Time Stem Separation Mode">
+                <button data-stem-mode="mix" data-track-id="${track.id}"
+                  class="py-0.5 rounded text-[9px] font-mono font-bold transition ${
+                    mode === 'mix' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-300'
+                  }">Full Mix</button>
+                <button data-stem-mode="instrumental" data-track-id="${track.id}"
+                  class="py-0.5 rounded text-[9px] font-mono font-bold transition ${
+                    mode === 'instrumental' ? 'bg-cyan-500/25 text-cyan-300 border border-cyan-500/40' : 'text-zinc-500 hover:text-cyan-300'
+                  }">Inst</button>
+                <button data-stem-mode="vocals" data-track-id="${track.id}"
+                  class="py-0.5 rounded text-[9px] font-mono font-bold transition ${
+                    mode === 'vocals' ? 'bg-violet-500/30 text-violet-200 border border-violet-500/40' : 'text-zinc-500 hover:text-violet-300'
+                  }">Vocals</button>
+              </div>
+
+              <!-- Compact Volume & Pan Sliders -->
               <div class="grid grid-cols-2 gap-1.5">
                 <div class="flex flex-col gap-0.5">
-                  <div class="flex justify-between text-[9px] font-mono text-zinc-400 leading-none">
+                  <div class="flex justify-between text-[8px] font-mono text-zinc-400 leading-none">
                     <span>VOL</span>
                     <span id="vol-label-${track.id}">${Math.round(track.volume * 100)}%</span>
                   </div>
@@ -2705,7 +2830,7 @@
                 </div>
 
                 <div class="flex flex-col gap-0.5">
-                  <div class="flex justify-between text-[9px] font-mono text-zinc-400 leading-none">
+                  <div class="flex justify-between text-[8px] font-mono text-zinc-400 leading-none">
                     <span>PAN</span>
                     <span id="pan-label-${track.id}">${track.pan === 0 ? 'C' : (track.pan < 0 ? `L${Math.round(Math.abs(track.pan)*100)}` : `R${Math.round(track.pan*100)}`)}</span>
                   </div>
@@ -2717,9 +2842,7 @@
             <!-- Synchronized Horizontally Scrollable Waveform Timeline -->
             <div class="flex-1 overflow-x-auto overflow-y-hidden bg-zinc-950/95" data-scroll-viewport="${track.id}">
               <div class="relative h-[76px]" style="width: ${widthPx}px;" data-inner-track="${track.id}">
-                <!-- Background grid + playhead canvas -->
                 <canvas class="w-full h-full block pointer-events-none"></canvas>
-                <!-- Hardware-accelerated interactive clips layer -->
                 <div class="absolute inset-0" data-clips-layer="${track.id}"></div>
               </div>
             </div>
@@ -2745,10 +2868,13 @@
             this.seekTo(Math.max(0, clickX / this.pixelsPerSecond));
           });
 
-          // Track mixer listeners
+          // Track mixer & stem switcher listeners
           row.querySelector(`[data-track-name="${track.id}"]`).addEventListener('change', (e) => {
             track.name = e.target.value.trim() || `Track ${track.id}`;
             this.updateClipInspectorUI();
+          });
+          row.querySelectorAll(`[data-stem-mode]`).forEach(btn => {
+            btn.addEventListener('click', () => this.setTrackStemMode(track.id, btn.dataset.stemMode));
           });
           row.querySelector(`[data-arm="${track.id}"]`).addEventListener('click', () => this.toggleArm(track.id));
           row.querySelector(`[data-mute="${track.id}"]`).addEventListener('click', () => this.toggleMute(track.id));
@@ -2758,7 +2884,10 @@
           row.querySelector(`[data-vol="${track.id}"]`).addEventListener('input', (e) => {
             track.volume = parseFloat(e.target.value);
             document.getElementById(`vol-label-${track.id}`).textContent = `${Math.round(track.volume * 100)}%`;
-            if (track.liveGainNode) track.liveGainNode.gain.value = track.volume;
+            if (track.liveGainNode) {
+              const monitorFactor = (this.isRecording && !track.armed) ? this.recMonitorLevel : 1.0;
+              track.liveGainNode.gain.value = track.volume * monitorFactor;
+            }
           });
 
           row.querySelector(`[data-pan="${track.id}"]`).addEventListener('input', (e) => {
@@ -2768,7 +2897,6 @@
             if (track.livePanNode) track.livePanNode.pan.value = track.pan;
           });
 
-          // Render interactive clip regions for this track
           this.renderTrackClipsDOM(track);
         });
 
@@ -2799,9 +2927,12 @@
           const arrayBuffer = await file.arrayBuffer();
           const audioBuffer = await this.audioCtx.decodeAudioData(arrayBuffer);
 
-          let targetTrack = this.tracks.find(t => t.armed);
+          // Place imported song on an unarmed backing track so the armed vocal track stays clean for overdubbing
+          let targetTrack = this.tracks.find(t => !t.armed && t.clips.length === 0);
           if (!targetTrack) {
-            targetTrack = this.addTrack(file.name.replace(/\.[^/.]+$/, ''), false);
+            targetTrack = this.addTrack(file.name.replace(/\.[^/.]+$/, ''), false, 'mix');
+          } else {
+            targetTrack.name = file.name.replace(/\.[^/.]+$/, '');
           }
 
           const peaks = this.extractPeaks(audioBuffer);
@@ -2817,9 +2948,10 @@
             peaks
           };
           targetTrack.clips.push(newClip);
+          this.renderTracksDOM();
           this.selectClip(targetTrack.id, newClip.id);
           this.updateTimelineDimensions();
-          this.showToast(`Imported "${file.name}" into ${targetTrack.name}`, 'success');
+          this.showToast(`Imported "${file.name}" — switch Inst/Vocals or tap Split Stems!`, 'success');
         } catch (err) {
           console.error(err);
           this.showToast('Unable to decode audio file. Please select MP3, WAV, M4A, or OGG.', 'error');
@@ -2927,19 +3059,9 @@
             const fadeIn = Math.min(activeDur, clip.fadeIn || 0);
             const fadeOut = Math.min(activeDur, clip.fadeOut || 0);
 
-            const gainNode = this.audioCtx.createGain();
-            gainNode.gain.value = track.volume;
-
-            const panNode = this.audioCtx.createStereoPanner();
-            panNode.pan.value = track.pan;
-
             source.connect(clipFadeGain);
-            clipFadeGain.connect(gainNode);
-            gainNode.connect(panNode);
-            panNode.connect(this.masterGain);
-
-            track.liveGainNode = gainNode;
-            track.livePanNode = panNode;
+            // Route through real-time Stem DSP + Track Gain + Pan + Master
+            this.connectSourceWithStemDSP(this.audioCtx, clipFadeGain, track, this.masterGain);
 
             if (clip.startTime >= offset) {
               const startAt = now + (clip.startTime - offset);
@@ -2996,6 +3118,12 @@
         this.activeSources = [];
       }
 
+      /* =====================================================================
+         CLEAN OVERDUB RECORDING & ACOUSTIC ECHO CANCELLATION
+         - Uses echoCancellation: true, noiseSuppression: true, autoGainControl: false, channelCount: 1
+         - Never connects mic input to speakers (eliminates feedback & bleed)
+         - Automatically scales backing tracks to Rec Monitor level during capture
+      ====================================================================== */
       async toggleRecord() {
         if (this.isCountingIn) return;
         if (this.isRecording) {
@@ -3011,7 +3139,7 @@
         let armedTrack = this.tracks.find(t => t.armed);
         if (!armedTrack) {
           if (this.tracks.length === 0) {
-            armedTrack = this.addTrack('Vocals 1', true);
+            armedTrack = this.addTrack('Vocals (Overdub)', true, 'mix');
           } else {
             armedTrack = this.tracks[0];
             this.toggleArm(armedTrack.id);
@@ -3022,13 +3150,14 @@
           if (!this.mediaStream) {
             this.mediaStream = await navigator.mediaDevices.getUserMedia({
               audio: {
-                echoCancellation: false,
-                noiseSuppression: false,
-                autoGainControl: false
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: false,
+                channelCount: 1
               }
             });
             document.getElementById('mic-status-dot').className = 'w-2 h-2 rounded-full bg-cyan-400';
-            document.getElementById('mic-status-text').textContent = 'Mic Active';
+            document.getElementById('mic-status-text').textContent = 'AEC Mic Ready';
           }
         } catch (err) {
           document.getElementById('mic-status-dot').className = 'w-2 h-2 rounded-full bg-red-500';
@@ -3037,10 +3166,13 @@
           return;
         }
 
-        const micSource = this.audioCtx.createMediaStreamSource(this.mediaStream);
-        this.micAnalyser = this.audioCtx.createAnalyser();
-        this.micAnalyser.fftSize = 256;
-        micSource.connect(this.micAnalyser);
+        if (!this.micSourceNode) {
+          this.micSourceNode = this.audioCtx.createMediaStreamSource(this.mediaStream);
+          this.micAnalyser = this.audioCtx.createAnalyser();
+          this.micAnalyser.fftSize = 256;
+          // Connect ONLY to analyser for visual metering — NEVER to audioCtx.destination
+          this.micSourceNode.connect(this.micAnalyser);
+        }
 
         if (this.countInEnabled) {
           await this.runCountIn();
@@ -3113,7 +3245,7 @@
             if (track) {
               const newClip = {
                 id: this.nextClipId++,
-                name: `Take ${track.clips.length + 1}`,
+                name: `Vocal Take ${track.clips.length + 1}`,
                 buffer: decodedBuffer,
                 startTime: this.recordingStartTime,
                 trimStart: 0,
@@ -3125,7 +3257,7 @@
               track.clips.push(newClip);
               this.selectClip(track.id, newClip.id);
               this.updateTimelineDimensions();
-              this.showToast(`Recorded ${newClip.name} to ${track.name}`, 'success');
+              this.showToast(`Recorded clean take to ${track.name}`, 'success');
             }
           } catch (err) {
             this.showToast('Error decoding recorded audio.', 'error');
@@ -3135,6 +3267,7 @@
         };
 
         this.isRecording = true;
+        document.getElementById('recording-isolation-banner').classList.remove('hidden');
         this.mediaRecorder.start(100);
         this.play();
         this.updateTransportUI();
@@ -3143,10 +3276,12 @@
       stopRecording() {
         if (!this.isRecording) return;
         this.isRecording = false;
+        document.getElementById('recording-isolation-banner').classList.add('hidden');
         if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
           this.mediaRecorder.stop();
         }
         this.pause();
+        this.applyActiveMonitorGain();
         this.updateTransportUI();
       }
 
@@ -3254,7 +3389,7 @@
       }
 
       /* ==========================
-         LIGHTWEIGHT TIMELINE GRID & PLAYHEAD CANVAS RENDERING
+         TIMELINE GRID, PLAYHEAD & LIVE METERS RENDER LOOP
       =========================== */
       startRenderLoop() {
         const render = () => {
@@ -3284,15 +3419,17 @@
 
             this.timecodeDisplay.textContent = this.formatTimecode(currentTime);
 
-            if (this.isRecording && this.micAnalyser) {
+            let liveMicPeak = 0;
+            if (this.micAnalyser && (this.isRecording || this.mediaStream)) {
               const dataArray = new Uint8Array(this.micAnalyser.frequencyBinCount);
               this.micAnalyser.getByteTimeDomainData(dataArray);
-              let peak = 0;
               for (let i = 0; i < dataArray.length; i++) {
                 const norm = Math.abs((dataArray[i] - 128) / 128);
-                if (norm > peak) peak = norm;
+                if (norm > liveMicPeak) liveMicPeak = norm;
               }
-              this.liveWaveformPeaks.push({ time: currentTime, peak });
+              if (this.isRecording) {
+                this.liveWaveformPeaks.push({ time: currentTime, peak: liveMicPeak });
+              }
             }
 
             this.drawRuler(currentTime);
@@ -3300,6 +3437,7 @@
               if (track.canvasEl) this.drawTrackGridCanvas(track, currentTime);
             });
             this.drawMasterMeter();
+            this.drawMicInputMeter(liveMicPeak);
           }
 
           requestAnimationFrame(render);
@@ -3374,7 +3512,6 @@
 
         ctx.clearRect(0, 0, w, h);
 
-        // Vertical second grid lines
         ctx.strokeStyle = '#181820';
         ctx.lineWidth = 1;
         const totalSeconds = Math.ceil(w / pps);
@@ -3386,14 +3523,12 @@
           ctx.stroke();
         }
 
-        // Center zero-crossing line
         ctx.strokeStyle = '#20202a';
         ctx.beginPath();
         ctx.moveTo(0, h / 2);
         ctx.lineTo(w, h / 2);
         ctx.stroke();
 
-        // Live Recording Waveform Preview
         if (this.isRecording && this.recordingTrackId === track.id) {
           const recStartX = this.recordingStartTime * pps;
           const recCurrentX = currentTime * pps;
@@ -3416,7 +3551,6 @@
           });
         }
 
-        // Vertical Playhead Line
         const playheadX = currentTime * pps;
         ctx.strokeStyle = this.isRecording ? '#ef4444' : '#06b6d4';
         ctx.lineWidth = 1.5;
@@ -3428,6 +3562,7 @@
 
       drawMasterMeter() {
         const canvas = this.masterMeterCanvas;
+        if (!canvas) return;
         const ctx = canvas.getContext('2d');
         const w = canvas.width;
         const h = canvas.height;
@@ -3453,8 +3588,25 @@
         ctx.fillRect(0, 0, w * level, h);
       }
 
+      drawMicInputMeter(peak) {
+        const canvas = this.micInputMeterCanvas;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const level = Math.min(1, peak * 2.6);
+        const grad = ctx.createLinearGradient(0, 0, w, 0);
+        grad.addColorStop(0, '#10b981');
+        grad.addColorStop(0.7, '#f59e0b');
+        grad.addColorStop(1, '#ef4444');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w * level, h);
+      }
+
       /* ==========================
-         STEREO WAV EXPORT
+         STEREO WAV EXPORT (WITH EXACT REAL-TIME STEM DSP ROUTING)
       =========================== */
       async exportMixWAV() {
         this.ensureAudioContext();
@@ -3473,7 +3625,7 @@
         }
 
         try {
-          this.showToast('Rendering master mixdown (.WAV)...', 'info');
+          this.showToast('Rendering master mixdown with active Stem DSP (.WAV)...', 'info');
           const sampleRate = this.audioCtx.sampleRate;
           const totalSamples = Math.ceil(maxDuration * sampleRate);
           const offlineCtx = new OfflineAudioContext(2, totalSamples, sampleRate);
@@ -3505,16 +3657,10 @@
                 clipFadeGain.gain.linearRampToValueAtTime(0.001, endAt);
               }
 
-              const gainNode = offlineCtx.createGain();
-              gainNode.gain.value = track.volume;
-
-              const panNode = offlineCtx.createStereoPanner();
-              panNode.pan.value = track.pan;
-
               source.connect(clipFadeGain);
-              clipFadeGain.connect(gainNode);
-              gainNode.connect(panNode);
-              panNode.connect(offlineCtx.destination);
+              // Apply the exact same Stem Isolation DSP routing in OfflineAudioContext
+              this.connectSourceWithStemDSP(offlineCtx, clipFadeGain, track, offlineCtx.destination);
+
               source.start(startAt, trimStart, activeDur);
             });
           });
