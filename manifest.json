@@ -1,4 +1,5 @@
 {
+  "id": "/pulselab/",
   "name": "PulseLab - Pocket Multi-Track Studio",
   "short_name": "PulseLab",
   "description": "Pocket multi-track audio recorder with real-time Vocal/Instrumental Stem Separation and Clean Overdub Recording.",
@@ -10,13 +11,13 @@
   "theme_color": "#09090b",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3844/3844724.png",
+      "src": "./icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3844/3844724.png",
+      "src": "./icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
