@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#09090b" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="PulseLab" />
+  <title>PulseLab — Pocket Multi-Track Studio</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            studio: {
+              bg: '#09090b',
+              panel: '#111116',
+              surface: '#181820',
+              border: '#272732',
+              violet: '#8b5cf6',
+              cyan: '#06b6d4',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    /* Custom scrollbar and range input styling for sleek DAW aesthetic */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #09090b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #272732;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3f3f4e;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 4px;
+      border-radius: 9999px;
+      background: #272732;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #f4f4f5;
+      margin-top: -5px;
+      box-shadow: 0 0 8px rgba(139, 92, 246, 0.65);
+      transition: transform 0.1s ease, background-color 0.1s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      background: #06b6d4;
+    }
+
+    @keyframes pulse-record {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.75); }
+      50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+    }
+    .recording-pulse {
+      animation: pulse-record 1.4s infinite;
+    }
+
+    /* Splash Screen Logo Animations */
+    @keyframes spin-slow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes eq-bounce {
+      0%, 100% { transform: scaleY(0.28); }
+      50% { transform: scaleY(1); }
+    }
+    @keyframes splash-glow {
+      0%, 100% { opacity: 0.45; transform: scale(0.95); }
+      50% { opacity: 0.9; transform: scale(1.06); }
+    }
+    @keyframes fade-up-in {
+      0% { opacity: 0; transform: translateY(14px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-spin-slow {
+      animation: spin-slow 9s linear infinite;
+    }
+    .animate-splash-glow {
+      animation: splash-glow 2.4s ease-in-out infinite;
+    }
+    .animate-fade-up {
+      animation: fade-up-in 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .eq-bar {
+      transform-origin: center;
+      animation: eq-bounce 0.85s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-studio-bg text-zinc-100 font-sans antialiased selection:bg-violet-500/30 selection:text-violet-200 min-h-screen flex flex-col overflow-x-hidden">
+
+  <!-- ANIMATED SPLASH SCREEN / LOGO INTRO -->
+  <div id="splash-screen" class="fixed inset-0 z-[100] bg-studio-bg flex flex-col items-center justify-center p-6 transition-all duration-700 ease-out">
+    <!-- Ambient Neon Radial Glow -->
+    <div class="absolute w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-gradient-to-tr from-violet-600/25 via-fuchsia-500/15 to-cyan-500/25 blur-3xl animate-splash-glow pointer-events-none"></div>
+
+    <!-- Animated Emblem + Wordmark -->
+    <div class="relative flex flex-col items-center text-center animate-fade-up">
+      <div class="relative w-28 h-28 sm:w-32 sm:h-32 flex items-center justify-center mb-6">
+        <!-- Outer Rotating Dashed Vinyl / Radar Ring -->
+        <svg class="absolute inset-0 w-full h-full animate-spin-slow" viewBox="0 0 120 120" fill="none">
+          <defs>
+            <linearGradient id="ringGrad" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#8b5cf6" />
+              <stop offset="50%" stop-color="#ec4899" />
+              <stop offset="100%" stop-color="#06b6d4" />
+            </linearGradient>
+          </defs>
+          <circle cx="60" cy="60" r="54" stroke="url(#ringGrad)" stroke-width="2.5" stroke-dasharray="18 8 6 8" stroke-linecap="round" />
+          <circle cx="60" cy="60" r="44" stroke="#272732" stroke-width="1" />
+        </svg>
+
+        <!-- Inner Studio Emblem Badge -->
+        <div class="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 border border-violet-500/40 shadow-2xl shadow-violet-500/25 flex items-center justify-center gap-1.5 px-3">
+          <span class="w-1.5 h-7 rounded-full bg-violet-500 eq-bar" style="animation-delay: 0.0s"></span>
+          <span class="w-1.5 h-11 rounded-full bg-fuchsia-400 eq-bar" style="animation-delay: 0.15s"></span>
+          <span class="w-1.5 h-14 rounded-full bg-gradient-to-t from-violet-400 to-cyan-300 eq-bar" style="animation-delay: 0.3s"></span>
+          <span class="w-1.5 h-10 rounded-full bg-cyan-400 eq-bar" style="animation-delay: 0.45s"></span>
+          <span class="w-1.5 h-6 rounded-full bg-violet-400 eq-bar" style="animation-delay: 0.6s"></span>
+        </div>
+      </div>
+
+      <!-- Brand Title & Tagline -->
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-white via-violet-200 to-cyan-300 bg-clip-text text-transparent">
+        PulseLab
+      </h1>
+      <p class="mt-2 text-[11px] sm:text-xs font-mono uppercase tracking-[0.28em] text-cyan-400/90 font-semibold">
+        Pocket Multi-Track Studio
+      </p>
+
+      <!-- Progress Bar -->
+      <div class="mt-8 w-44 h-1 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800">
+        <div id="splash-progress" class="h-full w-0 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 rounded-full transition-all duration-[2000ms] ease-out"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Banner (Replaces alert) -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-sm w-full px-4 sm:px-0"></div>
+
+  <!-- Count-In Overlay -->
+  <div id="countin-overlay" class="fixed inset-0 z-40 bg-black/75 backdrop-blur-sm hidden items-center justify-center pointer-events-none">
+    <div class="flex flex-col items-center gap-2 bg-zinc-900/95 border border-violet-500/40 px-10 py-8 rounded-2xl shadow-2xl shadow-violet-500/20">
+      <span class="text-xs uppercase tracking-widest text-cyan-400 font-mono font-semibold">Get Ready</span>
+      <span id="countin-number" class="text-7xl font-mono font-bold text-red-500">4</span>
+    </div>
+  </div>
+
+  <!-- Help & Shortcuts Modal -->
+  <div id="help-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-studio-panel border border-studio-border rounded-2xl max-w-lg w-full p-6 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-studio-border pb-4 mb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-violet-500/15 border border-violet-500/30 flex items-center justify-center text-violet-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h2 class="text-lg font-bold text-white">PulseLab Studio Guide</h2>
+        </div>
+        <button id="close-help-btn" class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-sm text-zinc-300">
+        <div class="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/25 text-cyan-100 flex gap-3">
+          <svg class="w-5 h-5 shrink-0 text-cyan-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+          <div>
+            <p class="font-semibold text-cyan-300">Gumamit ng Earphones / Headphones!</p>
+            <p class="text-xs text-cyan-200/80 mt-0.5">Para hindi bumalik sa mic ang backing beat o naunang track habang nag-o-overdub ka sa phone o PC.</p>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">Paano Gamitin</h3>
+          <ol class="list-decimal list-inside space-y-1.5 text-zinc-300 text-xs sm:text-sm">
+            <li>Pindutin ang <span class="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 font-mono font-bold">R</span> sa track na gusto mong pag-recordan (o mag-import ng backing beat gamit ang <strong>Import Beat</strong>).</li>
+            <li>Pindutin ang <strong>Rec</strong> button sa taas para magsimula (may 4-beat count-in).</li>
+            <li>Mag-add ng panibagong track at i-arm ang <span class="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 font-mono font-bold">R</span> para mag-layer ng vocals, harmonies, o instrumento.</li>
+            <li>I-click kahit saan sa waveform timeline para ilipat ang playhead, at i-click ang <strong>Export .WAV</strong> kapag tapos na.</li>
+          </ol>
+        </div>
+
+        <div>
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">Keyboard Shortcuts</h3>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="flex items-center justify-between bg-zinc-900 px-3 py-2 rounded-lg border border-zinc-800">
+              <span class="text-zinc-400">Play / Pause</span>
+              <kbd class="px-2 py-0.5 bg-zinc-800 border border-zinc-700 rounded font-mono text-zinc-200">Space</kbd>
+            </div>
+            <div class="flex items-center justify-between bg-zinc-900 px-3 py-2 rounded-lg border border-zinc-800">
+              <span class="text-zinc-400">Start / Stop Rec</span>
+              <kbd class="px-2 py-0.5 bg-zinc-800 border border-zinc-700 rounded font-mono text-zinc-200">R</kbd>
+            </div>
+            <div class="flex items-center justify-between bg-zinc-900 px-3 py-2 rounded-lg border border-zinc-800">
+              <span class="text-zinc-400">Stop & Rewind</span>
+              <kbd class="px-2 py-0.5 bg-zinc-800 border border-zinc-700 rounded font-mono text-zinc-200">Enter / 0</kbd>
+            </div>
+            <div class="flex items-center justify-between bg-zinc-900 px-3 py-2 rounded-lg border border-zinc-800">
+              <span class="text-zinc-400">Toggle Click</span>
+              <kbd class="px-2 py-0.5 bg-zinc-800 border border-zinc-700 rounded font-mono text-zinc-200">M</kbd>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOP TRANSPORT BAR -->
+  <header class="sticky top-0 z-30 bg-studio-panel/95 backdrop-blur-md border-b border-studio-border px-3 sm:px-6 py-2.5 shadow-lg">
+    <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Brand Logo (Clickable to replay splash) & Session Title -->
+      <div class="flex items-center gap-3">
+        <button id="btn-replay-intro" title="Replay PulseLab Intro" class="group relative w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 via-fuchsia-600 to-cyan-500 p-[1.5px] shadow-lg shadow-violet-500/20 active:scale-95 transition">
+          <div class="w-full h-full rounded-[10px] bg-zinc-950 flex items-center justify-center gap-0.5 px-1.5 group-hover:bg-zinc-900 transition">
+            <span class="w-1 h-2.5 rounded-full bg-violet-400"></span>
+            <span class="w-1 h-4 rounded-full bg-fuchsia-400"></span>
+            <span class="w-1 h-5 rounded-full bg-cyan-300"></span>
+            <span class="w-1 h-3 rounded-full bg-violet-400"></span>
+          </div>
+        </button>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-base sm:text-lg tracking-tight bg-gradient-to-r from-white via-violet-200 to-cyan-300 bg-clip-text text-transparent">
+              PulseLab
+            </span>
+            <span class="text-zinc-600">/</span>
+            <input id="project-title" type="text" value="My First Track" aria-label="Session Name"
+              class="bg-transparent font-medium text-xs sm:text-sm text-zinc-200 focus:outline-none focus:bg-zinc-800/80 px-1.5 py-0.5 rounded-md border border-transparent focus:border-zinc-700 w-28 sm:w-44 truncate" />
+          </div>
+          <p class="text-[10px] font-mono uppercase tracking-widest text-cyan-400/80">Pocket Multi-Track Studio</p>
+        </div>
+      </div>
+
+      <!-- Center Transport Controls + Digital Timecode -->
+      <div class="flex items-center gap-2 sm:gap-3 bg-studio-bg border border-studio-border px-3 py-1.5 rounded-2xl shadow-inner order-3 lg:order-2 w-full lg:w-auto justify-between lg:justify-center">
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <!-- Stop / Rewind -->
+          <button id="btn-stop" title="Stop & Rewind (Enter)" class="p-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-800 transition active:scale-95">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>
+          </button>
+
+          <!-- Play / Pause -->
+          <button id="btn-play" title="Play / Pause (Space)" class="p-2.5 sm:px-4 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 hover:from-violet-500 hover:to-cyan-400 text-white font-semibold flex items-center gap-1.5 shadow-md shadow-violet-500/25 transition active:scale-95">
+            <svg id="icon-play" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <svg id="icon-pause" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            <span id="label-play" class="text-xs hidden sm:inline">Play</span>
+          </button>
+
+          <!-- Record -->
+          <button id="btn-record" title="Record Armed Track (R)" class="p-2.5 sm:px-4 rounded-xl bg-zinc-900 hover:bg-red-950/60 text-red-400 border border-red-500/30 font-semibold flex items-center gap-1.5 transition active:scale-95">
+            <span id="rec-dot" class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
+            <span class="text-xs hidden sm:inline">Rec</span>
+          </button>
+
+          <!-- Loop Toggle -->
+          <button id="btn-loop" title="Toggle Loop Playback" class="p-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 border border-zinc-800 transition active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          </button>
+        </div>
+
+        <!-- Digital Timecode Display -->
+        <div class="flex items-center gap-3 bg-zinc-950 border border-zinc-800/90 px-3 py-1.5 rounded-xl">
+          <div class="text-right">
+            <div id="timecode-display" class="font-mono text-base sm:text-lg font-bold tracking-wider text-cyan-400 leading-none">
+              00:00.0
+            </div>
+            <div class="text-[9px] font-mono uppercase tracking-widest text-zinc-500 mt-0.5">MIN : SEC . MS</div>
+          </div>
+          <!-- Master Level Meter -->
+          <div class="flex flex-col gap-1">
+            <canvas id="master-meter" width="64" height="14" class="rounded bg-zinc-900 border border-zinc-800"></canvas>
+            <div class="flex justify-between text-[8px] font-mono text-zinc-500 leading-none">
+              <span>-36</span>
+              <span>-12</span>
+              <span>0dB</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Controls: Metronome, Export & Help -->
+      <div class="flex items-center gap-2 order-2 lg:order-3">
+        <!-- Metronome Module -->
+        <div class="hidden sm:flex items-center gap-2 bg-studio-bg border border-studio-border px-2.5 py-1.5 rounded-xl">
+          <button id="btn-metronome" title="Toggle Metronome (M)" class="p-1.5 rounded-lg bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 transition flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3L6 21h12L12 3zm0 0l4 9"/></svg>
+            <span class="text-xs font-medium">Click</span>
+          </button>
+          
+          <!-- Beat LEDs -->
+          <div id="beat-leds" class="flex items-center gap-1 px-1">
+            <span class="w-2 h-2 rounded-full bg-zinc-800 transition-colors" data-beat="0"></span>
+            <span class="w-2 h-2 rounded-full bg-zinc-800 transition-colors" data-beat="1"></span>
+            <span class="w-2 h-2 rounded-full bg-zinc-800 transition-colors" data-beat="2"></span>
+            <span class="w-2 h-2 rounded-full bg-zinc-800 transition-colors" data-beat="3"></span>
+          </div>
+
+          <div class="flex items-center gap-1 border-l border-zinc-800 pl-2">
+            <input id="bpm-input" type="number" min="50" max="220" value="110" aria-label="BPM"
+              class="w-12 bg-zinc-900 border border-zinc-800 rounded-md px-1.5 py-0.5 text-xs font-mono text-center text-zinc-200 focus:outline-none focus:border-violet-500" />
+            <span class="text-[10px] font-mono text-zinc-500">BPM</span>
+          </div>
+
+          <!-- 4-Beat Count-In Toggle -->
+          <button id="btn-countin" title="Toggle 4-Beat Count-In before Recording" class="px-2 py-1 rounded-lg bg-violet-500/15 text-violet-300 border border-violet-500/30 text-[11px] font-mono font-semibold transition">
+            Count: ON
+          </button>
+        </div>
+
+        <!-- Export WAV Button -->
+        <button id="btn-export" class="px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95">
+          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          <span>Export .WAV</span>
+        </button>
+
+        <!-- Help Button -->
+        <button id="btn-help" title="PulseLab Guide & Shortcuts" class="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-800 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Metronome Sub-bar (Visible only on xs screens) -->
+    <div class="flex sm:hidden items-center justify-between gap-2 mt-2.5 pt-2 border-t border-zinc-800/80">
+      <div class="flex items-center gap-2">
+        <button id="btn-metronome-mobile" class="px-2.5 py-1 rounded-lg bg-zinc-900 text-zinc-400 border border-zinc-800 text-xs font-medium">
+          Click: OFF
+        </button>
+        <div class="flex items-center gap-1">
+          <input id="bpm-input-mobile" type="number" min="50" max="220" value="110"
+            class="w-12 bg-zinc-900 border border-zinc-800 rounded px-1.5 py-0.5 text-xs font-mono text-center text-zinc-200" />
+          <span class="text-[10px] font-mono text-zinc-500">BPM</span>
+        </div>
+      </div>
+      <button id="btn-countin-mobile" class="px-2.5 py-1 rounded-lg bg-violet-500/15 text-violet-300 border border-violet-500/30 text-[11px] font-mono font-semibold">
+        Count: ON
+      </button>
+    </div>
+  </header>
+
+  <!-- WORKSPACE TOOLBAR -->
+  <div class="bg-studio-panel/60 border-b border-studio-border px-3 sm:px-6 py-2">
+    <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <button id="btn-add-track" class="px-3 py-1.5 rounded-xl bg-violet-500/15 hover:bg-violet-500/25 text-violet-300 border border-violet-500/30 text-xs font-semibold flex items-center gap-1.5 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          <span>Add Track</span>
+        </button>
+
+        <!-- Hidden File Input for Importing Backing Beat / Audio -->
+        <input type="file" id="audio-import-input" accept="audio/*" class="hidden" />
+        <button id="btn-import-audio" class="px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 text-xs font-medium flex items-center gap-1.5 transition">
+          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
+          <span>Import Beat / Audio</span>
+        </button>
+      </div>
+
+      <!-- Timeline Zoom & Mic Status -->
+      <div class="flex items-center gap-3 text-xs text-zinc-400">
+        <div id="mic-status-badge" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-[11px]">
+          <span class="w-2 h-2 rounded-full bg-zinc-500" id="mic-status-dot"></span>
+          <span id="mic-status-text">Mic Standby</span>
+        </div>
+
+        <div class="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 px-2.5 py-1 rounded-lg">
+          <span class="text-[11px] text-zinc-500">Zoom</span>
+          <button id="btn-zoom-out" class="px-1.5 hover:text-white font-mono font-bold">-</button>
+          <span id="zoom-label" class="font-mono text-[11px] text-zinc-300 w-9 text-center">100%</span>
+          <button id="btn-zoom-in" class="px-1.5 hover:text-white font-mono font-bold">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN MULTI-TRACK ARRANGEMENT & MIXER AREA -->
+  <main class="flex-1 max-w-[1600px] w-full mx-auto flex flex-col overflow-hidden">
+    
+    <!-- Timeline Ruler Header -->
+    <div class="flex border-b border-studio-border bg-studio-panel/90 select-none">
+      <!-- Left Spacer matching Track Controls width -->
+      <div class="w-52 sm:w-72 shrink-0 px-4 py-2 border-r border-studio-border flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-zinc-500">
+        <span>Tracks & Mixer</span>
+        <span>Vol / Pan</span>
+      </div>
+      <!-- Clickable Time Ruler -->
+      <div id="timeline-ruler-container" class="flex-1 relative h-8 overflow-hidden cursor-pointer bg-zinc-950">
+        <canvas id="ruler-canvas" class="w-full h-full block"></canvas>
+      </div>
+    </div>
+
+    <!-- Scrollable Tracks Container -->
+    <div id="tracks-wrapper" class="flex-1 overflow-y-auto divide-y divide-studio-border relative">
+      <!-- Tracks get dynamically rendered here -->
+    </div>
+
+    <!-- Empty State (shown if all tracks are deleted) -->
+    <div id="empty-state" class="hidden flex-1 flex-col items-center justify-center p-12 text-center">
+      <div class="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-violet-400 mb-3">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+      </div>
+      <h3 class="text-base font-semibold text-zinc-200">Walang active tracks</h3>
+      <p class="text-xs text-zinc-400 mt-1 max-w-xs">Mag-add ng bagong track para magsimulang mag-record ng vocals, gitara, o mag-import ng backing beat.</p>
+      <button onclick="studio.addTrack()" class="mt-4 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-xs font-semibold transition">
+        + Create New Track
+      </button>
+    </div>
+  </main>
+
+  <!-- Subtle Bottom Tip Bar -->
+  <footer class="bg-studio-panel border-t border-studio-border px-4 py-2 text-[11px] text-zinc-400 flex flex-wrap items-center justify-between gap-2">
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
+      <span>Tip: Gumamit ng <strong>headphones</strong> habang nag-o-overdub. I-click ang PulseLab logo sa taas para i-replay ang intro.</span>
+    </div>
+    <div class="font-mono text-zinc-500">
+      Space: Play/Pause • R: Record • Enter: Rewind
+    </div>
+  </footer>
+
+  <!-- CORE DAW AUDIO ENGINE & UI CONTROLLER -->
+  <script>
+    /**
+     * Trigger & Replay Splash Screen Logo Animation
+     */
+    function triggerSplashAnimation() {
+      const splash = document.getElementById('splash-screen');
+      const progress = document.getElementById('splash-progress');
+      if (!splash || !progress) return;
+
+      splash.classList.remove('hidden', 'opacity-0', 'scale-105', 'pointer-events-none');
+      progress.style.transition = 'none';
+      progress.style.width = '0%';
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          progress.style.transition = 'width 1900ms cubic-bezier(0.22, 1, 0.36, 1)';
+          progress.style.width = '100%';
+        });
+      });
+
+      setTimeout(() => {
+        splash.classList.add('opacity-0', 'scale-105', 'pointer-events-none');
+        setTimeout(() => {
+          splash.classList.add('hidden');
+        }, 700);
+      }, 2150);
+    }
+
+    /**
+     * PulseLab - Native Web Audio API Multi-Track Recorder & Mixer
+     */
+    class PulseLabStudio {
+      constructor() {
+        // Web Audio Core
+        this.audioCtx = null;
+        this.masterGain = null;
+        this.masterAnalyser = null;
+
+        // Track State
+        this.tracks = [];
+        this.trackColors = [
+          '#8b5cf6', // Violet
+          '#06b6d4', // Cyan
+          '#ec4899', // Pink
+          '#10b981', // Emerald
+          '#f59e0b', // Amber
+          '#3b82f6', // Blue
+          '#f43f5e', // Rose
+        ];
+        this.nextTrackId = 1;
+
+        // Transport & Playback State
+        this.isPlaying = false;
+        this.isRecording = false;
+        this.isCountingIn = false;
+        this.loopEnabled = false;
+        this.playheadTime = 0; // in seconds
+        this.playbackStartCtxTime = 0;
+        this.playbackStartOffset = 0;
+        this.activeSources = [];
+
+        // Recording State
+        this.mediaStream = null;
+        this.mediaRecorder = null;
+        this.recordedChunks = [];
+        this.recordingTrackId = null;
+        this.recordingStartTime = 0;
+        this.micAnalyser = null;
+        this.liveWaveformPeaks = [];
+
+        // Metronome State
+        this.metronomeEnabled = false;
+        this.countInEnabled = true;
+        this.bpm = 110;
+        this.nextNoteTime = 0;
+        this.currentBeat = 0;
+        this.metronomeTimerId = null;
+
+        // Timeline View State
+        this.pixelsPerSecond = 45;
+
+        // Bind DOM and initialize default tracks
+        this.initDOM();
+        this.bindEvents();
+        this.addTrack('Track 1 - Vocals', true);
+        this.addTrack('Track 2 - Beat / Guitar', false);
+        this.startRenderLoop();
+      }
+
+      ensureAudioContext() {
+        if (!this.audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          this.audioCtx = new AudioContextClass();
+          this.masterGain = this.audioCtx.createGain();
+          this.masterGain.gain.value = 0.9;
+
+          this.masterAnalyser = this.audioCtx.createAnalyser();
+          this.masterAnalyser.fftSize = 256;
+
+          this.masterGain.connect(this.masterAnalyser);
+          this.masterAnalyser.connect(this.audioCtx.destination);
+        }
+        if (this.audioCtx.state === 'suspended') {
+          this.audioCtx.resume();
+        }
+      }
+
+      initDOM() {
+        this.tracksWrapper = document.getElementById('tracks-wrapper');
+        this.emptyState = document.getElementById('empty-state');
+        this.rulerCanvas = document.getElementById('ruler-canvas');
+        this.rulerContainer = document.getElementById('timeline-ruler-container');
+        this.timecodeDisplay = document.getElementById('timecode-display');
+        this.masterMeterCanvas = document.getElementById('master-meter');
+        this.btnPlay = document.getElementById('btn-play');
+        this.iconPlay = document.getElementById('icon-play');
+        this.iconPause = document.getElementById('icon-pause');
+        this.labelPlay = document.getElementById('label-play');
+        this.btnStop = document.getElementById('btn-stop');
+        this.btnRecord = document.getElementById('btn-record');
+        this.btnLoop = document.getElementById('btn-loop');
+        this.recDot = document.getElementById('rec-dot');
+      }
+
+      bindEvents() {
+        // Replay Splash Intro
+        document.getElementById('btn-replay-intro').addEventListener('click', () => {
+          triggerSplashAnimation();
+        });
+
+        // Transport Controls
+        this.btnPlay.addEventListener('click', () => this.togglePlay());
+        this.btnStop.addEventListener('click', () => this.stop());
+        this.btnRecord.addEventListener('click', () => this.toggleRecord());
+        this.btnLoop.addEventListener('click', () => {
+          this.loopEnabled = !this.loopEnabled;
+          if (this.loopEnabled) {
+            this.btnLoop.className = 'p-2.5 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition active:scale-95';
+            this.showToast('Loop playback ON', 'info');
+          } else {
+            this.btnLoop.className = 'p-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 border border-zinc-800 transition active:scale-95';
+          }
+        });
+
+        // Track Management
+        document.getElementById('btn-add-track').addEventListener('click', () => {
+          this.addTrack(`Track ${this.nextTrackId}`);
+        });
+
+        // Audio File Import
+        const fileInput = document.getElementById('audio-import-input');
+        document.getElementById('btn-import-audio').addEventListener('click', () => {
+          fileInput.click();
+        });
+        fileInput.addEventListener('change', (e) => {
+          if (e.target.files && e.target.files[0]) {
+            this.importAudioFile(e.target.files[0]);
+            e.target.value = '';
+          }
+        });
+
+        // Metronome & BPM Controls
+        const toggleMetro = () => {
+          this.metronomeEnabled = !this.metronomeEnabled;
+          this.updateMetronomeUI();
+        };
+        document.getElementById('btn-metronome').addEventListener('click', toggleMetro);
+        document.getElementById('btn-metronome-mobile').addEventListener('click', toggleMetro);
+
+        const syncBpm = (val) => {
+          const parsed = Math.max(50, Math.min(220, parseInt(val, 10) || 110));
+          this.bpm = parsed;
+          document.getElementById('bpm-input').value = parsed;
+          document.getElementById('bpm-input-mobile').value = parsed;
+        };
+        document.getElementById('bpm-input').addEventListener('change', (e) => syncBpm(e.target.value));
+        document.getElementById('bpm-input-mobile').addEventListener('change', (e) => syncBpm(e.target.value));
+
+        const toggleCountIn = () => {
+          this.countInEnabled = !this.countInEnabled;
+          const label = `Count: ${this.countInEnabled ? 'ON' : 'OFF'}`;
+          const btnDesktop = document.getElementById('btn-countin');
+          const btnMobile = document.getElementById('btn-countin-mobile');
+          [btnDesktop, btnMobile].forEach(btn => {
+            btn.textContent = label;
+            if (this.countInEnabled) {
+              btn.className = btn.className.replace('bg-zinc-900 text-zinc-400 border-zinc-800', 'bg-violet-500/15 text-violet-300 border-violet-500/30');
+            } else {
+              btn.className = btn.className.replace('bg-violet-500/15 text-violet-300 border-violet-500/30', 'bg-zinc-900 text-zinc-400 border-zinc-800');
+            }
+          });
+        };
+        document.getElementById('btn-countin').addEventListener('click', toggleCountIn);
+        document.getElementById('btn-countin-mobile').addEventListener('click', toggleCountIn);
+
+        // Zoom Controls
+        document.getElementById('btn-zoom-in').addEventListener('click', () => {
+          this.pixelsPerSecond = Math.min(180, this.pixelsPerSecond + 15);
+          document.getElementById('zoom-label').textContent = `${Math.round((this.pixelsPerSecond / 45) * 100)}%`;
+        });
+        document.getElementById('btn-zoom-out').addEventListener('click', () => {
+          this.pixelsPerSecond = Math.max(15, this.pixelsPerSecond - 15);
+          document.getElementById('zoom-label').textContent = `${Math.round((this.pixelsPerSecond / 45) * 100)}%`;
+        });
+
+        // Ruler Scrubbing
+        this.rulerContainer.addEventListener('click', (e) => {
+          const rect = this.rulerContainer.getBoundingClientRect();
+          const clickX = e.clientX - rect.left;
+          const newTime = Math.max(0, clickX / this.pixelsPerSecond);
+          this.seekTo(newTime);
+        });
+
+        // Export WAV
+        document.getElementById('btn-export').addEventListener('click', () => this.exportMixWAV());
+
+        // Help Modal
+        const helpModal = document.getElementById('help-modal');
+        document.getElementById('btn-help').addEventListener('click', () => {
+          helpModal.classList.remove('hidden');
+          helpModal.classList.add('flex');
+        });
+        document.getElementById('close-help-btn').addEventListener('click', () => {
+          helpModal.classList.add('hidden');
+          helpModal.classList.remove('flex');
+        });
+        helpModal.addEventListener('click', (e) => {
+          if (e.target === helpModal) {
+            helpModal.classList.add('hidden');
+            helpModal.classList.remove('flex');
+          }
+        });
+
+        // Keyboard Shortcuts
+        window.addEventListener('keydown', (e) => {
+          if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+          if (e.code === 'Space') {
+            e.preventDefault();
+            this.togglePlay();
+          } else if (e.code === 'KeyR') {
+            e.preventDefault();
+            this.toggleRecord();
+          } else if (e.code === 'Enter' || e.code === 'Digit0') {
+            e.preventDefault();
+            this.stop();
+          } else if (e.code === 'KeyM') {
+            e.preventDefault();
+            toggleMetro();
+          }
+        });
+      }
+
+      showToast(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        const colors = {
+          info: 'bg-zinc-900/95 border-zinc-700 text-zinc-100',
+          success: 'bg-violet-950/95 border-violet-500/40 text-violet-200',
+          error: 'bg-red-950/95 border-red-500/40 text-red-200',
+          warning: 'bg-amber-950/95 border-amber-500/40 text-amber-200'
+        };
+        toast.className = `pointer-events-auto px-4 py-3 rounded-xl border shadow-xl backdrop-blur-md text-xs font-medium flex items-center justify-between gap-3 transition-all duration-300 ${colors[type] || colors.info}`;
+        toast.innerHTML = `<span>${message}</span>`;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(8px)';
+          setTimeout(() => toast.remove(), 300);
+        }, 3800);
+      }
+
+      addTrack(name = null, armed = false) {
+        const id = this.nextTrackId++;
+        const color = this.trackColors[(id - 1) % this.trackColors.length];
+
+        if (armed) {
+          this.tracks.forEach(t => t.armed = false);
+        }
+
+        const track = {
+          id,
+          name: name || `Track ${id}`,
+          color,
+          armed,
+          muted: false,
+          solo: false,
+          volume: 1.0,
+          pan: 0.0,
+          clips: [],
+          canvasEl: null
+        };
+
+        this.tracks.push(track);
+        this.renderTracksDOM();
+        return track;
+      }
+
+      deleteTrack(id) {
+        if (this.isRecording && this.recordingTrackId === id) {
+          this.stopRecording();
+        }
+        this.tracks = this.tracks.filter(t => t.id !== id);
+        this.renderTracksDOM();
+      }
+
+      toggleArm(id) {
+        this.tracks.forEach(t => {
+          if (t.id === id) {
+            t.armed = !t.armed;
+          } else {
+            t.armed = false;
+          }
+        });
+        this.renderTracksDOM();
+      }
+
+      toggleMute(id) {
+        const track = this.tracks.find(t => t.id === id);
+        if (track) {
+          track.muted = !track.muted;
+          this.renderTracksDOM();
+          if (this.isPlaying) this.restartPlaybackFromCurrent();
+        }
+      }
+
+      toggleSolo(id) {
+        const track = this.tracks.find(t => t.id === id);
+        if (track) {
+          track.solo = !track.solo;
+          this.renderTracksDOM();
+          if (this.isPlaying) this.restartPlaybackFromCurrent();
+        }
+      }
+
+      isTrackAudible(track) {
+        const anySolo = this.tracks.some(t => t.solo);
+        if (anySolo) {
+          return track.solo;
+        }
+        return !track.muted;
+      }
+
+      renderTracksDOM() {
+        if (this.tracks.length === 0) {
+          this.tracksWrapper.innerHTML = '';
+          this.emptyState.classList.remove('hidden');
+          this.emptyState.classList.add('flex');
+          return;
+        }
+        this.emptyState.classList.add('hidden');
+        this.emptyState.classList.remove('flex');
+
+        this.tracksWrapper.innerHTML = '';
+
+        this.tracks.forEach(track => {
+          const row = document.createElement('div');
+          row.className = `flex min-h-[112px] bg-studio-panel/40 hover:bg-studio-panel/70 transition-colors ${track.armed ? 'bg-red-950/10' : ''}`;
+
+          const audible = this.isTrackAudible(track);
+
+          row.innerHTML = `
+            <!-- Left Mixer & Track Control Panel -->
+            <div class="w-52 sm:w-72 shrink-0 p-3 border-r border-studio-border flex flex-col justify-between gap-2 relative select-none" style="border-left: 4px solid ${track.color}">
+              <div class="flex items-center justify-between gap-1.5">
+                <input type="text" value="${track.name}" data-track-name="${track.id}"
+                  class="bg-transparent text-xs sm:text-sm font-semibold text-zinc-100 focus:outline-none focus:bg-zinc-800 px-1.5 py-0.5 rounded w-full truncate border border-transparent focus:border-zinc-700" />
+                
+                <div class="flex items-center gap-1 shrink-0">
+                  <!-- Record Arm Button -->
+                  <button data-arm="${track.id}" title="Arm Track for Recording"
+                    class="w-6 h-6 rounded-md text-[11px] font-mono font-bold border transition flex items-center justify-center ${
+                      track.armed
+                        ? 'bg-red-500 text-white border-red-400 shadow-sm shadow-red-500/40'
+                        : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-red-400'
+                    }">R</button>
+
+                  <!-- Mute Button -->
+                  <button data-mute="${track.id}" title="Mute Track"
+                    class="w-6 h-6 rounded-md text-[11px] font-mono font-bold border transition flex items-center justify-center ${
+                      track.muted
+                        ? 'bg-amber-500 text-zinc-950 border-amber-400'
+                        : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-zinc-200'
+                    }">M</button>
+
+                  <!-- Solo Button -->
+                  <button data-solo="${track.id}" title="Solo Track"
+                    class="w-6 h-6 rounded-md text-[11px] font-mono font-bold border transition flex items-center justify-center ${
+                      track.solo
+                        ? 'bg-cyan-400 text-zinc-950 border-cyan-300'
+                        : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-zinc-200'
+                    }">S</button>
+
+                  <!-- Delete Track -->
+                  <button data-delete="${track.id}" title="Delete Track"
+                    class="w-6 h-6 rounded-md text-zinc-500 hover:text-red-400 hover:bg-zinc-800/80 transition flex items-center justify-center">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Volume & Pan Sliders -->
+              <div class="grid grid-cols-2 gap-2.5 pt-1">
+                <div class="flex flex-col gap-1">
+                  <div class="flex justify-between text-[10px] font-mono text-zinc-400">
+                    <span>VOL</span>
+                    <span id="vol-label-${track.id}">${Math.round(track.volume * 100)}%</span>
+                  </div>
+                  <input type="range" min="0" max="1.5" step="0.01" value="${track.volume}" data-vol="${track.id}" class="w-full" />
+                </div>
+
+                <div class="flex flex-col gap-1">
+                  <div class="flex justify-between text-[10px] font-mono text-zinc-400">
+                    <span>PAN</span>
+                    <span id="pan-label-${track.id}">${track.pan === 0 ? 'C' : (track.pan < 0 ? `L${Math.round(Math.abs(track.pan)*100)}` : `R${Math.round(track.pan*100)}`)}</span>
+                  </div>
+                  <input type="range" min="-1" max="1" step="0.05" value="${track.pan}" data-pan="${track.id}" class="w-full" />
+                </div>
+              </div>
+
+              <!-- Track Clip Info -->
+              <div class="flex items-center justify-between text-[10px] text-zinc-500 font-mono">
+                <span>${track.clips.length > 0 ? `${track.clips.length} clip(s)` : 'Empty'}</span>
+                <span class="${audible ? 'text-cyan-400/80' : 'text-zinc-600'}">${audible ? 'ACTIVE' : 'MUTED'}</span>
+              </div>
+            </div>
+
+            <!-- Right Waveform Timeline Canvas -->
+            <div class="flex-1 relative bg-zinc-950/90 cursor-pointer overflow-hidden" data-timeline="${track.id}">
+              <canvas class="w-full h-full block"></canvas>
+            </div>
+          `;
+
+          this.tracksWrapper.appendChild(row);
+          track.canvasEl = row.querySelector('canvas');
+
+          row.querySelector(`[data-track-name="${track.id}"]`).addEventListener('change', (e) => {
+            track.name = e.target.value.trim() || `Track ${track.id}`;
+          });
+          row.querySelector(`[data-arm="${track.id}"]`).addEventListener('click', () => this.toggleArm(track.id));
+          row.querySelector(`[data-mute="${track.id}"]`).addEventListener('click', () => this.toggleMute(track.id));
+          row.querySelector(`[data-solo="${track.id}"]`).addEventListener('click', () => this.toggleSolo(track.id));
+          row.querySelector(`[data-delete="${track.id}"]`).addEventListener('click', () => this.deleteTrack(track.id));
+
+          row.querySelector(`[data-vol="${track.id}"]`).addEventListener('input', (e) => {
+            track.volume = parseFloat(e.target.value);
+            document.getElementById(`vol-label-${track.id}`).textContent = `${Math.round(track.volume * 100)}%`;
+            if (track.liveGainNode) {
+              track.liveGainNode.gain.value = track.volume;
+            }
+          });
+
+          row.querySelector(`[data-pan="${track.id}"]`).addEventListener('input', (e) => {
+            track.pan = parseFloat(e.target.value);
+            const label = track.pan === 0 ? 'C' : (track.pan < 0 ? `L${Math.round(Math.abs(track.pan)*100)}` : `R${Math.round(track.pan*100)}`);
+            document.getElementById(`pan-label-${track.id}`).textContent = label;
+            if (track.livePanNode) {
+              track.livePanNode.pan.value = track.pan;
+            }
+          });
+
+          row.querySelector(`[data-timeline="${track.id}"]`).addEventListener('click', (e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const newTime = Math.max(0, clickX / this.pixelsPerSecond);
+            this.seekTo(newTime);
+          });
+        });
+      }
+
+      extractPeaks(audioBuffer, samplesPerPeak = 512) {
+        const channelData = audioBuffer.getChannelData(0);
+        const totalPeaks = Math.ceil(channelData.length / samplesPerPeak);
+        const peaks = new Float32Array(totalPeaks);
+
+        for (let i = 0; i < totalPeaks; i++) {
+          let max = 0;
+          const start = i * samplesPerPeak;
+          const end = Math.min(start + samplesPerPeak, channelData.length);
+          for (let j = start; j < end; j++) {
+            const abs = Math.abs(channelData[j]);
+            if (abs > max) max = abs;
+          }
+          peaks[i] = max;
+        }
+        return peaks;
+      }
+
+      async importAudioFile(file) {
+        this.ensureAudioContext();
+        try {
+          this.showToast(`Importing "${file.name}"...`, 'info');
+          const arrayBuffer = await file.arrayBuffer();
+          const audioBuffer = await this.audioCtx.decodeAudioData(arrayBuffer);
+
+          let targetTrack = this.tracks.find(t => t.armed);
+          if (!targetTrack) {
+            targetTrack = this.addTrack(file.name.replace(/\.[^/.]+$/, ''), false);
+          }
+
+          const peaks = this.extractPeaks(audioBuffer);
+          targetTrack.clips.push({
+            buffer: audioBuffer,
+            startTime: this.playheadTime,
+            peaks
+          });
+
+          this.renderTracksDOM();
+          this.showToast(`Loaded "${file.name}" into ${targetTrack.name}`, 'success');
+        } catch (err) {
+          console.error(err);
+          this.showToast('Hindi ma-decode ang audio file. Subukan ang .WAV o .MP3.', 'error');
+        }
+      }
+
+      getProjectDuration() {
+        let maxDuration = 0;
+        this.tracks.forEach(track => {
+          track.clips.forEach(clip => {
+            const end = clip.startTime + clip.buffer.duration;
+            if (end > maxDuration) maxDuration = end;
+          });
+        });
+        return maxDuration;
+      }
+
+      togglePlay() {
+        if (this.isRecording) {
+          this.stopRecording();
+          return;
+        }
+        if (this.isPlaying) {
+          this.pause();
+        } else {
+          this.play();
+        }
+      }
+
+      play() {
+        this.ensureAudioContext();
+        if (this.isPlaying) return;
+
+        this.isPlaying = true;
+        this.playbackStartCtxTime = this.audioCtx.currentTime;
+        this.playbackStartOffset = this.playheadTime;
+
+        this.scheduleTrackPlayback();
+        this.startMetronomeScheduler();
+        this.updateTransportUI();
+      }
+
+      pause() {
+        if (!this.isPlaying) return;
+        this.playheadTime = this.getCurrentTime();
+        this.stopAllAudioSources();
+        this.stopMetronomeScheduler();
+        this.isPlaying = false;
+        this.updateTransportUI();
+      }
+
+      stop() {
+        if (this.isRecording) {
+          this.stopRecording();
+        }
+        this.stopAllAudioSources();
+        this.stopMetronomeScheduler();
+        this.isPlaying = false;
+        this.isCountingIn = false;
+        this.playheadTime = 0;
+        this.updateTransportUI();
+      }
+
+      seekTo(seconds) {
+        const wasPlaying = this.isPlaying;
+        if (wasPlaying && !this.isRecording) {
+          this.stopAllAudioSources();
+          this.stopMetronomeScheduler();
+        }
+        this.playheadTime = Math.max(0, seconds);
+        if (wasPlaying && !this.isRecording) {
+          this.playbackStartCtxTime = this.audioCtx.currentTime;
+          this.playbackStartOffset = this.playheadTime;
+          this.scheduleTrackPlayback();
+          this.startMetronomeScheduler();
+        }
+      }
+
+      restartPlaybackFromCurrent() {
+        if (!this.isPlaying) return;
+        const currentPos = this.getCurrentTime();
+        this.stopAllAudioSources();
+        this.playbackStartCtxTime = this.audioCtx.currentTime;
+        this.playbackStartOffset = currentPos;
+        this.scheduleTrackPlayback();
+      }
+
+      getCurrentTime() {
+        if (!this.isPlaying || !this.audioCtx) {
+          return this.playheadTime;
+        }
+        return this.playbackStartOffset + (this.audioCtx.currentTime - this.playbackStartCtxTime);
+      }
+
+      scheduleTrackPlayback() {
+        this.stopAllAudioSources();
+        const now = this.audioCtx.currentTime;
+        const offset = this.playbackStartOffset;
+
+        this.tracks.forEach(track => {
+          if (!this.isTrackAudible(track)) return;
+          track.clips.forEach(clip => {
+            const clipEnd = clip.startTime + clip.buffer.duration;
+            if (clipEnd <= offset) return;
+
+            const source = this.audioCtx.createBufferSource();
+            source.buffer = clip.buffer;
+
+            const gainNode = this.audioCtx.createGain();
+            gainNode.gain.value = track.volume;
+
+            const panNode = this.audioCtx.createStereoPanner();
+            panNode.pan.value = track.pan;
+
+            source.connect(gainNode);
+            gainNode.connect(panNode);
+            panNode.connect(this.masterGain);
+
+            track.liveGainNode = gainNode;
+            track.livePanNode = panNode;
+
+            if (clip.startTime >= offset) {
+              const delay = clip.startTime - offset;
+              source.start(now + delay, 0);
+            } else {
+              const clipOffset = offset - clip.startTime;
+              source.start(now, clipOffset);
+            }
+
+            this.activeSources.push(source);
+          });
+        });
+      }
+
+      stopAllAudioSources() {
+        this.activeSources.forEach(src => {
+          try {
+            src.stop();
+            src.disconnect();
+          } catch (_) {}
+        });
+        this.activeSources = [];
+      }
+
+      async toggleRecord() {
+        if (this.isCountingIn) return;
+        if (this.isRecording) {
+          this.stopRecording();
+        } else {
+          await this.startRecordingWorkflow();
+        }
+      }
+
+      async startRecordingWorkflow() {
+        this.ensureAudioContext();
+
+        let armedTrack = this.tracks.find(t => t.armed);
+        if (!armedTrack) {
+          if (this.tracks.length === 0) {
+            armedTrack = this.addTrack('Track 1 - Vocals', true);
+          } else {
+            armedTrack = this.tracks[0];
+            this.toggleArm(armedTrack.id);
+          }
+        }
+
+        try {
+          if (!this.mediaStream) {
+            this.mediaStream = await navigator.mediaDevices.getUserMedia({
+              audio: {
+                echoCancellation: false,
+                noiseSuppression: false,
+                autoGainControl: false
+              }
+            });
+            document.getElementById('mic-status-dot').className = 'w-2 h-2 rounded-full bg-cyan-400';
+            document.getElementById('mic-status-text').textContent = 'Mic Active';
+          }
+        } catch (err) {
+          console.error('Microphone error:', err);
+          document.getElementById('mic-status-dot').className = 'w-2 h-2 rounded-full bg-red-500';
+          document.getElementById('mic-status-text').textContent = 'Mic Blocked';
+          this.showToast('Microphone access denied. I-allow ang mic permission sa browser settings.', 'error');
+          return;
+        }
+
+        const micSource = this.audioCtx.createMediaStreamSource(this.mediaStream);
+        this.micAnalyser = this.audioCtx.createAnalyser();
+        this.micAnalyser.fftSize = 256;
+        micSource.connect(this.micAnalyser);
+
+        if (this.countInEnabled) {
+          await this.runCountIn();
+        }
+
+        this.beginActualRecording(armedTrack);
+      }
+
+      runCountIn() {
+        return new Promise((resolve) => {
+          this.isCountingIn = true;
+          const overlay = document.getElementById('countin-overlay');
+          const numEl = document.getElementById('countin-number');
+          overlay.classList.remove('hidden');
+          overlay.classList.add('flex');
+
+          const beatDurationMs = (60 / this.bpm) * 1000;
+          let count = 4;
+
+          const tick = () => {
+            if (!this.isCountingIn) {
+              overlay.classList.add('hidden');
+              overlay.classList.remove('flex');
+              resolve();
+              return;
+            }
+            numEl.textContent = count;
+            this.playMetronomeClick(this.audioCtx.currentTime, count === 4);
+            count--;
+
+            if (count < 0) {
+              overlay.classList.add('hidden');
+              overlay.classList.remove('flex');
+              this.isCountingIn = false;
+              resolve();
+            } else {
+              setTimeout(tick, beatDurationMs);
+            }
+          };
+
+          tick();
+        });
+      }
+
+      beginActualRecording(targetTrack) {
+        this.recordedChunks = [];
+        this.liveWaveformPeaks = [];
+        this.recordingTrackId = targetTrack.id;
+        this.recordingStartTime = this.playheadTime;
+
+        const mimeTypes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus', ''];
+        const selectedMime = mimeTypes.find(m => m === '' || MediaRecorder.isTypeSupported(m));
+
+        this.mediaRecorder = selectedMime
+          ? new MediaRecorder(this.mediaStream, { mimeType: selectedMime })
+          : new MediaRecorder(this.mediaStream);
+
+        this.mediaRecorder.ondataavailable = (e) => {
+          if (e.data && e.data.size > 0) {
+            this.recordedChunks.push(e.data);
+          }
+        };
+
+        this.mediaRecorder.onstop = async () => {
+          const blob = new Blob(this.recordedChunks, { type: this.mediaRecorder.mimeType || 'audio/webm' });
+          try {
+            const arrayBuffer = await blob.arrayBuffer();
+            const decodedBuffer = await this.audioCtx.decodeAudioData(arrayBuffer);
+            const peaks = this.extractPeaks(decodedBuffer);
+
+            const track = this.tracks.find(t => t.id === this.recordingTrackId);
+            if (track) {
+              track.clips.push({
+                buffer: decodedBuffer,
+                startTime: this.recordingStartTime,
+                peaks
+              });
+              this.renderTracksDOM();
+              this.showToast(`Saved take to ${track.name}`, 'success');
+            }
+          } catch (err) {
+            console.error('Failed to decode recorded audio:', err);
+            this.showToast('Nagka-error sa pag-save ng recording.', 'error');
+          }
+          this.recordingTrackId = null;
+          this.liveWaveformPeaks = [];
+        };
+
+        this.isRecording = true;
+        this.mediaRecorder.start(100);
+        this.play();
+        this.updateTransportUI();
+      }
+
+      stopRecording() {
+        if (!this.isRecording) return;
+        this.isRecording = false;
+        if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+          this.mediaRecorder.stop();
+        }
+        this.pause();
+        this.updateTransportUI();
+      }
+
+      playMetronomeClick(time, isAccent) {
+        if (!this.audioCtx) return;
+        const osc = this.audioCtx.createOscillator();
+        const gain = this.audioCtx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(isAccent ? 1250 : 840, time);
+
+        gain.gain.setValueAtTime(0.35, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.045);
+
+        osc.connect(gain);
+        gain.connect(this.audioCtx.destination);
+
+        osc.start(time);
+        osc.stop(time + 0.05);
+      }
+
+      startMetronomeScheduler() {
+        this.stopMetronomeScheduler();
+        if (!this.audioCtx) return;
+
+        this.currentBeat = 0;
+        this.nextNoteTime = this.audioCtx.currentTime;
+
+        const scheduler = () => {
+          if (!this.isPlaying) return;
+          while (this.nextNoteTime < this.audioCtx.currentTime + 0.1) {
+            const beatIndex = this.currentBeat % 4;
+            if (this.metronomeEnabled) {
+              this.playMetronomeClick(this.nextNoteTime, beatIndex === 0);
+            }
+            this.highlightBeatLED(beatIndex);
+
+            const secondsPerBeat = 60.0 / this.bpm;
+            this.nextNoteTime += secondsPerBeat;
+            this.currentBeat++;
+          }
+          this.metronomeTimerId = setTimeout(scheduler, 25);
+        };
+        scheduler();
+      }
+
+      stopMetronomeScheduler() {
+        if (this.metronomeTimerId) {
+          clearTimeout(this.metronomeTimerId);
+          this.metronomeTimerId = null;
+        }
+        document.querySelectorAll('#beat-leds span').forEach(led => {
+          led.className = 'w-2 h-2 rounded-full bg-zinc-800 transition-colors';
+        });
+      }
+
+      highlightBeatLED(beatIndex) {
+        const leds = document.querySelectorAll('#beat-leds span');
+        leds.forEach((led, idx) => {
+          if (idx === beatIndex) {
+            led.className = idx === 0
+              ? 'w-2 h-2 rounded-full bg-violet-400 shadow-sm shadow-violet-400'
+              : 'w-2 h-2 rounded-full bg-cyan-400';
+          } else {
+            led.className = 'w-2 h-2 rounded-full bg-zinc-800 transition-colors';
+          }
+        });
+      }
+
+      updateMetronomeUI() {
+        const btnDesktop = document.getElementById('btn-metronome');
+        const btnMobile = document.getElementById('btn-metronome-mobile');
+        if (this.metronomeEnabled) {
+          btnDesktop.className = 'p-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition flex items-center gap-1.5';
+          btnMobile.textContent = 'Click: ON';
+          btnMobile.className = 'px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-xs font-medium';
+        } else {
+          btnDesktop.className = 'p-1.5 rounded-lg bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 transition flex items-center gap-1.5';
+          btnMobile.textContent = 'Click: OFF';
+          btnMobile.className = 'px-2.5 py-1 rounded-lg bg-zinc-900 text-zinc-400 border border-zinc-800 text-xs font-medium';
+        }
+      }
+
+      updateTransportUI() {
+        if (this.isPlaying && !this.isRecording) {
+          this.iconPlay.classList.add('hidden');
+          this.iconPause.classList.remove('hidden');
+          this.labelPlay.textContent = 'Pause';
+        } else {
+          this.iconPlay.classList.remove('hidden');
+          this.iconPause.classList.add('hidden');
+          this.labelPlay.textContent = 'Play';
+        }
+
+        if (this.isRecording) {
+          this.btnRecord.classList.add('bg-red-600', 'text-white', 'recording-pulse');
+          this.btnRecord.classList.remove('bg-zinc-900', 'text-red-400');
+          this.recDot.classList.replace('bg-red-500', 'bg-white');
+        } else {
+          this.btnRecord.classList.remove('bg-red-600', 'text-white', 'recording-pulse');
+          this.btnRecord.classList.add('bg-zinc-900', 'text-red-400');
+          this.recDot.classList.replace('bg-white', 'bg-red-500');
+        }
+      }
+
+      formatTimecode(sec) {
+        const mins = Math.floor(sec / 60);
+        const secs = Math.floor(sec % 60);
+        const tenths = Math.floor((sec % 1) * 10);
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${tenths}`;
+      }
+
+      startRenderLoop() {
+        const render = () => {
+          let currentTime = this.getCurrentTime();
+
+          // Handle Loop wrapping during playback
+          if (this.isPlaying && !this.isRecording && this.loopEnabled) {
+            const totalDur = this.getProjectDuration();
+            if (totalDur > 0.2 && currentTime >= totalDur) {
+              this.seekTo(0);
+              currentTime = 0;
+            }
+          }
+
+          if (this.isPlaying) {
+            this.playheadTime = currentTime;
+          }
+
+          this.timecodeDisplay.textContent = this.formatTimecode(currentTime);
+
+          if (this.isRecording && this.micAnalyser) {
+            const dataArray = new Uint8Array(this.micAnalyser.frequencyBinCount);
+            this.micAnalyser.getByteTimeDomainData(dataArray);
+            let peak = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+              const norm = Math.abs((dataArray[i] - 128) / 128);
+              if (norm > peak) peak = norm;
+            }
+            this.liveWaveformPeaks.push({ time: currentTime, peak });
+          }
+
+          this.drawRuler(currentTime);
+
+          this.tracks.forEach(track => {
+            if (track.canvasEl) {
+              this.drawTrackCanvas(track, currentTime);
+            }
+          });
+
+          this.drawMasterMeter();
+
+          requestAnimationFrame(render);
+        };
+        requestAnimationFrame(render);
+      }
+
+      drawRuler(currentTime) {
+        const canvas = this.rulerCanvas;
+        const rect = canvas.parentElement.getBoundingClientRect();
+        if (canvas.width !== rect.width || canvas.height !== rect.height) {
+          canvas.width = rect.width;
+          canvas.height = rect.height;
+        }
+
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const pps = this.pixelsPerSecond;
+        const totalSeconds = Math.ceil(canvas.width / pps) + 2;
+
+        ctx.strokeStyle = '#272732';
+        ctx.fillStyle = '#71717a';
+        ctx.font = '10px "JetBrains Mono", monospace';
+        ctx.lineWidth = 1;
+
+        for (let s = 0; s <= totalSeconds; s++) {
+          const x = Math.floor(s * pps) + 0.5;
+          const isMajor = s % 5 === 0;
+
+          ctx.beginPath();
+          ctx.moveTo(x, isMajor ? 8 : 18);
+          ctx.lineTo(x, canvas.height);
+          ctx.stroke();
+
+          if (isMajor) {
+            const mins = Math.floor(s / 60);
+            const secs = s % 60;
+            ctx.fillText(`${mins}:${String(secs).padStart(2, '0')}`, x + 4, 14);
+          }
+        }
+
+        const playheadX = currentTime * pps;
+        ctx.fillStyle = this.isRecording ? '#ef4444' : '#06b6d4';
+        ctx.beginPath();
+        ctx.moveTo(playheadX - 6, 0);
+        ctx.lineTo(playheadX + 6, 0);
+        ctx.lineTo(playheadX, 10);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      drawTrackCanvas(track, currentTime) {
+        const canvas = track.canvasEl;
+        const rect = canvas.parentElement.getBoundingClientRect();
+        if (canvas.width !== rect.width || canvas.height !== rect.height) {
+          canvas.width = rect.width;
+          canvas.height = rect.height;
+        }
+
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width;
+        const h = canvas.height;
+        const pps = this.pixelsPerSecond;
+        const audible = this.isTrackAudible(track);
+
+        ctx.clearRect(0, 0, w, h);
+
+        ctx.strokeStyle = '#181820';
+        ctx.lineWidth = 1;
+        const totalSeconds = Math.ceil(w / pps);
+        for (let s = 0; s <= totalSeconds; s++) {
+          const x = Math.floor(s * pps) + 0.5;
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, h);
+          ctx.stroke();
+        }
+
+        ctx.strokeStyle = '#20202a';
+        ctx.beginPath();
+        ctx.moveTo(0, h / 2);
+        ctx.lineTo(w, h / 2);
+        ctx.stroke();
+
+        track.clips.forEach(clip => {
+          const clipX = clip.startTime * pps;
+          const clipW = clip.buffer.duration * pps;
+          if (clipX + clipW < 0 || clipX > w) return;
+
+          ctx.fillStyle = audible ? `${track.color}1c` : '#27273233';
+          ctx.strokeStyle = audible ? `${track.color}70` : '#3f3f4e';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.roundRect(clipX, 8, Math.max(4, clipW), h - 16, 6);
+          ctx.fill();
+          ctx.stroke();
+
+          const peaks = clip.peaks;
+          const barWidth = 2;
+          const gap = 1;
+          const stepPx = barWidth + gap;
+          const numBars = Math.floor(clipW / stepPx);
+          const centerY = h / 2;
+          const maxAmp = (h - 24) / 2;
+
+          ctx.fillStyle = audible ? track.color : '#52525b';
+
+          for (let i = 0; i < numBars; i++) {
+            const peakIdx = Math.floor((i / numBars) * peaks.length);
+            const amp = Math.max(0.03, peaks[peakIdx] || 0) * maxAmp;
+            const barX = clipX + i * stepPx;
+            if (barX > w) break;
+            ctx.fillRect(barX, centerY - amp, barWidth, amp * 2);
+          }
+        });
+
+        if (this.isRecording && this.recordingTrackId === track.id) {
+          const recStartX = this.recordingStartTime * pps;
+          const recCurrentX = currentTime * pps;
+          const recWidth = Math.max(2, recCurrentX - recStartX);
+
+          ctx.fillStyle = 'rgba(239, 68, 68, 0.16)';
+          ctx.strokeStyle = 'rgba(239, 68, 68, 0.85)';
+          ctx.beginPath();
+          ctx.roundRect(recStartX, 8, recWidth, h - 16, 6);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = '#ef4444';
+          const centerY = h / 2;
+          const maxAmp = (h - 24) / 2;
+          this.liveWaveformPeaks.forEach(pt => {
+            const x = pt.time * pps;
+            const amp = Math.max(0.05, pt.peak) * maxAmp;
+            ctx.fillRect(x, centerY - amp, 2, amp * 2);
+          });
+        }
+
+        const playheadX = currentTime * pps;
+        ctx.strokeStyle = this.isRecording ? '#ef4444' : '#06b6d4';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(playheadX, 0);
+        ctx.lineTo(playheadX, h);
+        ctx.stroke();
+      }
+
+      drawMasterMeter() {
+        const canvas = this.masterMeterCanvas;
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        let level = 0;
+        if (this.masterAnalyser && (this.isPlaying || this.isRecording)) {
+          const data = new Uint8Array(this.masterAnalyser.frequencyBinCount);
+          this.masterAnalyser.getByteTimeDomainData(data);
+          let sum = 0;
+          for (let i = 0; i < data.length; i++) {
+            const v = (data[i] - 128) / 128;
+            sum += v * v;
+          }
+          const rms = Math.sqrt(sum / data.length);
+          level = Math.min(1, rms * 3.2);
+        }
+
+        const grad = ctx.createLinearGradient(0, 0, w, 0);
+        grad.addColorStop(0, '#8b5cf6');
+        grad.addColorStop(0.65, '#06b6d4');
+        grad.addColorStop(1, '#ef4444');
+
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w * level, h);
+      }
+
+      async exportMixWAV() {
+        this.ensureAudioContext();
+
+        let maxDuration = 0;
+        this.tracks.forEach(track => {
+          if (!this.isTrackAudible(track)) return;
+          track.clips.forEach(clip => {
+            const end = clip.startTime + clip.buffer.duration;
+            if (end > maxDuration) maxDuration = end;
+          });
+        });
+
+        if (maxDuration <= 0) {
+          this.showToast('Walang active audio clips na mae-export. Mag-record o mag-import muna.', 'warning');
+          return;
+        }
+
+        try {
+          this.showToast('Rendering master mixdown (.WAV)...', 'info');
+          const sampleRate = this.audioCtx.sampleRate;
+          const totalSamples = Math.ceil(maxDuration * sampleRate);
+          const offlineCtx = new OfflineAudioContext(2, totalSamples, sampleRate);
+
+          this.tracks.forEach(track => {
+            if (!this.isTrackAudible(track)) return;
+
+            track.clips.forEach(clip => {
+              const source = offlineCtx.createBufferSource();
+              source.buffer = clip.buffer;
+
+              const gainNode = offlineCtx.createGain();
+              gainNode.gain.value = track.volume;
+
+              const panNode = offlineCtx.createStereoPanner();
+              panNode.pan.value = track.pan;
+
+              source.connect(gainNode);
+              gainNode.connect(panNode);
+              panNode.connect(offlineCtx.destination);
+
+              source.start(clip.startTime);
+            });
+          });
+
+          const renderedBuffer = await offlineCtx.startRendering();
+          const wavBlob = this.audioBufferToWav(renderedBuffer);
+
+          const title = (document.getElementById('project-title').value || 'PulseLab_Mix')
+            .trim()
+            .replace(/[^a-z0-9_\-\s]/gi, '_');
+
+          const url = URL.createObjectURL(wavBlob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `PulseLab-${title}.wav`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+
+          this.showToast(`Exported "PulseLab-${title}.wav" successfully!`, 'success');
+        } catch (err) {
+          console.error('Export error:', err);
+          this.showToast('Nagka-error sa pag-export ng WAV file.', 'error');
+        }
+      }
+
+      audioBufferToWav(buffer) {
+        const numChannels = buffer.numberOfChannels;
+        const sampleRate = buffer.sampleRate;
+        const format = 1;
+        const bitDepth = 16;
+
+        const left = buffer.getChannelData(0);
+        const right = numChannels > 1 ? buffer.getChannelData(1) : left;
+        const length = left.length * numChannels * 2;
+        const arrayBuffer = new ArrayBuffer(44 + length);
+        const view = new DataView(arrayBuffer);
+
+        const writeString = (offset, str) => {
+          for (let i = 0; i < str.length; i++) {
+            view.setUint8(offset + i, str.charCodeAt(i));
+          }
+        };
+
+        writeString(0, 'RIFF');
+        view.setUint32(4, 36 + length, true);
+        writeString(8, 'WAVE');
+        writeString(12, 'fmt ');
+        view.setUint32(16, 16, true);
+        view.setUint16(20, format, true);
+        view.setUint16(22, numChannels, true);
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * numChannels * 2, true);
+        view.setUint16(32, numChannels * 2, true);
+        view.setUint16(34, bitDepth, true);
+        writeString(36, 'data');
+        view.setUint32(40, length, true);
+
+        let offset = 44;
+        for (let i = 0; i < left.length; i++) {
+          const sL = Math.max(-1, Math.min(1, left[i]));
+          view.setInt16(offset, sL < 0 ? sL * 0x8000 : sL * 0x7FFF, true);
+          offset += 2;
+
+          if (numChannels > 1) {
+            const sR = Math.max(-1, Math.min(1, right[i]));
+            view.setInt16(offset, sR < 0 ? sR * 0x8000 : sR * 0x7FFF, true);
+            offset += 2;
+          }
+        }
+
+        return new Blob([arrayBuffer], { type: 'audio/wav' });
+      }
+    }
+
+    let studio;
+    window.addEventListener('DOMContentLoaded', () => {
+      triggerSplashAnimation();
+      studio = new PulseLabStudio();
+    });
+  </script>
+</body>
+</html>
