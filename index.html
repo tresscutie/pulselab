@@ -7,13 +7,23 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="PulseLab" />
-  <title>PulseLab — Pocket Multi-Track Studio</title>
+  <title>PulseLab v2.0 — Pocket Multi-Track Studio</title>
+
+  <!-- Dynamic PWA Manifest Link -->
+  <link id="pwa-manifest-link" rel="manifest" href="" />
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Firebase v10 Compat SDK for Real Google / Facebook OAuth -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
   <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -26,7 +36,7 @@
           colors: {
             studio: {
               bg: '#09090b',
-              panel: '#111116',
+              panel: '#121216',
               surface: '#181820',
               border: '#272732',
               violet: '#8b5cf6',
@@ -37,10 +47,11 @@
       }
     };
   </script>
+
   <style>
     ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 7px;
+      height: 7px;
     }
     ::-webkit-scrollbar-track {
       background: #09090b;
@@ -119,7 +130,7 @@
     }
   </style>
 </head>
-<body class="bg-studio-bg text-zinc-100 font-sans antialiased selection:bg-violet-500/30 selection:text-violet-200 min-h-screen flex flex-col overflow-x-hidden">
+<body class="bg-studio-bg text-zinc-100 font-sans antialiased selection:bg-violet-500/30 selection:text-violet-200 min-h-screen flex flex-col">
 
   <!-- 1. ANIMATED SPLASH SCREEN -->
   <div id="splash-screen" class="fixed inset-0 z-[100] bg-studio-bg flex flex-col items-center justify-center p-6 transition-all duration-700 ease-out">
@@ -139,7 +150,7 @@
           <circle cx="60" cy="60" r="44" stroke="#272732" stroke-width="1" />
         </svg>
 
-        <div class="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 border border-violet-500/40 shadow-2xl shadow-violet-500/25 flex items-center justify-center gap-1.5 px-3">
+        <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 border border-violet-500/40 shadow-2xl shadow-violet-500/25 flex items-center justify-center gap-1.5 px-3">
           <span class="w-1.5 h-7 rounded-full bg-violet-500 eq-bar" style="animation-delay: 0.0s"></span>
           <span class="w-1.5 h-11 rounded-full bg-fuchsia-400 eq-bar" style="animation-delay: 0.15s"></span>
           <span class="w-1.5 h-14 rounded-full bg-gradient-to-t from-violet-400 to-cyan-300 eq-bar" style="animation-delay: 0.3s"></span>
@@ -148,9 +159,12 @@
         </div>
       </div>
 
-      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-white via-violet-200 to-cyan-300 bg-clip-text text-transparent">
-        PulseLab
-      </h1>
+      <div class="flex items-center gap-2">
+        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-white via-violet-200 to-cyan-300 bg-clip-text text-transparent">
+          PulseLab
+        </h1>
+        <span class="px-2 py-0.5 rounded-md bg-violet-500/20 border border-violet-500/40 text-violet-300 font-mono text-xs font-bold">v2.0</span>
+      </div>
       <p class="mt-2 text-[11px] sm:text-xs font-mono uppercase tracking-[0.28em] text-cyan-400/90 font-semibold">
         Pocket Multi-Track Studio
       </p>
@@ -158,15 +172,15 @@
       <div class="mt-8 w-48 h-1.5 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800">
         <div id="splash-progress" class="h-full w-0 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 rounded-full"></div>
       </div>
-      <p class="mt-2.5 text-[11px] font-mono text-zinc-500">Initializing Audio Engine...</p>
+      <p class="mt-2.5 text-[11px] font-mono text-zinc-500">Initializing Audio Engine & PWA...</p>
     </div>
   </div>
 
   <!-- Toast Notification Container -->
-  <div id="toast-container" class="fixed bottom-20 sm:bottom-5 right-4 z-[90] flex flex-col gap-2 pointer-events-none max-w-sm w-full px-4 sm:px-0"></div>
+  <div id="toast-container" class="fixed bottom-20 sm:bottom-5 right-4 z-[95] flex flex-col gap-2 pointer-events-none max-w-sm w-full px-4 sm:px-0"></div>
 
   <!-- Custom Confirmation / Rename Modal -->
-  <div id="dialog-modal" class="fixed inset-0 z-[85] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+  <div id="dialog-modal" class="fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-studio-panel border border-studio-border rounded-2xl max-w-md w-full p-6 shadow-2xl">
       <h3 id="dialog-title" class="text-lg font-bold text-white">Confirm Action</h3>
       <p id="dialog-message" class="text-sm text-zinc-400 mt-1.5">Are you sure you want to proceed?</p>
@@ -184,13 +198,102 @@
     </div>
   </div>
 
-  <!-- 2. SIGN-IN SCREEN (GOOGLE / FACEBOOK / GUEST) -->
+  <!-- PWA Install App Instructions Modal -->
+  <div id="install-modal" class="fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-studio-panel border border-studio-border rounded-3xl max-w-md w-full p-6 shadow-2xl">
+      <div class="flex items-center justify-between pb-4 border-b border-studio-border">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-cyan-500 flex items-center justify-center text-white font-bold">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">Install PulseLab App</h3>
+            <p class="text-[11px] text-cyan-400 font-mono">Offline Progressive Web App</p>
+          </div>
+        </div>
+        <button id="install-modal-close" class="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-3.5 text-xs sm:text-sm text-zinc-300">
+        <p class="text-zinc-400">Install PulseLab directly onto your phone or computer home screen for full-screen studio mode and offline recording:</p>
+        
+        <div class="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800">
+          <p class="font-bold text-white flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-violet-500/20 text-violet-300 font-mono text-[11px]">Android / Chrome</span>
+          </p>
+          <p class="text-xs text-zinc-400 mt-1.5">Tap the browser menu (<strong class="text-zinc-200">⋮</strong>) in the top right corner and select <strong class="text-cyan-300">"Install App"</strong> or <strong class="text-cyan-300">"Add to Home screen"</strong>.</p>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800">
+          <p class="font-bold text-white flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono text-[11px]">iPhone / iPad (Safari)</span>
+          </p>
+          <p class="text-xs text-zinc-400 mt-1.5">Tap the <strong class="text-zinc-200">Share button</strong> at the bottom of Safari, scroll down, and tap <strong class="text-cyan-300">"Add to Home Screen"</strong>.</p>
+        </div>
+      </div>
+
+      <div class="mt-5 flex justify-end">
+        <button id="install-modal-done" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-semibold text-xs sm:text-sm">
+          Got It
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase OAuth Configuration Modal -->
+  <div id="firebase-config-modal" class="fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-studio-panel border border-studio-border rounded-3xl max-w-lg w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-studio-border">
+        <div>
+          <h3 class="text-base font-bold text-white">Configure Real Google & Facebook OAuth</h3>
+          <p class="text-xs text-zinc-400 mt-0.5">Connect your Firebase project for genuine popup account pickers</p>
+        </div>
+        <button id="fb-cfg-close" class="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-3 text-xs text-zinc-300">
+        <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1.5">
+          <p class="font-bold text-cyan-300">3 Quick Setup Steps:</p>
+          <ol class="list-decimal list-inside space-y-1 text-zinc-400">
+            <li>Go to <span class="text-zinc-200 font-mono">console.firebase.google.com</span> and create a free project.</li>
+            <li>Go to <strong class="text-zinc-200">Authentication → Sign-in method</strong> and enable <strong class="text-zinc-200">Google</strong> and/or <strong class="text-zinc-200">Facebook</strong>. Add your domain under <em>Authorized domains</em>.</li>
+            <li>Open <strong class="text-zinc-200">Project Settings → Your apps (Web)</strong> and paste your <code class="text-violet-300">firebaseConfig</code> JSON below:</li>
+          </ol>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-zinc-400 mb-1">Firebase Config JSON</label>
+          <textarea id="firebase-config-textarea" rows="6" placeholder='{
+  "apiKey": "AIzaSy...",
+  "authDomain": "your-app.firebaseapp.com",
+  "projectId": "your-app",
+  "appId": "1:123456:web:abcdef"
+}' class="w-full bg-zinc-950 border border-zinc-800 focus:border-violet-500 rounded-xl p-3 font-mono text-xs text-zinc-200 focus:outline-none"></textarea>
+        </div>
+
+        <div class="flex items-center justify-between gap-2 pt-2">
+          <button id="fb-cfg-clear" type="button" class="px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 border border-zinc-800 text-xs font-semibold">
+            Reset / Remove Config
+          </button>
+          <button id="fb-cfg-save" type="button" class="px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-xs font-semibold shadow-lg shadow-violet-500/20">
+            Save & Activate Real OAuth
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. SIGN-IN SCREEN (FIREBASE REAL OAUTH + REALISTIC ACCOUNT CHOOSER) -->
   <section id="auth-view" class="hidden flex-1 flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden">
     <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-violet-600/15 rounded-full blur-3xl pointer-events-none"></div>
 
     <div class="relative w-full max-w-md bg-studio-panel/90 backdrop-blur-xl border border-studio-border rounded-3xl p-6 sm:p-8 shadow-2xl">
       <!-- Brand Header -->
-      <div class="flex flex-col items-center text-center mb-7">
+      <div class="flex flex-col items-center text-center mb-6">
         <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600 via-fuchsia-600 to-cyan-500 p-[1.5px] shadow-lg shadow-violet-500/25 mb-4">
           <div class="w-full h-full rounded-[14px] bg-zinc-950 flex items-center justify-center gap-1 px-2">
             <span class="w-1 h-4 rounded-full bg-violet-400"></span>
@@ -200,7 +303,18 @@
           </div>
         </div>
         <h2 class="text-2xl font-extrabold tracking-tight text-white">Welcome to PulseLab</h2>
-        <p class="text-xs sm:text-sm text-zinc-400 mt-1.5">Sign in to save your multi-track sessions, vocal layers, and studio mixes.</p>
+        <p class="text-xs sm:text-sm text-zinc-400 mt-1.5">Sign in with your account to sync multi-track sessions, vocal layers, and mixes.</p>
+        
+        <!-- OAuth Mode Pill -->
+        <div class="mt-3 flex items-center gap-2">
+          <span id="oauth-mode-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-zinc-400">
+            <span id="oauth-mode-dot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+            <span id="oauth-mode-text">Account Chooser Mode</span>
+          </span>
+          <button id="btn-open-fb-config" class="text-[11px] font-semibold text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+            Configure Real Google/FB OAuth
+          </button>
+        </div>
       </div>
 
       <!-- Social Auth Buttons -->
@@ -223,7 +337,7 @@
         </button>
       </div>
 
-      <div class="relative my-6">
+      <div class="relative my-5">
         <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-zinc-800"></div></div>
         <div class="relative flex justify-center text-xs"><span class="px-3 bg-studio-panel text-zinc-500 font-mono uppercase">Or</span></div>
       </div>
@@ -232,39 +346,71 @@
         Continue as Guest Producer
       </button>
 
-      <p class="text-[11px] text-center text-zinc-500 mt-5">
-        Your audio sessions are stored locally on your device for instant offline studio access.
-      </p>
+      <div class="mt-4 flex justify-center">
+        <button id="btn-auth-install" class="inline-flex items-center gap-1.5 text-xs font-semibold text-violet-400 hover:text-violet-300 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          <span>Install PulseLab App on Device</span>
+        </button>
+      </div>
     </div>
 
-    <!-- Simulated OAuth Account Modal -->
+    <!-- REALISTIC GOOGLE / FACEBOOK ACCOUNT CHOOSER MODAL -->
     <div id="oauth-modal" class="fixed inset-0 z-[80] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
-      <div class="bg-studio-panel border border-studio-border rounded-2xl max-w-sm w-full p-6 shadow-2xl">
-        <div class="flex items-center justify-between mb-4">
+      <div class="bg-[#16161d] border border-zinc-800 rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl">
+        <!-- Top Provider Header -->
+        <div class="px-6 pt-5 pb-4 border-b border-zinc-800/90 flex items-center justify-between">
           <div class="flex items-center gap-2.5">
-            <span id="oauth-provider-badge" class="w-3 h-3 rounded-full bg-violet-500"></span>
-            <h3 id="oauth-modal-title" class="text-base font-bold text-white">Sign in with Google</h3>
+            <div id="oauth-provider-icon" class="w-6 h-6 flex items-center justify-center"></div>
+            <span id="oauth-header-label" class="text-xs font-semibold text-zinc-300">Sign in with Google</span>
           </div>
           <button id="oauth-close-btn" class="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
 
-        <form id="oauth-form" class="space-y-3.5">
-          <div>
-            <label class="block text-xs font-medium text-zinc-400 mb-1">Producer / Artist Name</label>
-            <input id="oauth-name-input" type="text" required placeholder="e.g. Alex Rivera"
-              class="w-full bg-zinc-950 border border-zinc-800 focus:border-violet-500 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none" />
+        <div class="p-6">
+          <div class="text-center mb-5">
+            <h3 class="text-lg font-bold text-white">Choose an account</h3>
+            <p class="text-xs text-zinc-400 mt-0.5">to continue to <span class="text-violet-400 font-semibold">PulseLab Studio</span></p>
           </div>
-          <div>
-            <label class="block text-xs font-medium text-zinc-400 mb-1">Email Address</label>
-            <input id="oauth-email-input" type="email" required placeholder="producer@example.com"
-              class="w-full bg-zinc-950 border border-zinc-800 focus:border-violet-500 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none" />
+
+          <!-- Saved Accounts Picker List -->
+          <div id="saved-accounts-list" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+            <!-- Dynamically populated saved accounts -->
           </div>
-          <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 hover:from-violet-500 hover:to-cyan-400 text-white font-semibold text-sm shadow-lg shadow-violet-500/20 transition mt-2">
-            Continue to PulseLab
+
+          <!-- Toggle "Use another account" -->
+          <button id="btn-toggle-add-account" type="button" class="mt-3 w-full py-2.5 px-3 rounded-xl hover:bg-zinc-800/80 border border-transparent hover:border-zinc-700 flex items-center gap-3 text-left transition">
+            <div class="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-300 shrink-0">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+            </div>
+            <div>
+              <div class="text-xs font-semibold text-zinc-200">Use another account</div>
+              <div class="text-[11px] text-zinc-500">Add a verified email or profile</div>
+            </div>
           </button>
-        </form>
+
+          <!-- Add Account Form (Collapsible) -->
+          <form id="oauth-form" class="hidden mt-4 pt-4 border-t border-zinc-800 space-y-3">
+            <div>
+              <label class="block text-[11px] font-medium text-zinc-400 mb-1">Full Name</label>
+              <input id="oauth-name-input" type="text" required placeholder="e.g. Tressie Mae"
+                class="w-full bg-zinc-950 border border-zinc-800 focus:border-violet-500 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white focus:outline-none" />
+            </div>
+            <div>
+              <label id="oauth-email-label" class="block text-[11px] font-medium text-zinc-400 mb-1">Gmail Address</label>
+              <input id="oauth-email-input" type="email" required placeholder="name@gmail.com"
+                class="w-full bg-zinc-950 border border-zinc-800 focus:border-violet-500 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white focus:outline-none" />
+            </div>
+            <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 hover:from-violet-500 hover:to-cyan-400 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-violet-500/20 transition">
+              Verify & Continue
+            </button>
+          </form>
+
+          <p class="text-[10px] text-zinc-500 mt-5 leading-relaxed text-center">
+            To use live Google/Facebook popups, click <button type="button" id="btn-modal-open-fb-cfg" class="text-cyan-400 underline">Configure Real OAuth</button> on the login screen.
+          </p>
+        </div>
       </div>
     </div>
   </section>
@@ -273,9 +419,9 @@
   <div id="app-shell" class="hidden flex-1 flex-col min-h-screen pb-16 sm:pb-0">
     
     <!-- TOP MAIN NAVIGATION BAR -->
-    <nav class="sticky top-0 z-40 bg-studio-panel/95 backdrop-blur-md border-b border-studio-border px-4 sm:px-6 h-14 flex items-center justify-between">
+    <nav class="sticky top-0 z-40 bg-studio-panel/95 backdrop-blur-md border-b border-studio-border px-3 sm:px-6 h-14 flex items-center justify-between gap-2">
       <!-- Logo & Brand -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2.5">
         <button id="btn-replay-intro" title="Replay Intro Animation" class="group w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 via-fuchsia-600 to-cyan-500 p-[1.5px] shadow-md shadow-violet-500/20 active:scale-95 transition">
           <div class="w-full h-full rounded-[10px] bg-zinc-950 flex items-center justify-center gap-0.5 px-1.5 group-hover:bg-zinc-900 transition">
             <span class="w-0.5 h-2.5 rounded-full bg-violet-400"></span>
@@ -288,33 +434,40 @@
           <span class="font-extrabold text-base sm:text-lg tracking-tight bg-gradient-to-r from-white via-violet-200 to-cyan-300 bg-clip-text text-transparent">
             PulseLab
           </span>
-          <span class="hidden md:inline-block ml-2 text-[10px] font-mono uppercase tracking-widest text-zinc-500">Pocket Studio</span>
+          <span class="hidden lg:inline-block ml-1.5 text-[10px] font-mono uppercase tracking-widest text-zinc-500">v2.0 Studio</span>
         </div>
       </div>
 
       <!-- Desktop Navigation Tabs -->
       <div class="hidden sm:flex items-center gap-1.5 bg-zinc-950 border border-studio-border p-1 rounded-xl">
-        <button data-nav="projects" class="nav-tab-btn px-4 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-2">
+        <button data-nav="projects" class="nav-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
           <span>My Projects</span>
         </button>
-        <button data-nav="studio" class="nav-tab-btn px-4 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-2">
+        <button data-nav="studio" class="nav-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
           <span>Recording Studio</span>
         </button>
-        <button data-nav="profile" class="nav-tab-btn px-4 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-2">
+        <button data-nav="profile" class="nav-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
           <span>Profile</span>
         </button>
       </div>
 
-      <!-- Right User Pill -->
-      <button data-nav="profile" class="flex items-center gap-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 pl-2 pr-3 py-1 rounded-full transition">
-        <div id="nav-avatar" class="w-7 h-7 rounded-full bg-gradient-to-tr from-violet-600 to-cyan-500 flex items-center justify-center text-xs font-bold text-white">
-          P
-        </div>
-        <span id="nav-username" class="text-xs font-medium text-zinc-200 max-w-[100px] truncate">Producer</span>
-      </button>
+      <!-- Right Controls: Install App + User Pill -->
+      <div class="flex items-center gap-2">
+        <button id="btn-install-top" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          <span>Install App</span>
+        </button>
+
+        <button data-nav="profile" class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 pl-1.5 pr-2.5 py-1 rounded-full transition">
+          <div id="nav-avatar" class="w-7 h-7 rounded-full bg-gradient-to-tr from-violet-600 to-cyan-500 flex items-center justify-center text-xs font-bold text-white overflow-hidden">
+            P
+          </div>
+          <span id="nav-username" class="text-xs font-medium text-zinc-200 max-w-[90px] truncate hidden sm:inline">Producer</span>
+        </button>
+      </div>
     </nav>
 
     <!-- ==========================================
@@ -336,7 +489,7 @@
               Welcome back, <span id="home-user-name" class="bg-gradient-to-r from-violet-300 to-cyan-300 bg-clip-text text-transparent">Producer</span>
             </h1>
             <p class="text-xs sm:text-sm text-zinc-400 mt-1.5 max-w-xl">
-              Start a fresh multi-track recording session, layer harmonies over an imported beat, or continue editing your saved tracks below.
+              Record multi-track vocals, split & trim audio clips with precision, or open one of your saved studio sessions below.
             </p>
           </div>
 
@@ -351,7 +504,7 @@
       <div class="flex items-center justify-between mb-4">
         <div>
           <h2 class="text-lg font-bold text-white">Your Recorded Projects</h2>
-          <p class="text-xs text-zinc-400">Saved sessions with full track waveforms and mixer settings</p>
+          <p class="text-xs text-zinc-400">Saved sessions with trimmed waveforms and mixer settings</p>
         </div>
         <span id="projects-count-badge" class="px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-300">
           0 Projects
@@ -367,7 +520,7 @@
     <!-- ==========================================
          VIEW B: MULTI-TRACK RECORDING STUDIO
     =========================================== -->
-    <section id="view-studio" class="hidden flex-1 flex-col overflow-hidden">
+    <section id="view-studio" class="hidden flex-1 flex-col min-h-[calc(100vh-3.5rem)]">
       
       <!-- Count-In Overlay -->
       <div id="countin-overlay" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center pointer-events-none">
@@ -381,24 +534,23 @@
       <div id="help-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-studio-panel border border-studio-border rounded-2xl max-w-lg w-full p-6 shadow-2xl">
           <div class="flex items-center justify-between border-b border-studio-border pb-4 mb-4">
-            <h2 class="text-lg font-bold text-white">PulseLab Studio Guide</h2>
+            <h2 class="text-lg font-bold text-white">PulseLab v2.0 Studio & Editing Guide</h2>
             <button id="close-help-btn" class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
           </div>
-          <div class="space-y-4 text-sm text-zinc-300">
-            <div class="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/25 text-cyan-100">
-              <p class="font-semibold text-cyan-300">Use Wired Earphones or Headphones</p>
-              <p class="text-xs text-cyan-200/80 mt-1">Wearing headphones prevents speaker bleed so your vocal takes stay clean while overdubbing over existing tracks.</p>
+          <div class="space-y-3.5 text-sm text-zinc-300">
+            <div class="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/25 text-cyan-100">
+              <p class="font-semibold text-cyan-300 text-xs sm:text-sm">1. Cut, Split & Trim Audio Clips</p>
+              <p class="text-xs text-cyan-200/80 mt-1">Click any waveform clip on the timeline to select it. Move the playhead where you want to cut and click <strong>Split</strong> (Scissors), or adjust <strong>Trim Start / End</strong> to cut off unwanted silence.</p>
             </div>
-            <div>
-              <h3 class="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">Quick Workflow</h3>
-              <ol class="list-decimal list-inside space-y-1.5 text-zinc-300 text-xs sm:text-sm">
-                <li>Arm a track by toggling its <span class="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 font-mono font-bold">R</span> button.</li>
-                <li>Click <strong>Rec</strong> on the top transport bar to record after a 4-beat count-in.</li>
-                <li>Click <strong>Save Project</strong> to store your session in your <em>My Projects</em> library.</li>
-                <li>Click <strong>Export .WAV</strong> to download a stereo mixdown of all active tracks.</li>
-              </ol>
+            <div class="p-3 rounded-xl bg-violet-500/10 border border-violet-500/25 text-violet-100">
+              <p class="font-semibold text-violet-300 text-xs sm:text-sm">2. Slide & Zoom Long Recordings</p>
+              <p class="text-xs text-violet-200/80 mt-1">Swipe or scroll horizontally across the timeline ruler/tracks to view long recordings, and use the <strong>Zoom Slider (50%–300%)</strong> to inspect waveform details.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300">
+              <p class="font-semibold text-white text-xs sm:text-sm">3. Clean Vocal Overdubbing</p>
+              <p class="text-xs text-zinc-400 mt-1">Use wired earphones/headphones when recording vocals over an imported beat so speaker audio does not bleed into your microphone.</p>
             </div>
           </div>
         </div>
@@ -406,17 +558,15 @@
 
       <!-- Studio Transport Header -->
       <div class="bg-studio-panel/95 border-b border-studio-border px-3 sm:px-6 py-2.5">
-        <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-3">
+        <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-2.5">
           
           <!-- Project Title & Save Button -->
           <div class="flex items-center gap-2">
             <button data-nav="projects" title="Back to Projects" class="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-800 transition">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
             </button>
-            <div>
-              <input id="project-title" type="text" value="Untitled Session" aria-label="Project Title"
-                class="bg-zinc-900/80 font-bold text-xs sm:text-sm text-white focus:outline-none focus:bg-zinc-800 px-2.5 py-1 rounded-lg border border-zinc-800 focus:border-violet-500 w-36 sm:w-52 truncate" />
-            </div>
+            <input id="project-title" type="text" value="Untitled Session" aria-label="Project Title"
+              class="bg-zinc-900/80 font-bold text-xs sm:text-sm text-white focus:outline-none focus:bg-zinc-800 px-2.5 py-1.5 rounded-lg border border-zinc-800 focus:border-violet-500 w-36 sm:w-48 truncate" />
             <button id="btn-save-project" class="px-3 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-violet-500/20 transition active:scale-95">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
               <span>Save</span>
@@ -467,7 +617,7 @@
 
           <!-- Right Controls: Metronome, Export & Help -->
           <div class="flex items-center gap-2 order-2 lg:order-3">
-            <div class="hidden sm:flex items-center gap-2 bg-studio-bg border border-studio-border px-2.5 py-1.5 rounded-xl">
+            <div class="hidden xl:flex items-center gap-2 bg-studio-bg border border-studio-border px-2.5 py-1.5 rounded-xl">
               <button id="btn-metronome" title="Toggle Metronome (M)" class="p-1.5 rounded-lg bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 transition flex items-center gap-1.5">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3L6 21h12L12 3zm0 0l4 9"/></svg>
                 <span class="text-xs font-medium">Click</span>
@@ -502,8 +652,8 @@
           </div>
         </div>
 
-        <!-- Mobile Metronome Sub-bar -->
-        <div class="flex sm:hidden items-center justify-between gap-2 mt-2.5 pt-2 border-t border-zinc-800/80">
+        <!-- Compact Metronome Bar for Mobile & Tablet -->
+        <div class="flex xl:hidden items-center justify-between gap-2 mt-2.5 pt-2 border-t border-zinc-800/80">
           <div class="flex items-center gap-2">
             <button id="btn-metronome-mobile" class="px-2.5 py-1 rounded-lg bg-zinc-900 text-zinc-400 border border-zinc-800 text-xs font-medium">
               Click: OFF
@@ -520,9 +670,10 @@
         </div>
       </div>
 
-      <!-- Studio Workspace Toolbar -->
-      <div class="bg-studio-panel/60 border-b border-studio-border px-3 sm:px-6 py-2">
+      <!-- Studio Workspace Toolbar + Audio Editor Controls -->
+      <div class="bg-studio-panel/75 border-b border-studio-border px-3 sm:px-6 py-2">
         <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-2">
+          <!-- Track & Import Actions -->
           <div class="flex items-center gap-2">
             <button id="btn-add-track" class="px-3 py-1.5 rounded-xl bg-violet-500/15 hover:bg-violet-500/25 text-violet-300 border border-violet-500/30 text-xs font-semibold flex items-center gap-1.5 transition">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -536,42 +687,106 @@
             </button>
           </div>
 
+          <!-- Non-Destructive Audio Clip Editor Toolbar -->
+          <div class="flex flex-wrap items-center gap-1.5 bg-zinc-950 border border-zinc-800 px-2.5 py-1 rounded-xl">
+            <span class="text-[10px] font-mono uppercase tracking-wider text-zinc-500 mr-1">Clip Edit:</span>
+
+            <button id="btn-clip-split" title="Split selected clip at Playhead (S)" class="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-violet-600/30 text-zinc-200 hover:text-violet-200 border border-zinc-800 text-xs font-semibold flex items-center gap-1 transition">
+              <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"/></svg>
+              <span>Split</span>
+            </button>
+
+            <button id="btn-clip-trim-left" title="Cut clip start to Playhead" class="px-2 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 text-[11px] font-mono transition">
+              [ Cut Start
+            </button>
+
+            <button id="btn-clip-trim-right" title="Cut clip end to Playhead" class="px-2 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 text-[11px] font-mono transition">
+              Cut End ]
+            </button>
+
+            <button id="btn-clip-duplicate" title="Duplicate selected clip" class="px-2 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 text-[11px] font-medium transition">
+              Duplicate
+            </button>
+
+            <button id="btn-clip-delete" title="Delete selected clip (Del)" class="px-2 py-1 rounded-lg bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-500/30 text-[11px] font-medium transition">
+              Delete
+            </button>
+          </div>
+
+          <!-- Zoom Slider (50% to 300%) + Mic Status -->
           <div class="flex items-center gap-3 text-xs text-zinc-400">
-            <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-[11px]">
+            <div class="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-[11px]">
               <span class="w-2 h-2 rounded-full bg-zinc-500" id="mic-status-dot"></span>
               <span id="mic-status-text">Mic Standby</span>
             </div>
 
-            <div class="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 px-2.5 py-1 rounded-lg">
+            <div class="flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-2.5 py-1 rounded-lg">
               <span class="text-[11px] text-zinc-500">Zoom</span>
-              <button id="btn-zoom-out" class="px-1.5 hover:text-white font-mono font-bold">-</button>
-              <span id="zoom-label" class="font-mono text-[11px] text-zinc-300 w-9 text-center">100%</span>
-              <button id="btn-zoom-in" class="px-1.5 hover:text-white font-mono font-bold">+</button>
+              <input id="zoom-slider" type="range" min="50" max="300" step="10" value="100" class="w-20 sm:w-24" />
+              <span id="zoom-label" class="font-mono text-[11px] text-cyan-400 w-10 text-right">100%</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Multi-Track Timeline Arrangement -->
-      <div class="flex-1 max-w-[1600px] w-full mx-auto flex flex-col overflow-hidden">
-        <div class="flex border-b border-studio-border bg-studio-panel/90 select-none">
-          <div class="w-52 sm:w-72 shrink-0 px-4 py-2 border-r border-studio-border flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-zinc-500">
-            <span>Tracks & Mixer</span>
-            <span>Vol / Pan</span>
+      <!-- Selected Clip Inspector Strip (Shows Numeric Trim Start/End when a clip is clicked) -->
+      <div id="clip-inspector-bar" class="hidden bg-violet-950/30 border-b border-violet-500/30 px-3 sm:px-6 py-1.5">
+        <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+            <span id="inspector-clip-name" class="font-semibold text-white">Selected Clip</span>
+            <span id="inspector-clip-duration" class="font-mono text-[11px] text-cyan-300">(0.00s active)</span>
           </div>
-          <div id="timeline-ruler-container" class="flex-1 relative h-8 overflow-hidden cursor-pointer bg-zinc-950">
-            <canvas id="ruler-canvas" class="w-full h-full block"></canvas>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <label class="flex items-center gap-1.5 text-[11px] font-mono text-zinc-300">
+              <span>Position (s):</span>
+              <input id="inspector-start-time" type="number" step="0.05" min="0" class="w-16 bg-zinc-950 border border-zinc-700 rounded px-1.5 py-0.5 text-xs text-white" />
+            </label>
+            <label class="flex items-center gap-1.5 text-[11px] font-mono text-zinc-300">
+              <span>Trim Start (s):</span>
+              <input id="inspector-trim-start" type="number" step="0.05" min="0" class="w-16 bg-zinc-950 border border-zinc-700 rounded px-1.5 py-0.5 text-xs text-white" />
+            </label>
+            <label class="flex items-center gap-1.5 text-[11px] font-mono text-zinc-300">
+              <span>Trim End (s):</span>
+              <input id="inspector-trim-end" type="number" step="0.05" min="0.05" class="w-16 bg-zinc-950 border border-zinc-700 rounded px-1.5 py-0.5 text-xs text-white" />
+            </label>
+            <button id="btn-inspector-reset" class="text-[11px] text-violet-300 hover:text-white underline">Reset Trim</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================
+           SYNCHRONIZED HORIZONTAL + VERTICAL SCROLLABLE MULTI-TRACK TIMELINE
+      ================================================================= -->
+      <div class="flex-1 max-w-[1600px] w-full mx-auto flex flex-col overflow-hidden">
+        
+        <!-- Sticky Timeline Header Row (Left Mixer Header + Synchronized Horizontal Ruler) -->
+        <div class="flex border-b border-studio-border bg-studio-panel/95 select-none shrink-0">
+          <div class="w-44 sm:w-64 md:w-72 shrink-0 px-3 sm:px-4 py-2 border-r border-studio-border flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-zinc-500">
+            <span>Tracks & Mixer</span>
+            <span class="hidden sm:inline">Vol / Pan</span>
+          </div>
+          <!-- Horizontal Scrollable Ruler Viewport -->
+          <div id="ruler-scroll-viewport" class="flex-1 overflow-x-auto overflow-y-hidden bg-zinc-950 cursor-pointer">
+            <div id="ruler-inner-track" class="relative h-8" style="width: 2400px;">
+              <canvas id="ruler-canvas" class="w-full h-full block"></canvas>
+            </div>
           </div>
         </div>
 
-        <div id="tracks-wrapper" class="flex-1 overflow-y-auto divide-y divide-studio-border relative"></div>
+        <!-- Vertically Scrollable Tracks Body -->
+        <div id="tracks-vertical-scroller" class="flex-1 overflow-y-auto max-h-[calc(100vh-17.5rem)] divide-y divide-studio-border">
+          <!-- Track rows dynamically injected here -->
+        </div>
 
+        <!-- Empty State -->
         <div id="empty-state" class="hidden flex-1 flex-col items-center justify-center p-12 text-center">
           <div class="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-violet-400 mb-3">
             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
           </div>
           <h3 class="text-base font-semibold text-zinc-200">No Active Tracks</h3>
-          <p class="text-xs text-zinc-400 mt-1 max-w-xs">Add a new audio track to start recording vocals, instruments, or import a backing beat.</p>
+          <p class="text-xs text-zinc-400 mt-1 max-w-xs">Add a new audio track to record vocals, instruments, or import a backing beat.</p>
           <button onclick="studio.addTrack()" class="mt-4 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-xs font-semibold transition">
             + Create New Track
           </button>
@@ -585,7 +800,7 @@
     <section id="view-profile" class="hidden flex-1 max-w-3xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-10">
       <div class="bg-studio-panel border border-studio-border rounded-3xl p-6 sm:p-8 shadow-xl">
         <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5 pb-6 border-b border-studio-border">
-          <div id="profile-avatar" class="w-20 h-20 rounded-3xl bg-gradient-to-br from-violet-600 via-fuchsia-600 to-cyan-500 flex items-center justify-center text-3xl font-extrabold text-white shadow-lg shadow-violet-500/25 shrink-0">
+          <div id="profile-avatar" class="w-20 h-20 rounded-3xl bg-gradient-to-br from-violet-600 via-fuchsia-600 to-cyan-500 flex items-center justify-center text-3xl font-extrabold text-white shadow-lg shadow-violet-500/25 shrink-0 overflow-hidden">
             P
           </div>
           <div class="text-center sm:text-left flex-1">
@@ -613,8 +828,13 @@
           </div>
         </div>
 
-        <!-- Account Actions -->
+        <!-- Account & PWA Actions -->
         <div class="space-y-3 pt-2">
+          <button id="btn-profile-install" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-violet-600/20 to-cyan-500/20 hover:from-violet-600/30 hover:to-cyan-500/30 text-cyan-300 border border-cyan-500/30 text-sm font-semibold flex items-center justify-between transition">
+            <span>Install PulseLab App to Home Screen</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          </button>
+
           <button id="btn-profile-edit" class="w-full py-3 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-800 text-sm font-semibold flex items-center justify-between transition">
             <span>Edit Producer Display Name</span>
             <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
@@ -648,11 +868,52 @@
   <!-- CORE APPLICATION SCRIPT -->
   <script>
     /**
-     * IndexedDB Storage Manager for Multi-Track Projects
+     * 1. Dynamic PWA Manifest Generator (Data-URI Blob)
+     */
+    (function setupDynamicPWAManifest() {
+      const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#8b5cf6"/>
+            <stop offset="100%" stop-color="#06b6d4"/>
+          </linearGradient>
+        </defs>
+        <rect width="512" height="512" rx="112" fill="#09090b"/>
+        <rect x="24" y="24" width="464" height="464" rx="96" fill="none" stroke="url(#g)" stroke-width="18"/>
+        <rect x="136" y="190" width="32" height="132" rx="16" fill="#8b5cf6"/>
+        <rect x="196" y="140" width="32" height="232" rx="16" fill="#ec4899"/>
+        <rect x="256" y="104" width="32" height="304" rx="16" fill="#06b6d4"/>
+        <rect x="316" y="160" width="32" height="192" rx="16" fill="#8b5cf6"/>
+        <rect x="376" y="210" width="32" height="92" rx="16" fill="#06b6d4"/>
+      </svg>`;
+
+      const iconUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgIcon);
+      const manifest = {
+        name: 'PulseLab — Pocket Multi-Track Studio',
+        short_name: 'PulseLab',
+        description: 'Pocket multi-track audio recorder, waveform cutter, and studio mixer.',
+        start_url: window.location.href,
+        display: 'standalone',
+        background_color: '#09090b',
+        theme_color: '#09090b',
+        icons: [
+          { src: iconUrl, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
+          { src: iconUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
+        ]
+      };
+
+      const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+      const manifestURL = URL.createObjectURL(blob);
+      const linkEl = document.getElementById('pwa-manifest-link');
+      if (linkEl) linkEl.setAttribute('href', manifestURL);
+    })();
+
+    /**
+     * 2. IndexedDB Storage Manager for Multi-Track Projects
      */
     class ProjectStorage {
       constructor() {
-        this.dbName = 'PulseLabStudioDB';
+        this.dbName = 'PulseLabStudioDB_v2';
         this.storeName = 'projects';
         this.db = null;
       }
@@ -713,7 +974,7 @@
     }
 
     /**
-     * Animated Splash Screen Controller
+     * 3. Animated Splash Screen Controller
      */
     function triggerSplashAnimation(onComplete = null) {
       const splash = document.getElementById('splash-screen');
@@ -726,7 +987,7 @@
 
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          progress.style.transition = 'width 2000ms cubic-bezier(0.22, 1, 0.36, 1)';
+          progress.style.transition = 'width 1800ms cubic-bezier(0.22, 1, 0.36, 1)';
           progress.style.width = '100%';
         });
       });
@@ -736,12 +997,12 @@
         setTimeout(() => {
           splash.classList.add('hidden');
           if (typeof onComplete === 'function') onComplete();
-        }, 650);
-      }, 2200);
+        }, 600);
+      }, 2000);
     }
 
     /**
-     * PulseLab Multi-Track Studio & App Controller
+     * 4. PulseLab v2.0 Multi-Track Studio & App Controller
      */
     class PulseLabApp {
       constructor() {
@@ -751,15 +1012,25 @@
         this.currentProjectId = null;
         this.savedProjects = [];
 
+        // Firebase & Account Chooser State
+        this.firebaseReady = false;
+        this.pendingOAuthProvider = 'Google';
+        this.savedAccounts = [];
+
+        // PWA Install Prompt
+        this.deferredInstallPrompt = null;
+
         // Web Audio Engine
         this.audioCtx = null;
         this.masterGain = null;
         this.masterAnalyser = null;
 
-        // Track State
+        // Track & Clip Selection State
         this.tracks = [];
         this.trackColors = ['#8b5cf6', '#06b6d4', '#ec4899', '#10b981', '#f59e0b', '#3b82f6', '#f43f5e'];
         this.nextTrackId = 1;
+        this.nextClipId = 1;
+        this.selectedClipRef = null; // { trackId, clipId }
 
         // Transport State
         this.isPlaying = false;
@@ -788,17 +1059,23 @@
         this.currentBeat = 0;
         this.metronomeTimerId = null;
 
-        // Timeline State
+        // Timeline Scroll & Zoom State
+        this.basePixelsPerSecond = 45;
+        this.zoomPercent = 100;
         this.pixelsPerSecond = 45;
-        this.pendingOAuthProvider = 'Google';
+        this.timelineScrollLeft = 0;
+        this.minTimelineSeconds = 60;
 
         this.init();
       }
 
       async init() {
         await this.storage.init();
+        this.initFirebaseFromStorage();
+        this.loadSavedAccounts();
         this.initDOM();
         this.bindEvents();
+        this.setupPWAListeners();
         this.loadUserSession();
         this.startRenderLoop();
 
@@ -812,10 +1089,11 @@
       }
 
       initDOM() {
-        this.tracksWrapper = document.getElementById('tracks-wrapper');
+        this.tracksWrapper = document.getElementById('tracks-vertical-scroller');
         this.emptyState = document.getElementById('empty-state');
+        this.rulerScrollViewport = document.getElementById('ruler-scroll-viewport');
+        this.rulerInnerTrack = document.getElementById('ruler-inner-track');
         this.rulerCanvas = document.getElementById('ruler-canvas');
-        this.rulerContainer = document.getElementById('timeline-ruler-container');
         this.timecodeDisplay = document.getElementById('timecode-display');
         this.masterMeterCanvas = document.getElementById('master-meter');
         this.btnPlay = document.getElementById('btn-play');
@@ -829,14 +1107,217 @@
       }
 
       /* ==========================
-         AUTH & NAVIGATION FLOW
+         PWA INSTALL PROMPT HANDLER
       =========================== */
+      setupPWAListeners() {
+        window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault();
+          this.deferredInstallPrompt = e;
+        });
+
+        window.addEventListener('appinstalled', () => {
+          this.deferredInstallPrompt = null;
+          this.showToast('PulseLab installed on your device!', 'success');
+        });
+      }
+
+      async triggerInstallApp() {
+        if (this.deferredInstallPrompt) {
+          this.deferredInstallPrompt.prompt();
+          const { outcome } = await this.deferredInstallPrompt.userChoice;
+          if (outcome === 'accepted') {
+            this.showToast('Installing PulseLab App...', 'success');
+          }
+          this.deferredInstallPrompt = null;
+        } else {
+          document.getElementById('install-modal').classList.remove('hidden');
+          document.getElementById('install-modal').classList.add('flex');
+        }
+      }
+
+      /* ==========================
+         FIREBASE REAL OAUTH + ACCOUNT CHOOSER
+      =========================== */
+      initFirebaseFromStorage() {
+        try {
+          const rawCfg = localStorage.getItem('pulselab_firebase_config');
+          if (!rawCfg) {
+            this.updateOAuthModeBadge(false);
+            return;
+          }
+          const config = JSON.parse(rawCfg);
+          if (config && config.apiKey && config.authDomain && window.firebase) {
+            if (!firebase.apps.length) {
+              firebase.initializeApp(config);
+            }
+            this.firebaseReady = true;
+            this.updateOAuthModeBadge(true);
+            document.getElementById('firebase-config-textarea').value = JSON.stringify(config, null, 2);
+          }
+        } catch (err) {
+          console.warn('Firebase config error:', err);
+          this.firebaseReady = false;
+          this.updateOAuthModeBadge(false);
+        }
+      }
+
+      updateOAuthModeBadge(isLiveFirebase) {
+        const dot = document.getElementById('oauth-mode-dot');
+        const text = document.getElementById('oauth-mode-text');
+        if (!dot || !text) return;
+        if (isLiveFirebase) {
+          dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+          text.textContent = 'Live Firebase OAuth Active';
+        } else {
+          dot.className = 'w-2 h-2 rounded-full bg-amber-400';
+          text.textContent = 'Account Chooser Mode';
+        }
+      }
+
+      loadSavedAccounts() {
+        try {
+          const raw = localStorage.getItem('pulselab_saved_accounts');
+          if (raw) {
+            this.savedAccounts = JSON.parse(raw);
+          } else {
+            this.savedAccounts = [
+              {
+                name: 'Alex Rivera (Producer)',
+                email: 'alex.rivera.beats@gmail.com',
+                provider: 'Google',
+                verified: true
+              },
+              {
+                name: 'Maya Lin Studio',
+                email: 'maya.lin@facebook.com',
+                provider: 'Facebook',
+                verified: true
+              }
+            ];
+            localStorage.setItem('pulselab_saved_accounts', JSON.stringify(this.savedAccounts));
+          }
+        } catch (_) {
+          this.savedAccounts = [];
+        }
+      }
+
+      persistAccountToChooser(account) {
+        const existsIdx = this.savedAccounts.findIndex(
+          a => a.email.toLowerCase() === account.email.toLowerCase() && a.provider === account.provider
+        );
+        if (existsIdx >= 0) {
+          this.savedAccounts[existsIdx] = { ...this.savedAccounts[existsIdx], ...account };
+        } else {
+          this.savedAccounts.unshift(account);
+        }
+        localStorage.setItem('pulselab_saved_accounts', JSON.stringify(this.savedAccounts));
+      }
+
+      async handleSocialSignInClick(providerName) {
+        this.pendingOAuthProvider = providerName;
+
+        // 1. If Firebase Config is active, trigger REAL Google/Facebook Popup Picker
+        if (this.firebaseReady && window.firebase && firebase.auth) {
+          try {
+            const provider = providerName === 'Google'
+              ? new firebase.auth.GoogleAuthProvider()
+              : new firebase.auth.FacebookAuthProvider();
+
+            if (providerName === 'Google') {
+              provider.setCustomParameters({ prompt: 'select_account' });
+            }
+
+            const result = await firebase.auth().signInWithPopup(provider);
+            const fbUser = result.user;
+            const userProfile = {
+              name: fbUser.displayName || `${providerName} Producer`,
+              email: fbUser.email || `${providerName.toLowerCase()}@pulselab.studio`,
+              photoURL: fbUser.photoURL || null,
+              provider: providerName
+            };
+
+            this.persistAccountToChooser({ ...userProfile, verified: true });
+            this.saveUserSession(userProfile);
+            this.enterAppShell();
+            this.showToast(`Signed in via ${providerName} (${userProfile.email})`, 'success');
+            return;
+          } catch (err) {
+            console.error('Firebase OAuth Error:', err);
+            this.showToast(`OAuth popup message: ${err.message}`, 'error');
+            return;
+          }
+        }
+
+        // 2. Otherwise open the realistic Account Chooser Modal
+        this.openRealisticAccountChooser(providerName);
+      }
+
+      openRealisticAccountChooser(providerName) {
+        const modal = document.getElementById('oauth-modal');
+        const iconBox = document.getElementById('oauth-provider-icon');
+        const headerLabel = document.getElementById('oauth-header-label');
+        const emailLabel = document.getElementById('oauth-email-label');
+        const emailInput = document.getElementById('oauth-email-input');
+
+        headerLabel.textContent = `Sign in with ${providerName}`;
+        if (providerName === 'Google') {
+          iconBox.innerHTML = `<svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/><path fill="#34A853" d="M12 24c3.3 0 6.08-1.09 8.1-2.96l-3.88-3.05c-1.1.74-2.51 1.18-4.22 1.18-3.25 0-6-2.19-6.98-5.14H1.01v3.14C3.05 21.2 7.24 24 12 24z"/><path fill="#FBBC05" d="M5.02 14.03c-.25-.74-.39-1.54-.39-2.36 0-.82.14-1.62.39-2.36V6.17H1.01C.37 7.45 0 8.89 0 10.42s.37 2.97 1.01 4.25l4.01-3.14z"/><path fill="#EA4335" d="M12 4.75c1.79 0 3.41.62 4.68 1.82l3.51-3.51C18.07 1.19 15.3 0 12 0 7.24 0 3.05 2.8 1.01 6.83l4.01 3.14c.98-2.95 3.73-5.22 6.98-5.22z"/></svg>`;
+          emailLabel.textContent = 'Google / Gmail Address';
+          emailInput.placeholder = 'yourname@gmail.com';
+        } else {
+          iconBox.innerHTML = `<svg class="w-5 h-5 text-[#1877F2] fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`;
+          emailLabel.textContent = 'Facebook Email';
+          emailInput.placeholder = 'yourname@email.com';
+        }
+
+        // Render saved accounts matching provider or all saved accounts
+        const listEl = document.getElementById('saved-accounts-list');
+        listEl.innerHTML = '';
+        const matchingAccounts = this.savedAccounts.filter(a => a.provider === providerName);
+        const accountsToShow = matchingAccounts.length > 0 ? matchingAccounts : this.savedAccounts;
+
+        accountsToShow.forEach(acc => {
+          const initial = (acc.name || 'U').charAt(0).toUpperCase();
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'w-full p-2.5 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 hover:border-violet-500/40 flex items-center gap-3 text-left transition group';
+          btn.innerHTML = `
+            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-violet-600 to-cyan-500 flex items-center justify-center text-xs font-bold text-white shrink-0">
+              ${initial}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-bold text-white truncate">${acc.name}</span>
+                <svg class="w-3.5 h-3.5 text-cyan-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              </div>
+              <div class="text-[11px] text-zinc-400 truncate">${acc.email}</div>
+            </div>
+            <span class="text-[10px] font-mono text-zinc-500 group-hover:text-cyan-400">Select</span>
+          `;
+          btn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            const selectedUser = {
+              name: acc.name,
+              email: acc.email,
+              provider: providerName
+            };
+            this.saveUserSession(selectedUser);
+            this.enterAppShell();
+            this.showToast(`Signed in as ${acc.name}`, 'success');
+          });
+          listEl.appendChild(btn);
+        });
+
+        document.getElementById('oauth-form').classList.add('hidden');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+
       loadUserSession() {
         try {
           const raw = localStorage.getItem('pulselab_user');
-          if (raw) {
-            this.user = JSON.parse(raw);
-          }
+          if (raw) this.user = JSON.parse(raw);
         } catch (_) {}
       }
 
@@ -867,11 +1348,19 @@
       updateUserUI() {
         if (!this.user) return;
         const initials = (this.user.name || 'P').charAt(0).toUpperCase();
-        document.getElementById('nav-avatar').textContent = initials;
+        const navAv = document.getElementById('nav-avatar');
+        const profAv = document.getElementById('profile-avatar');
+
+        if (this.user.photoURL) {
+          navAv.innerHTML = `<img src="${this.user.photoURL}" alt="Avatar" class="w-full h-full object-cover" />`;
+          profAv.innerHTML = `<img src="${this.user.photoURL}" alt="Avatar" class="w-full h-full object-cover" />`;
+        } else {
+          navAv.textContent = initials;
+          profAv.textContent = initials;
+        }
+
         document.getElementById('nav-username').textContent = this.user.name;
         document.getElementById('home-user-name').textContent = this.user.name;
-
-        document.getElementById('profile-avatar').textContent = initials;
         document.getElementById('profile-name').textContent = this.user.name;
         document.getElementById('profile-email').textContent = this.user.email;
         document.getElementById('profile-provider-badge').textContent = `${this.user.provider} Account`;
@@ -892,15 +1381,13 @@
           }
         });
 
-        // Update Desktop Nav Tabs
         document.querySelectorAll('.nav-tab-btn').forEach(btn => {
           const isActive = btn.dataset.nav === viewName;
           btn.className = isActive
-            ? 'nav-tab-btn px-4 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-2 bg-violet-600 text-white shadow-sm'
-            : 'nav-tab-btn px-4 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-2 text-zinc-400 hover:text-white';
+            ? 'nav-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-2 bg-violet-600 text-white shadow-sm'
+            : 'nav-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-2 text-zinc-400 hover:text-white';
         });
 
-        // Update Mobile Bottom Nav Tabs
         document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
           const isActive = btn.dataset.nav === viewName;
           btn.className = isActive
@@ -912,6 +1399,8 @@
           this.refreshProjectsDashboard();
         } else if (viewName === 'profile') {
           this.updateProfileStats();
+        } else if (viewName === 'studio') {
+          this.updateTimelineDimensions();
         }
       }
 
@@ -920,8 +1409,8 @@
       =========================== */
       async ensureStarterProject() {
         const existing = await this.storage.getAllProjects();
-        if (existing.length === 0 && !localStorage.getItem('pulselab_seeded')) {
-          localStorage.setItem('pulselab_seeded', 'true');
+        if (existing.length === 0 && !localStorage.getItem('pulselab_seeded_v2')) {
+          localStorage.setItem('pulselab_seeded_v2', 'true');
           const demoProject = {
             id: 'proj_demo_1',
             title: 'Midnight Lo-Fi Demo',
@@ -1004,6 +1493,8 @@
 
       createNewStudioSession() {
         this.stop();
+        this.selectedClipRef = null;
+        this.updateClipInspectorUI();
         this.currentProjectId = 'proj_' + Date.now();
         document.getElementById('project-title').value = `Studio Session ${this.savedProjects.length + 1}`;
         this.bpm = 110;
@@ -1020,6 +1511,9 @@
       async openProjectInStudio(proj) {
         this.stop();
         this.ensureAudioContext();
+        this.selectedClipRef = null;
+        this.updateClipInspectorUI();
+
         this.currentProjectId = proj.id;
         document.getElementById('project-title').value = proj.title;
         this.bpm = proj.bpm || 110;
@@ -1039,9 +1533,15 @@
                 const clonedBuf = clip.wavArrayBuffer.slice(0);
                 const audioBuffer = await this.audioCtx.decodeAudioData(clonedBuf);
                 const peaks = this.extractPeaks(audioBuffer);
+                const trimStart = clip.trimStart ?? 0;
+                const trimEnd = clip.trimEnd ?? audioBuffer.duration;
                 restoredClips.push({
+                  id: this.nextClipId++,
+                  name: clip.name || 'Audio Take',
                   buffer: audioBuffer,
                   startTime: clip.startTime || 0,
+                  trimStart,
+                  trimEnd,
                   peaks
                 });
               }
@@ -1060,7 +1560,9 @@
             volume: savedTrack.volume ?? 1.0,
             pan: savedTrack.pan ?? 0.0,
             clips: restoredClips,
-            canvasEl: null
+            canvasEl: null,
+            scrollViewportEl: null,
+            innerTrackEl: null
           });
         }
 
@@ -1084,7 +1586,10 @@
           const serializedClips = track.clips.map(clip => {
             const wavBlob = this.audioBufferToWav(clip.buffer);
             return {
+              name: clip.name || 'Audio Take',
               startTime: clip.startTime,
+              trimStart: clip.trimStart ?? 0,
+              trimEnd: clip.trimEnd ?? clip.buffer.duration,
               wavBlob
             };
           });
@@ -1101,7 +1606,6 @@
           };
         });
 
-        // Convert Blobs to ArrayBuffers for reliable IndexedDB storage across mobile browsers
         for (const t of serializedTracks) {
           for (const c of t.clips) {
             c.wavArrayBuffer = await c.wavBlob.arrayBuffer();
@@ -1199,34 +1703,77 @@
          EVENT BINDINGS
       =========================== */
       bindEvents() {
-        // Navigation Tabs
         document.querySelectorAll('[data-nav]').forEach(btn => {
-          btn.addEventListener('click', () => {
-            this.switchView(btn.dataset.nav);
-          });
+          btn.addEventListener('click', () => this.switchView(btn.dataset.nav));
         });
 
-        // Replay Splash Intro
-        document.getElementById('btn-replay-intro').addEventListener('click', () => {
-          triggerSplashAnimation();
+        document.getElementById('btn-replay-intro').addEventListener('click', () => triggerSplashAnimation());
+
+        // Install App Triggers
+        document.getElementById('btn-install-top').addEventListener('click', () => this.triggerInstallApp());
+        document.getElementById('btn-auth-install').addEventListener('click', () => this.triggerInstallApp());
+        document.getElementById('btn-profile-install').addEventListener('click', () => this.triggerInstallApp());
+        document.getElementById('install-modal-close').addEventListener('click', () => {
+          document.getElementById('install-modal').classList.add('hidden');
+          document.getElementById('install-modal').classList.remove('flex');
+        });
+        document.getElementById('install-modal-done').addEventListener('click', () => {
+          document.getElementById('install-modal').classList.add('hidden');
+          document.getElementById('install-modal').classList.remove('flex');
         });
 
-        // Auth Buttons
-        const openOAuthModal = (provider) => {
-          this.pendingOAuthProvider = provider;
-          document.getElementById('oauth-modal-title').textContent = `Continue with ${provider}`;
-          document.getElementById('oauth-provider-badge').className = provider === 'Google'
-            ? 'w-3 h-3 rounded-full bg-emerald-400'
-            : 'w-3 h-3 rounded-full bg-[#1877F2]';
-          document.getElementById('oauth-modal').classList.remove('hidden');
-          document.getElementById('oauth-modal').classList.add('flex');
+        // Firebase Config Modal
+        const openFbCfg = () => {
+          document.getElementById('firebase-config-modal').classList.remove('hidden');
+          document.getElementById('firebase-config-modal').classList.add('flex');
         };
+        document.getElementById('btn-open-fb-config').addEventListener('click', openFbCfg);
+        document.getElementById('btn-modal-open-fb-cfg').addEventListener('click', () => {
+          document.getElementById('oauth-modal').classList.add('hidden');
+          document.getElementById('oauth-modal').classList.remove('flex');
+          openFbCfg();
+        });
+        document.getElementById('fb-cfg-close').addEventListener('click', () => {
+          document.getElementById('firebase-config-modal').classList.add('hidden');
+          document.getElementById('firebase-config-modal').classList.remove('flex');
+        });
+        document.getElementById('fb-cfg-save').addEventListener('click', () => {
+          const raw = document.getElementById('firebase-config-textarea').value.trim();
+          try {
+            const parsed = JSON.parse(raw);
+            if (!parsed.apiKey || !parsed.authDomain) throw new Error('Missing apiKey or authDomain');
+            localStorage.setItem('pulselab_firebase_config', JSON.stringify(parsed));
+            this.initFirebaseFromStorage();
+            document.getElementById('firebase-config-modal').classList.add('hidden');
+            document.getElementById('firebase-config-modal').classList.remove('flex');
+            this.showToast('Firebase OAuth configured! Click Google or Facebook to test.', 'success');
+          } catch (err) {
+            this.showToast('Invalid JSON config. Paste the exact firebaseConfig object.', 'error');
+          }
+        });
+        document.getElementById('fb-cfg-clear').addEventListener('click', () => {
+          localStorage.removeItem('pulselab_firebase_config');
+          this.firebaseReady = false;
+          this.updateOAuthModeBadge(false);
+          document.getElementById('firebase-config-textarea').value = '';
+          this.showToast('Switched back to Account Chooser Mode', 'info');
+        });
 
-        document.getElementById('btn-auth-google').addEventListener('click', () => openOAuthModal('Google'));
-        document.getElementById('btn-auth-facebook').addEventListener('click', () => openOAuthModal('Facebook'));
+        // Social Auth Buttons
+        document.getElementById('btn-auth-google').addEventListener('click', () => this.handleSocialSignInClick('Google'));
+        document.getElementById('btn-auth-facebook').addEventListener('click', () => this.handleSocialSignInClick('Facebook'));
+
         document.getElementById('oauth-close-btn').addEventListener('click', () => {
           document.getElementById('oauth-modal').classList.add('hidden');
           document.getElementById('oauth-modal').classList.remove('flex');
+        });
+
+        document.getElementById('btn-toggle-add-account').addEventListener('click', () => {
+          const form = document.getElementById('oauth-form');
+          form.classList.toggle('hidden');
+          if (!form.classList.contains('hidden')) {
+            document.getElementById('oauth-name-input').focus();
+          }
         });
 
         document.getElementById('oauth-form').addEventListener('submit', (e) => {
@@ -1238,11 +1785,14 @@
           document.getElementById('oauth-modal').classList.add('hidden');
           document.getElementById('oauth-modal').classList.remove('flex');
 
-          this.saveUserSession({
+          const newAccount = {
             name,
             email,
-            provider: this.pendingOAuthProvider
-          });
+            provider: this.pendingOAuthProvider,
+            verified: true
+          };
+          this.persistAccountToChooser(newAccount);
+          this.saveUserSession(newAccount);
           this.enterAppShell();
           this.showToast(`Signed in with ${this.pendingOAuthProvider}`, 'success');
         });
@@ -1275,8 +1825,11 @@
           });
         });
 
-        document.getElementById('btn-sign-out').addEventListener('click', () => {
+        document.getElementById('btn-sign-out').addEventListener('click', async () => {
           this.stop();
+          if (this.firebaseReady && window.firebase && firebase.auth) {
+            try { await firebase.auth().signOut(); } catch (_) {}
+          }
           localStorage.removeItem('pulselab_user');
           this.user = null;
           this.showAuthScreen();
@@ -1284,15 +1837,10 @@
         });
 
         // Projects View Buttons
-        document.getElementById('btn-new-session').addEventListener('click', () => {
-          this.createNewStudioSession();
-        });
+        document.getElementById('btn-new-session').addEventListener('click', () => this.createNewStudioSession());
 
         // Studio Transport & Save
-        document.getElementById('btn-save-project').addEventListener('click', () => {
-          this.saveCurrentProjectToStorage();
-        });
-
+        document.getElementById('btn-save-project').addEventListener('click', () => this.saveCurrentProjectToStorage());
         this.btnPlay.addEventListener('click', () => this.togglePlay());
         this.btnStop.addEventListener('click', () => this.stop());
         this.btnRecord.addEventListener('click', () => this.toggleRecord());
@@ -1306,9 +1854,7 @@
           }
         });
 
-        document.getElementById('btn-add-track').addEventListener('click', () => {
-          this.addTrack(`Track ${this.nextTrackId}`);
-        });
+        document.getElementById('btn-add-track').addEventListener('click', () => this.addTrack(`Track ${this.nextTrackId}`));
 
         const fileInput = document.getElementById('audio-import-input');
         document.getElementById('btn-import-audio').addEventListener('click', () => fileInput.click());
@@ -1317,6 +1863,48 @@
             this.importAudioFile(e.target.files[0]);
             e.target.value = '';
           }
+        });
+
+        // Non-Destructive Audio Clip Editor Toolbar Buttons
+        document.getElementById('btn-clip-split').addEventListener('click', () => this.splitSelectedClipAtPlayhead());
+        document.getElementById('btn-clip-trim-left').addEventListener('click', () => this.trimSelectedClipStartToPlayhead());
+        document.getElementById('btn-clip-trim-right').addEventListener('click', () => this.trimSelectedClipEndToPlayhead());
+        document.getElementById('btn-clip-duplicate').addEventListener('click', () => this.duplicateSelectedClip());
+        document.getElementById('btn-clip-delete').addEventListener('click', () => this.deleteSelectedClip());
+
+        // Clip Inspector Numeric Inputs
+        document.getElementById('inspector-start-time').addEventListener('change', (e) => {
+          const info = this.getSelectedClipObject();
+          if (!info) return;
+          info.clip.startTime = Math.max(0, parseFloat(e.target.value) || 0);
+          this.updateTimelineDimensions();
+          this.updateClipInspectorUI();
+        });
+        document.getElementById('inspector-trim-start').addEventListener('change', (e) => {
+          const info = this.getSelectedClipObject();
+          if (!info) return;
+          const val = Math.max(0, Math.min(info.clip.trimEnd - 0.05, parseFloat(e.target.value) || 0));
+          info.clip.trimStart = val;
+          this.updateClipInspectorUI();
+          if (this.isPlaying) this.restartPlaybackFromCurrent();
+        });
+        document.getElementById('inspector-trim-end').addEventListener('change', (e) => {
+          const info = this.getSelectedClipObject();
+          if (!info) return;
+          const maxDur = info.clip.buffer.duration;
+          const val = Math.min(maxDur, Math.max(info.clip.trimStart + 0.05, parseFloat(e.target.value) || maxDur));
+          info.clip.trimEnd = val;
+          this.updateClipInspectorUI();
+          if (this.isPlaying) this.restartPlaybackFromCurrent();
+        });
+        document.getElementById('btn-inspector-reset').addEventListener('click', () => {
+          const info = this.getSelectedClipObject();
+          if (!info) return;
+          info.clip.trimStart = 0;
+          info.clip.trimEnd = info.clip.buffer.duration;
+          this.updateClipInspectorUI();
+          if (this.isPlaying) this.restartPlaybackFromCurrent();
+          this.showToast('Clip trim reset to full length', 'info');
         });
 
         // Metronome & BPM
@@ -1351,19 +1939,22 @@
         document.getElementById('btn-countin').addEventListener('click', toggleCountIn);
         document.getElementById('btn-countin-mobile').addEventListener('click', toggleCountIn);
 
-        // Zoom
-        document.getElementById('btn-zoom-in').addEventListener('click', () => {
-          this.pixelsPerSecond = Math.min(180, this.pixelsPerSecond + 15);
-          document.getElementById('zoom-label').textContent = `${Math.round((this.pixelsPerSecond / 45) * 100)}%`;
-        });
-        document.getElementById('btn-zoom-out').addEventListener('click', () => {
-          this.pixelsPerSecond = Math.max(15, this.pixelsPerSecond - 15);
-          document.getElementById('zoom-label').textContent = `${Math.round((this.pixelsPerSecond / 45) * 100)}%`;
+        // Zoom Slider (50% to 300%)
+        document.getElementById('zoom-slider').addEventListener('input', (e) => {
+          this.zoomPercent = parseInt(e.target.value, 10) || 100;
+          this.pixelsPerSecond = (this.basePixelsPerSecond * this.zoomPercent) / 100;
+          document.getElementById('zoom-label').textContent = `${this.zoomPercent}%`;
+          this.updateTimelineDimensions();
         });
 
-        // Ruler Scrubbing
-        this.rulerContainer.addEventListener('click', (e) => {
-          const rect = this.rulerContainer.getBoundingClientRect();
+        // Synchronized Horizontal Scrolling on Ruler
+        this.rulerScrollViewport.addEventListener('scroll', () => {
+          this.syncHorizontalScroll(this.rulerScrollViewport.scrollLeft, this.rulerScrollViewport);
+        });
+
+        // Ruler Click to Seek Playhead
+        this.rulerInnerTrack.addEventListener('click', (e) => {
+          const rect = this.rulerInnerTrack.getBoundingClientRect();
           const clickX = e.clientX - rect.left;
           this.seekTo(Math.max(0, clickX / this.pixelsPerSecond));
         });
@@ -1382,7 +1973,7 @@
           helpModal.classList.remove('flex');
         });
 
-        // Keyboard Shortcuts (Active in Studio View)
+        // Keyboard Shortcuts
         window.addEventListener('keydown', (e) => {
           if (this.currentView !== 'studio') return;
           if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
@@ -1393,12 +1984,50 @@
           } else if (e.code === 'KeyR') {
             e.preventDefault();
             this.toggleRecord();
+          } else if (e.code === 'KeyS') {
+            e.preventDefault();
+            this.splitSelectedClipAtPlayhead();
+          } else if (e.code === 'Delete' || e.code === 'Backspace') {
+            if (this.selectedClipRef) {
+              e.preventDefault();
+              this.deleteSelectedClip();
+            }
           } else if (e.code === 'Enter' || e.code === 'Digit0') {
             e.preventDefault();
             this.stop();
           } else if (e.code === 'KeyM') {
             e.preventDefault();
             toggleMetro();
+          }
+        });
+      }
+
+      /* ==========================
+         SYNCHRONIZED HORIZONTAL SCROLLING
+      =========================== */
+      syncHorizontalScroll(scrollLeft, sourceEl) {
+        this.timelineScrollLeft = scrollLeft;
+        if (this.rulerScrollViewport && this.rulerScrollViewport !== sourceEl) {
+          this.rulerScrollViewport.scrollLeft = scrollLeft;
+        }
+        this.tracks.forEach(t => {
+          if (t.scrollViewportEl && t.scrollViewportEl !== sourceEl) {
+            t.scrollViewportEl.scrollLeft = scrollLeft;
+          }
+        });
+      }
+
+      updateTimelineDimensions() {
+        const projDur = this.getProjectDuration();
+        const totalSec = Math.max(this.minTimelineSeconds, Math.ceil(projDur + 20), Math.ceil(this.playheadTime + 15));
+        const widthPx = Math.max(1200, Math.ceil(totalSec * this.pixelsPerSecond));
+
+        if (this.rulerInnerTrack) {
+          this.rulerInnerTrack.style.width = `${widthPx}px`;
+        }
+        this.tracks.forEach(t => {
+          if (t.innerTrackEl) {
+            t.innerTrackEl.style.width = `${widthPx}px`;
           }
         });
       }
@@ -1421,6 +2050,193 @@
           toast.style.transform = 'translateY(8px)';
           setTimeout(() => toast.remove(), 300);
         }, 3500);
+      }
+
+      /* ==========================
+         NON-DESTRUCTIVE AUDIO CLIP EDITING
+      =========================== */
+      getClipActiveDuration(clip) {
+        const trimStart = clip.trimStart ?? 0;
+        const trimEnd = clip.trimEnd ?? clip.buffer.duration;
+        return Math.max(0.05, trimEnd - trimStart);
+      }
+
+      selectClip(trackId, clipId) {
+        this.selectedClipRef = { trackId, clipId };
+        this.updateClipInspectorUI();
+      }
+
+      getSelectedClipObject() {
+        if (!this.selectedClipRef) return null;
+        const track = this.tracks.find(t => t.id === this.selectedClipRef.trackId);
+        if (!track) return null;
+        const clipIndex = track.clips.findIndex(c => c.id === this.selectedClipRef.clipId);
+        if (clipIndex === -1) return null;
+        return { track, clip: track.clips[clipIndex], clipIndex };
+      }
+
+      updateClipInspectorUI() {
+        const bar = document.getElementById('clip-inspector-bar');
+        const info = this.getSelectedClipObject();
+        if (!info) {
+          bar.classList.add('hidden');
+          return;
+        }
+        bar.classList.remove('hidden');
+        const { track, clip } = info;
+        const activeDur = this.getClipActiveDuration(clip);
+        document.getElementById('inspector-clip-name').textContent = `${track.name} • ${clip.name || 'Clip'}`;
+        document.getElementById('inspector-clip-duration').textContent = `(${activeDur.toFixed(2)}s active)`;
+        document.getElementById('inspector-start-time').value = clip.startTime.toFixed(2);
+        document.getElementById('inspector-trim-start').value = (clip.trimStart ?? 0).toFixed(2);
+        document.getElementById('inspector-trim-end').value = (clip.trimEnd ?? clip.buffer.duration).toFixed(2);
+      }
+
+      splitSelectedClipAtPlayhead() {
+        // Find selected clip, or auto-detect clip under playhead
+        let info = this.getSelectedClipObject();
+        if (!info) {
+          for (const t of this.tracks) {
+            for (let i = 0; i < t.clips.length; i++) {
+              const c = t.clips[i];
+              const cEnd = c.startTime + this.getClipActiveDuration(c);
+              if (this.playheadTime > c.startTime + 0.05 && this.playheadTime < cEnd - 0.05) {
+                info = { track: t, clip: c, clipIndex: i };
+                break;
+              }
+            }
+            if (info) break;
+          }
+        }
+
+        if (!info) {
+          this.showToast('Place the playhead inside an audio clip to split it.', 'warning');
+          return;
+        }
+
+        const { track, clip, clipIndex } = info;
+        const trimStart = clip.trimStart ?? 0;
+        const trimEnd = clip.trimEnd ?? clip.buffer.duration;
+        const activeDur = trimEnd - trimStart;
+        const clipEnd = clip.startTime + activeDur;
+
+        if (this.playheadTime <= clip.startTime + 0.05 || this.playheadTime >= clipEnd - 0.05) {
+          this.showToast('Move the cyan playhead inside the clip before splitting.', 'warning');
+          return;
+        }
+
+        const offsetIntoActive = this.playheadTime - clip.startTime;
+        const splitSourcePoint = trimStart + offsetIntoActive;
+
+        // Left half stays at original startTime, ends at splitSourcePoint
+        const leftClip = {
+          ...clip,
+          id: this.nextClipId++,
+          name: `${clip.name || 'Clip'} (Part 1)`,
+          trimStart,
+          trimEnd: splitSourcePoint
+        };
+
+        // Right half starts at playheadTime, begins from splitSourcePoint
+        const rightClip = {
+          ...clip,
+          id: this.nextClipId++,
+          name: `${clip.name || 'Clip'} (Part 2)`,
+          startTime: this.playheadTime,
+          trimStart: splitSourcePoint,
+          trimEnd
+        };
+
+        track.clips.splice(clipIndex, 1, leftClip, rightClip);
+        this.selectClip(track.id, rightClip.id);
+        this.renderTracksDOM();
+        if (this.isPlaying) this.restartPlaybackFromCurrent();
+        this.showToast(`Split clip at ${this.formatTimecode(this.playheadTime)}`, 'success');
+      }
+
+      trimSelectedClipStartToPlayhead() {
+        const info = this.getSelectedClipObject();
+        if (!info) {
+          this.showToast('Click a waveform clip first to cut its start.', 'warning');
+          return;
+        }
+        const { clip } = info;
+        const trimStart = clip.trimStart ?? 0;
+        const trimEnd = clip.trimEnd ?? clip.buffer.duration;
+        const clipEnd = clip.startTime + (trimEnd - trimStart);
+
+        if (this.playheadTime <= clip.startTime || this.playheadTime >= clipEnd - 0.05) {
+          this.showToast('Place the playhead inside the clip to cut the start.', 'warning');
+          return;
+        }
+
+        const cutAmount = this.playheadTime - clip.startTime;
+        clip.trimStart = trimStart + cutAmount;
+        clip.startTime = this.playheadTime;
+
+        this.updateClipInspectorUI();
+        if (this.isPlaying) this.restartPlaybackFromCurrent();
+        this.showToast('Cut beginning of clip to playhead', 'success');
+      }
+
+      trimSelectedClipEndToPlayhead() {
+        const info = this.getSelectedClipObject();
+        if (!info) {
+          this.showToast('Click a waveform clip first to cut its end.', 'warning');
+          return;
+        }
+        const { clip } = info;
+        const trimStart = clip.trimStart ?? 0;
+        const trimEnd = clip.trimEnd ?? clip.buffer.duration;
+        const clipEnd = clip.startTime + (trimEnd - trimStart);
+
+        if (this.playheadTime <= clip.startTime + 0.05 || this.playheadTime >= clipEnd) {
+          this.showToast('Place the playhead inside the clip to cut the end.', 'warning');
+          return;
+        }
+
+        const newActiveDuration = this.playheadTime - clip.startTime;
+        clip.trimEnd = trimStart + newActiveDuration;
+
+        this.updateClipInspectorUI();
+        if (this.isPlaying) this.restartPlaybackFromCurrent();
+        this.showToast('Cut end of clip to playhead', 'success');
+      }
+
+      duplicateSelectedClip() {
+        const info = this.getSelectedClipObject();
+        if (!info) {
+          this.showToast('Select a waveform clip to duplicate.', 'warning');
+          return;
+        }
+        const { track, clip } = info;
+        const activeDur = this.getClipActiveDuration(clip);
+        const clone = {
+          ...clip,
+          id: this.nextClipId++,
+          name: `${clip.name || 'Clip'} Copy`,
+          startTime: clip.startTime + activeDur
+        };
+        track.clips.push(clone);
+        this.selectClip(track.id, clone.id);
+        this.renderTracksDOM();
+        this.updateTimelineDimensions();
+        this.showToast('Duplicated clip right after original', 'success');
+      }
+
+      deleteSelectedClip() {
+        const info = this.getSelectedClipObject();
+        if (!info) {
+          this.showToast('Click a waveform clip first to delete it.', 'warning');
+          return;
+        }
+        const { track, clipIndex } = info;
+        track.clips.splice(clipIndex, 1);
+        this.selectedClipRef = null;
+        this.updateClipInspectorUI();
+        this.renderTracksDOM();
+        if (this.isPlaying) this.restartPlaybackFromCurrent();
+        this.showToast('Removed audio clip', 'info');
       }
 
       /* ==========================
@@ -1459,7 +2275,9 @@
           volume: 1.0,
           pan: 0.0,
           clips: [],
-          canvasEl: null
+          canvasEl: null,
+          scrollViewportEl: null,
+          innerTrackEl: null
         };
 
         this.tracks.push(track);
@@ -1470,6 +2288,10 @@
       deleteTrack(id) {
         if (this.isRecording && this.recordingTrackId === id) {
           this.stopRecording();
+        }
+        if (this.selectedClipRef && this.selectedClipRef.trackId === id) {
+          this.selectedClipRef = null;
+          this.updateClipInspectorUI();
         }
         this.tracks = this.tracks.filter(t => t.id !== id);
         this.renderTracksDOM();
@@ -1516,14 +2338,19 @@
         this.emptyState.classList.remove('flex');
         this.tracksWrapper.innerHTML = '';
 
+        const projDur = this.getProjectDuration();
+        const totalSec = Math.max(this.minTimelineSeconds, Math.ceil(projDur + 20), Math.ceil(this.playheadTime + 15));
+        const widthPx = Math.max(1200, Math.ceil(totalSec * this.pixelsPerSecond));
+
         this.tracks.forEach(track => {
           const row = document.createElement('div');
-          row.className = `flex min-h-[112px] bg-studio-panel/40 hover:bg-studio-panel/70 transition-colors ${track.armed ? 'bg-red-950/10' : ''}`;
+          row.className = `flex min-h-[116px] bg-studio-panel/40 hover:bg-studio-panel/70 transition-colors ${track.armed ? 'bg-red-950/10' : ''}`;
           const audible = this.isTrackAudible(track);
 
           row.innerHTML = `
-            <div class="w-52 sm:w-72 shrink-0 p-3 border-r border-studio-border flex flex-col justify-between gap-2 relative select-none" style="border-left: 4px solid ${track.color}">
-              <div class="flex items-center justify-between gap-1.5">
+            <!-- Fixed Left Track Controls & Mixer -->
+            <div class="w-44 sm:w-64 md:w-72 shrink-0 p-2.5 sm:p-3 border-r border-studio-border flex flex-col justify-between gap-2 relative select-none bg-studio-panel/95 z-10" style="border-left: 4px solid ${track.color}">
+              <div class="flex items-center justify-between gap-1">
                 <input type="text" value="${track.name}" data-track-name="${track.id}"
                   class="bg-transparent text-xs sm:text-sm font-semibold text-zinc-100 focus:outline-none focus:bg-zinc-800 px-1.5 py-0.5 rounded w-full truncate border border-transparent focus:border-zinc-700" />
                 
@@ -1550,7 +2377,7 @@
                 </div>
               </div>
 
-              <div class="grid grid-cols-2 gap-2.5 pt-1">
+              <div class="grid grid-cols-2 gap-2 pt-1">
                 <div class="flex flex-col gap-1">
                   <div class="flex justify-between text-[10px] font-mono text-zinc-400">
                     <span>VOL</span>
@@ -1574,16 +2401,31 @@
               </div>
             </div>
 
-            <div class="flex-1 relative bg-zinc-950/90 cursor-pointer overflow-hidden" data-timeline="${track.id}">
-              <canvas class="w-full h-full block"></canvas>
+            <!-- Synchronized Horizontally Scrollable Waveform Timeline -->
+            <div class="flex-1 overflow-x-auto overflow-y-hidden bg-zinc-950/95 cursor-pointer" data-scroll-viewport="${track.id}">
+              <div class="relative h-full min-h-[116px]" style="width: ${widthPx}px;" data-inner-track="${track.id}">
+                <canvas class="w-full h-full block"></canvas>
+              </div>
             </div>
           `;
 
           this.tracksWrapper.appendChild(row);
+          track.scrollViewportEl = row.querySelector(`[data-scroll-viewport="${track.id}"]`);
+          track.innerTrackEl = row.querySelector(`[data-inner-track="${track.id}"]`);
           track.canvasEl = row.querySelector('canvas');
 
+          // Restore current horizontal scroll offset
+          track.scrollViewportEl.scrollLeft = this.timelineScrollLeft;
+
+          // Synchronize horizontal scrolling across ruler and all tracks
+          track.scrollViewportEl.addEventListener('scroll', () => {
+            this.syncHorizontalScroll(track.scrollViewportEl.scrollLeft, track.scrollViewportEl);
+          });
+
+          // Track mixer listeners
           row.querySelector(`[data-track-name="${track.id}"]`).addEventListener('change', (e) => {
             track.name = e.target.value.trim() || `Track ${track.id}`;
+            this.updateClipInspectorUI();
           });
           row.querySelector(`[data-arm="${track.id}"]`).addEventListener('click', () => this.toggleArm(track.id));
           row.querySelector(`[data-mute="${track.id}"]`).addEventListener('click', () => this.toggleMute(track.id));
@@ -1603,12 +2445,26 @@
             if (track.livePanNode) track.livePanNode.pan.value = track.pan;
           });
 
-          row.querySelector(`[data-timeline="${track.id}"]`).addEventListener('click', (e) => {
-            const rect = e.currentTarget.getBoundingClientRect();
+          // Click timeline to select clip (if clicked inside clip) & move playhead
+          track.innerTrackEl.addEventListener('click', (e) => {
+            const rect = track.innerTrackEl.getBoundingClientRect();
             const clickX = e.clientX - rect.left;
-            this.seekTo(Math.max(0, clickX / this.pixelsPerSecond));
+            const clickedTime = Math.max(0, clickX / this.pixelsPerSecond);
+
+            // Check if user clicked on an existing clip
+            const hitClip = track.clips.find(c => {
+              const cEnd = c.startTime + this.getClipActiveDuration(c);
+              return clickedTime >= c.startTime && clickedTime <= cEnd;
+            });
+
+            if (hitClip) {
+              this.selectClip(track.id, hitClip.id);
+            }
+            this.seekTo(clickedTime);
           });
         });
+
+        this.updateTimelineDimensions();
       }
 
       extractPeaks(audioBuffer, samplesPerPeak = 512) {
@@ -1641,11 +2497,17 @@
           }
 
           const peaks = this.extractPeaks(audioBuffer);
-          targetTrack.clips.push({
+          const newClip = {
+            id: this.nextClipId++,
+            name: file.name.replace(/\.[^/.]+$/, ''),
             buffer: audioBuffer,
             startTime: this.playheadTime,
+            trimStart: 0,
+            trimEnd: audioBuffer.duration,
             peaks
-          });
+          };
+          targetTrack.clips.push(newClip);
+          this.selectClip(targetTrack.id, newClip.id);
 
           this.renderTracksDOM();
           this.showToast(`Loaded "${file.name}" into ${targetTrack.name}`, 'success');
@@ -1659,7 +2521,7 @@
         let maxDuration = 0;
         this.tracks.forEach(track => {
           track.clips.forEach(clip => {
-            const end = clip.startTime + clip.buffer.duration;
+            const end = clip.startTime + this.getClipActiveDuration(clip);
             if (end > maxDuration) maxDuration = end;
           });
         });
@@ -1703,6 +2565,7 @@
         this.isPlaying = false;
         this.isCountingIn = false;
         this.playheadTime = 0;
+        this.syncHorizontalScroll(0, null);
         this.updateTransportUI();
       }
 
@@ -1743,7 +2606,9 @@
         this.tracks.forEach(track => {
           if (!this.isTrackAudible(track)) return;
           track.clips.forEach(clip => {
-            const clipEnd = clip.startTime + clip.buffer.duration;
+            const trimStart = clip.trimStart ?? 0;
+            const activeDur = this.getClipActiveDuration(clip);
+            const clipEnd = clip.startTime + activeDur;
             if (clipEnd <= offset) return;
 
             const source = this.audioCtx.createBufferSource();
@@ -1763,9 +2628,14 @@
             track.livePanNode = panNode;
 
             if (clip.startTime >= offset) {
-              source.start(now + (clip.startTime - offset), 0);
+              const delay = clip.startTime - offset;
+              source.start(now + delay, trimStart, activeDur);
             } else {
-              source.start(now, offset - clip.startTime);
+              const alreadyElapsed = offset - clip.startTime;
+              const remainingDur = activeDur - alreadyElapsed;
+              if (remainingDur > 0) {
+                source.start(now, trimStart + alreadyElapsed, remainingDur);
+              }
             }
 
             this.activeSources.push(source);
@@ -1899,13 +2769,19 @@
 
             const track = this.tracks.find(t => t.id === this.recordingTrackId);
             if (track) {
-              track.clips.push({
+              const newClip = {
+                id: this.nextClipId++,
+                name: `Take ${track.clips.length + 1}`,
                 buffer: decodedBuffer,
                 startTime: this.recordingStartTime,
+                trimStart: 0,
+                trimEnd: decodedBuffer.duration,
                 peaks
-              });
+              };
+              track.clips.push(newClip);
+              this.selectClip(track.id, newClip.id);
               this.renderTracksDOM();
-              this.showToast(`Saved take to ${track.name}`, 'success');
+              this.showToast(`Saved ${newClip.name} to ${track.name}`, 'success');
             }
           } catch (err) {
             console.error('Failed to decode recorded audio:', err);
@@ -2034,6 +2910,9 @@
         return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${tenths}`;
       }
 
+      /* ==========================
+         CANVAS RENDERING LOOP
+      =========================== */
       startRenderLoop() {
         const render = () => {
           if (this.currentView === 'studio') {
@@ -2049,6 +2928,16 @@
 
             if (this.isPlaying) {
               this.playheadTime = currentTime;
+              this.updateTimelineDimensions();
+
+              // Auto-scroll timeline horizontally to keep playhead in view during playback/recording
+              if (this.rulerScrollViewport) {
+                const viewportW = this.rulerScrollViewport.clientWidth;
+                const playheadPx = currentTime * this.pixelsPerSecond;
+                if (playheadPx > this.timelineScrollLeft + viewportW - 60) {
+                  this.syncHorizontalScroll(playheadPx - viewportW * 0.3, null);
+                }
+              }
             }
 
             this.timecodeDisplay.textContent = this.formatTimecode(currentTime);
@@ -2078,18 +2967,22 @@
 
       drawRuler(currentTime) {
         const canvas = this.rulerCanvas;
-        const rect = canvas.parentElement.getBoundingClientRect();
-        if (rect.width === 0) return;
-        if (canvas.width !== rect.width || canvas.height !== rect.height) {
-          canvas.width = rect.width;
-          canvas.height = rect.height;
+        const inner = this.rulerInnerTrack;
+        if (!canvas || !inner) return;
+        const w = inner.offsetWidth;
+        const h = inner.offsetHeight;
+        if (w === 0) return;
+
+        if (canvas.width !== w || canvas.height !== h) {
+          canvas.width = w;
+          canvas.height = h;
         }
 
         const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, w, h);
 
         const pps = this.pixelsPerSecond;
-        const totalSeconds = Math.ceil(canvas.width / pps) + 2;
+        const totalSeconds = Math.ceil(w / pps);
 
         ctx.strokeStyle = '#272732';
         ctx.fillStyle = '#71717a';
@@ -2101,7 +2994,7 @@
           const isMajor = s % 5 === 0;
           ctx.beginPath();
           ctx.moveTo(x, isMajor ? 8 : 18);
-          ctx.lineTo(x, canvas.height);
+          ctx.lineTo(x, h);
           ctx.stroke();
 
           if (isMajor) {
@@ -2123,21 +3016,24 @@
 
       drawTrackCanvas(track, currentTime) {
         const canvas = track.canvasEl;
-        const rect = canvas.parentElement.getBoundingClientRect();
-        if (rect.width === 0) return;
-        if (canvas.width !== rect.width || canvas.height !== rect.height) {
-          canvas.width = rect.width;
-          canvas.height = rect.height;
+        const inner = track.innerTrackEl;
+        if (!canvas || !inner) return;
+        const w = inner.offsetWidth;
+        const h = inner.offsetHeight;
+        if (w === 0) return;
+
+        if (canvas.width !== w || canvas.height !== h) {
+          canvas.width = w;
+          canvas.height = h;
         }
 
         const ctx = canvas.getContext('2d');
-        const w = canvas.width;
-        const h = canvas.height;
         const pps = this.pixelsPerSecond;
         const audible = this.isTrackAudible(track);
 
         ctx.clearRect(0, 0, w, h);
 
+        // Vertical second grid lines
         ctx.strokeStyle = '#181820';
         ctx.lineWidth = 1;
         const totalSeconds = Math.ceil(w / pps);
@@ -2149,43 +3045,74 @@
           ctx.stroke();
         }
 
+        // Center zero-crossing line
         ctx.strokeStyle = '#20202a';
         ctx.beginPath();
         ctx.moveTo(0, h / 2);
         ctx.lineTo(w, h / 2);
         ctx.stroke();
 
+        // Draw Audio Clips (Trimmed Active Windows)
         track.clips.forEach(clip => {
-          const clipX = clip.startTime * pps;
-          const clipW = clip.buffer.duration * pps;
-          if (clipX + clipW < 0 || clipX > w) return;
+          const trimStart = clip.trimStart ?? 0;
+          const trimEnd = clip.trimEnd ?? clip.buffer.duration;
+          const activeDur = this.getClipActiveDuration(clip);
+          const totalBufDur = clip.buffer.duration;
 
-          ctx.fillStyle = audible ? `${track.color}1c` : '#27273233';
-          ctx.strokeStyle = audible ? `${track.color}70` : '#3f3f4e';
-          ctx.lineWidth = 1;
+          const clipX = clip.startTime * pps;
+          const clipW = activeDur * pps;
+          const isSelected = this.selectedClipRef &&
+            this.selectedClipRef.trackId === track.id &&
+            this.selectedClipRef.clipId === clip.id;
+
+          // Clip container box
+          ctx.fillStyle = audible ? `${track.color}22` : '#27273233';
+          ctx.strokeStyle = isSelected ? '#06b6d4' : (audible ? `${track.color}88` : '#3f3f4e');
+          ctx.lineWidth = isSelected ? 2 : 1;
           ctx.beginPath();
           ctx.roundRect(clipX, 8, Math.max(4, clipW), h - 16, 6);
           ctx.fill();
           ctx.stroke();
 
+          // Clip label badge
+          ctx.fillStyle = isSelected ? '#22d3ee' : '#a1a1aa';
+          ctx.font = '10px "JetBrains Mono", monospace';
+          if (clipW > 42) {
+            ctx.fillText((clip.name || 'Clip').slice(0, Math.floor(clipW / 7)), clipX + 6, 20);
+          }
+
+          // Draw Waveform Peaks strictly within [trimStart, trimEnd]
           const peaks = clip.peaks;
+          const startRatio = trimStart / totalBufDur;
+          const endRatio = trimEnd / totalBufDur;
+          const startPeakIdx = Math.floor(startRatio * peaks.length);
+          const endPeakIdx = Math.max(startPeakIdx + 1, Math.floor(endRatio * peaks.length));
+          const sliceLen = endPeakIdx - startPeakIdx;
+
           const barWidth = 2;
           const gap = 1;
           const stepPx = barWidth + gap;
           const numBars = Math.floor(clipW / stepPx);
-          const centerY = h / 2;
-          const maxAmp = (h - 24) / 2;
+          const centerY = h / 2 + 4;
+          const maxAmp = (h - 32) / 2;
 
           ctx.fillStyle = audible ? track.color : '#52525b';
           for (let i = 0; i < numBars; i++) {
-            const peakIdx = Math.floor((i / numBars) * peaks.length);
-            const amp = Math.max(0.03, peaks[peakIdx] || 0) * maxAmp;
+            const pIdx = startPeakIdx + Math.floor((i / numBars) * sliceLen);
+            const amp = Math.max(0.03, peaks[pIdx] || 0) * maxAmp;
             const barX = clipX + i * stepPx;
-            if (barX > w) break;
             ctx.fillRect(barX, centerY - amp, barWidth, amp * 2);
+          }
+
+          // Trim Bracket Handles on Selected Clip
+          if (isSelected) {
+            ctx.fillStyle = '#06b6d4';
+            ctx.fillRect(clipX, 8, 3, h - 16);
+            ctx.fillRect(clipX + Math.max(4, clipW) - 3, 8, 3, h - 16);
           }
         });
 
+        // Live Recording Waveform Preview
         if (this.isRecording && this.recordingTrackId === track.id) {
           const recStartX = this.recordingStartTime * pps;
           const recCurrentX = currentTime * pps;
@@ -2208,6 +3135,7 @@
           });
         }
 
+        // Vertical Playhead Line
         const playheadX = currentTime * pps;
         ctx.strokeStyle = this.isRecording ? '#ef4444' : '#06b6d4';
         ctx.lineWidth = 1.5;
@@ -2244,13 +3172,16 @@
         ctx.fillRect(0, 0, w * level, h);
       }
 
+      /* ==========================
+         STEREO WAV EXPORT (RESPECTS TRIMS & SPLITS)
+      =========================== */
       async exportMixWAV() {
         this.ensureAudioContext();
         let maxDuration = 0;
         this.tracks.forEach(track => {
           if (!this.isTrackAudible(track)) return;
           track.clips.forEach(clip => {
-            const end = clip.startTime + clip.buffer.duration;
+            const end = clip.startTime + this.getClipActiveDuration(clip);
             if (end > maxDuration) maxDuration = end;
           });
         });
@@ -2269,6 +3200,9 @@
           this.tracks.forEach(track => {
             if (!this.isTrackAudible(track)) return;
             track.clips.forEach(clip => {
+              const trimStart = clip.trimStart ?? 0;
+              const activeDur = this.getClipActiveDuration(clip);
+
               const source = offlineCtx.createBufferSource();
               source.buffer = clip.buffer;
 
@@ -2281,7 +3215,7 @@
               source.connect(gainNode);
               gainNode.connect(panNode);
               panNode.connect(offlineCtx.destination);
-              source.start(clip.startTime);
+              source.start(clip.startTime, trimStart, activeDur);
             });
           });
 
