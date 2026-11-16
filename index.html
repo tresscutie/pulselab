@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="PulseLab" />
-  <title>PulseLab v2.5 — Pocket Multi-Track Studio</title>
+  <title>PulseLab v3.0 — Pocket Multi-Track Studio</title>
 
   <!-- Dynamic PWA Manifest Link -->
   <link id="pwa-manifest-link" rel="manifest" href="" />
@@ -15,7 +15,7 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Firebase v10 Compat SDK for Real Google / Facebook OAuth -->
+  <!-- Firebase v10 Compat SDK for Optional Real Google / Facebook OAuth -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
@@ -91,6 +91,27 @@
       background: #06b6d4;
     }
 
+    /* Hardware-accelerated clip region elements (Zero-lag touch/pointer drag) */
+    .clip-region-el {
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      will-change: transform, left, width;
+      cursor: grab;
+    }
+    .clip-region-el.is-dragging {
+      cursor: grabbing;
+      z-index: 30;
+      box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.45), 0 0 0 2px #06b6d4;
+    }
+    .clip-trim-handle {
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      width: 22px;
+      cursor: ew-resize;
+    }
+
     @keyframes pulse-record {
       0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.75); }
       50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
@@ -122,7 +143,7 @@
       animation: splash-glow 2.4s ease-in-out infinite;
     }
     .animate-fade-up {
-      animation: fade-up-in 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: fade-up-in 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     .eq-bar {
       transform-origin: center;
@@ -132,8 +153,13 @@
 </head>
 <body class="bg-studio-bg text-zinc-100 font-sans antialiased selection:bg-violet-500/30 selection:text-violet-200 min-h-screen flex flex-col">
 
-  <!-- 1. ANIMATED NEON VINYL & EQUALIZER SPLASH SCREEN -->
-  <div id="splash-screen" class="fixed inset-0 z-[100] bg-studio-bg flex flex-col items-center justify-center p-6 transition-all duration-700 ease-out">
+  <!-- FLOATING DRAG / TRIM TIMECODE TOOLTIP -->
+  <div id="drag-tooltip" class="fixed z-[98] hidden pointer-events-none px-2.5 py-1 rounded-lg bg-zinc-950/95 border border-cyan-400/70 shadow-xl shadow-cyan-500/20 font-mono text-[11px] font-bold text-cyan-300 tracking-wide">
+    0.00s
+  </div>
+
+  <!-- 1. ANIMATED NEON VINYL & EQUALIZER SPLASH SCREEN (TAP TO SKIP) -->
+  <div id="splash-screen" title="Tap anywhere to skip intro" class="fixed inset-0 z-[100] bg-studio-bg flex flex-col items-center justify-center p-6 transition-all duration-500 ease-out cursor-pointer">
     <div class="absolute w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-gradient-to-tr from-violet-600/25 via-fuchsia-500/15 to-cyan-500/25 blur-3xl animate-splash-glow pointer-events-none"></div>
 
     <div class="relative flex flex-col items-center text-center animate-fade-up">
@@ -163,7 +189,7 @@
         <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-white via-violet-200 to-cyan-300 bg-clip-text text-transparent">
           PulseLab
         </h1>
-        <span class="px-2 py-0.5 rounded-md bg-violet-500/20 border border-violet-500/40 text-violet-300 font-mono text-xs font-bold">v2.5</span>
+        <span class="px-2 py-0.5 rounded-md bg-violet-500/20 border border-violet-500/40 text-violet-300 font-mono text-xs font-bold">v3.0</span>
       </div>
       <p class="mt-2 text-[11px] sm:text-xs font-mono uppercase tracking-[0.28em] text-cyan-400/90 font-semibold">
         Pocket Multi-Track Studio
@@ -172,7 +198,7 @@
       <div class="mt-8 w-48 h-1.5 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800">
         <div id="splash-progress" class="h-full w-0 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 rounded-full"></div>
       </div>
-      <p class="mt-2.5 text-[11px] font-mono text-zinc-500">Initializing Audio Engine & PWA...</p>
+      <p class="mt-2.5 text-[11px] font-mono text-zinc-500">Tap anywhere to enter studio</p>
     </div>
   </div>
 
@@ -198,7 +224,7 @@
     </div>
   </div>
 
-  <!-- PWA Install App Instructions Modal -->
+  <!-- PWA / Android APK Install Instructions Modal -->
   <div id="install-modal" class="fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-studio-panel border border-studio-border rounded-3xl max-w-md w-full p-6 shadow-2xl">
       <div class="flex items-center justify-between pb-4 border-b border-studio-border">
@@ -208,7 +234,7 @@
           </div>
           <div>
             <h3 class="text-base font-bold text-white">Install PulseLab App</h3>
-            <p class="text-[11px] text-cyan-400 font-mono">Offline Progressive Web App</p>
+            <p class="text-[11px] text-cyan-400 font-mono">Offline PWA & Android APK Ready</p>
           </div>
         </div>
         <button id="install-modal-close" class="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800">
@@ -216,9 +242,7 @@
         </button>
       </div>
 
-      <div class="mt-4 space-y-3.5 text-xs sm:text-sm text-zinc-300">
-        <p class="text-zinc-400">Install PulseLab directly onto your phone or computer home screen for full-screen studio mode and offline recording:</p>
-        
+      <div class="mt-4 space-y-3 text-xs sm:text-sm text-zinc-300">
         <div class="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800">
           <p class="font-bold text-white flex items-center gap-2">
             <span class="px-2 py-0.5 rounded bg-violet-500/20 text-violet-300 font-mono text-[11px]">Android / Chrome</span>
@@ -228,9 +252,9 @@
 
         <div class="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800">
           <p class="font-bold text-white flex items-center gap-2">
-            <span class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono text-[11px]">iPhone / iPad (Safari)</span>
+            <span class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono text-[11px]">Google Play / APK Package</span>
           </p>
-          <p class="text-xs text-zinc-400 mt-1.5">Tap the <strong class="text-zinc-200">Share button</strong> at the bottom of Safari, scroll down, and tap <strong class="text-cyan-300">"Add to Home Screen"</strong>.</p>
+          <p class="text-xs text-zinc-400 mt-1.5">Host this file on GitHub Pages and enter your URL at <strong class="text-cyan-300">pwabuilder.com</strong> to generate a native Android <code class="text-violet-300">.apk</code> or Play Store <code class="text-violet-300">.aab</code> bundle.</p>
         </div>
       </div>
 
@@ -242,13 +266,13 @@
     </div>
   </div>
 
-  <!-- Firebase OAuth Configuration Modal -->
+  <!-- Optional Firebase OAuth Configuration Modal -->
   <div id="firebase-config-modal" class="fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-studio-panel border border-studio-border rounded-3xl max-w-lg w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between pb-3 border-b border-studio-border">
         <div>
           <h3 class="text-base font-bold text-white">Configure Real Google & Facebook OAuth</h3>
-          <p class="text-xs text-zinc-400 mt-0.5">Connect your Firebase project for genuine popup account pickers</p>
+          <p class="text-xs text-zinc-400 mt-0.5">Connect your Firebase project for live popup account pickers</p>
         </div>
         <button id="fb-cfg-close" class="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -260,7 +284,7 @@
           <p class="font-bold text-cyan-300">3 Quick Setup Steps:</p>
           <ol class="list-decimal list-inside space-y-1 text-zinc-400">
             <li>Go to <span class="text-zinc-200 font-mono">console.firebase.google.com</span> and create a free project.</li>
-            <li>Go to <strong class="text-zinc-200">Authentication → Sign-in method</strong> and enable <strong class="text-zinc-200">Google</strong> and/or <strong class="text-zinc-200">Facebook</strong>. Add your domain under <em>Authorized domains</em>.</li>
+            <li>Go to <strong class="text-zinc-200">Authentication → Sign-in method</strong> and enable <strong class="text-zinc-200">Google</strong> and/or <strong class="text-zinc-200">Facebook</strong>.</li>
             <li>Open <strong class="text-zinc-200">Project Settings → Your apps (Web)</strong> and paste your <code class="text-violet-300">firebaseConfig</code> JSON below:</li>
           </ol>
         </div>
@@ -277,22 +301,21 @@
 
         <div class="flex items-center justify-between gap-2 pt-2">
           <button id="fb-cfg-clear" type="button" class="px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 border border-zinc-800 text-xs font-semibold">
-            Reset / Remove Config
+            Reset Config
           </button>
           <button id="fb-cfg-save" type="button" class="px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-xs font-semibold shadow-lg shadow-violet-500/20">
-            Save & Activate Real OAuth
+            Save & Activate OAuth
           </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 2. SIGN-IN SCREEN (FIREBASE REAL OAUTH + MULTI-ACCOUNT CHOOSER) -->
+  <!-- 2. SIGN-IN SCREEN -->
   <section id="auth-view" class="hidden flex-1 flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden">
     <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-violet-600/15 rounded-full blur-3xl pointer-events-none"></div>
 
     <div class="relative w-full max-w-md bg-studio-panel/90 backdrop-blur-xl border border-studio-border rounded-3xl p-6 sm:p-8 shadow-2xl">
-      <!-- Brand Header -->
       <div class="flex flex-col items-center text-center mb-6">
         <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600 via-fuchsia-600 to-cyan-500 p-[1.5px] shadow-lg shadow-violet-500/25 mb-4">
           <div class="w-full h-full rounded-[14px] bg-zinc-950 flex items-center justify-center gap-1 px-2">
@@ -305,19 +328,17 @@
         <h2 class="text-2xl font-extrabold tracking-tight text-white">Welcome to PulseLab</h2>
         <p class="text-xs sm:text-sm text-zinc-400 mt-1.5">Sign in to sync multi-track sessions, vocal takes, and mixes.</p>
         
-        <!-- OAuth Mode Pill -->
         <div class="mt-3 flex items-center gap-2">
           <span id="oauth-mode-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-zinc-400">
             <span id="oauth-mode-dot" class="w-2 h-2 rounded-full bg-amber-400"></span>
             <span id="oauth-mode-text">Account Chooser Mode</span>
           </span>
           <button id="btn-open-fb-config" class="text-[11px] font-semibold text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
-            Configure Real Google/FB OAuth
+            Configure OAuth
           </button>
         </div>
       </div>
 
-      <!-- Social Auth Buttons -->
       <div class="space-y-3">
         <button id="btn-auth-google" class="w-full py-3 px-4 rounded-xl bg-white hover:bg-zinc-100 text-zinc-900 font-semibold text-sm flex items-center justify-center gap-3 shadow-md transition active:scale-[0.99]">
           <svg class="w-5 h-5" viewBox="0 0 24 24">
@@ -381,7 +402,7 @@
             </div>
             <div>
               <div class="text-xs font-semibold text-zinc-200">Use another account</div>
-              <div class="text-[11px] text-zinc-500">Add a verified email or profile</div>
+              <div class="text-[11px] text-zinc-500">Add a producer profile</div>
             </div>
           </button>
 
@@ -400,10 +421,6 @@
               Verify & Continue
             </button>
           </form>
-
-          <p class="text-[10px] text-zinc-500 mt-5 leading-relaxed text-center">
-            To use live Google/Facebook popups, click <button type="button" id="btn-modal-open-fb-cfg" class="text-cyan-400 underline">Configure Real OAuth</button> on the login screen.
-          </p>
         </div>
       </div>
     </div>
@@ -414,7 +431,6 @@
     
     <!-- TOP MAIN NAVIGATION BAR -->
     <nav class="sticky top-0 z-40 bg-studio-panel/95 backdrop-blur-md border-b border-studio-border px-3 sm:px-6 h-12 sm:h-14 flex items-center justify-between gap-2">
-      <!-- Logo & Brand (Replay Splash Button) -->
       <div class="flex items-center gap-2.5">
         <button id="btn-replay-intro" title="Replay Intro Animation" class="group w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-violet-600 via-fuchsia-600 to-cyan-500 p-[1.5px] shadow-md shadow-violet-500/20 active:scale-95 transition">
           <div class="w-full h-full rounded-[10px] bg-zinc-950 flex items-center justify-center gap-0.5 px-1.5 group-hover:bg-zinc-900 transition">
@@ -428,7 +444,7 @@
           <span class="font-extrabold text-sm sm:text-lg tracking-tight bg-gradient-to-r from-white via-violet-200 to-cyan-300 bg-clip-text text-transparent">
             PulseLab
           </span>
-          <span class="hidden lg:inline-block ml-1.5 text-[10px] font-mono uppercase tracking-widest text-zinc-500">v2.5 Studio</span>
+          <span class="hidden lg:inline-block ml-1.5 text-[10px] font-mono uppercase tracking-widest text-zinc-500">v3.0 Studio</span>
         </div>
       </div>
 
@@ -476,13 +492,13 @@
           <div>
             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-500/15 border border-violet-500/30 text-violet-300 text-[11px] font-mono font-semibold mb-3">
               <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-              STUDIO WORKSPACE READY
+              60FPS ZERO-LAG TIMELINE ENGINE
             </span>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
               Welcome back, <span id="home-user-name" class="bg-gradient-to-r from-violet-300 to-cyan-300 bg-clip-text text-transparent">Producer</span>
             </h1>
             <p class="text-xs sm:text-sm text-zinc-400 mt-1.5 max-w-xl">
-              Record multi-track vocals, drag & arrange split clips freely on the timeline, import beats directly from your music storage, and export stereo WAV mixes.
+              Record multi-track vocals, glide audio clips smoothly across the timeline with zero lag, trim edges with wide touch handles, and export stereo WAV mixes.
             </p>
           </div>
 
@@ -523,23 +539,23 @@
       <div id="help-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-studio-panel border border-studio-border rounded-2xl max-w-lg w-full p-6 shadow-2xl">
           <div class="flex items-center justify-between border-b border-studio-border pb-4 mb-4">
-            <h2 class="text-lg font-bold text-white">PulseLab v2.5 Quick Editing Guide</h2>
+            <h2 class="text-lg font-bold text-white">PulseLab v3.0 Studio Controls</h2>
             <button id="close-help-btn" class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
           </div>
           <div class="space-y-3 text-sm text-zinc-300">
             <div class="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/25 text-cyan-100">
-              <p class="font-semibold text-cyan-300 text-xs sm:text-sm">1. Drag & Move Clips Freely</p>
-              <p class="text-xs text-cyan-200/80 mt-1">Touch or click the middle of any clip and drag left or right across the timeline to reposition it. Use the <strong>Snap</strong> toggle to snap clips cleanly to beat divisions.</p>
+              <p class="font-semibold text-cyan-300 text-xs sm:text-sm">1. Smooth 60fps Clip Dragging</p>
+              <p class="text-xs text-cyan-200/80 mt-1">Touch and drag the center of any clip region to slide it smoothly along the timeline with live timecode feedback. Toggle <strong>Snap</strong> on/off for beat-aligned placement.</p>
             </div>
             <div class="p-3 rounded-xl bg-violet-500/10 border border-violet-500/25 text-violet-100">
-              <p class="font-semibold text-violet-300 text-xs sm:text-sm">2. Direct Edge Trimming, Split & Fades</p>
-              <p class="text-xs text-violet-200/80 mt-1">Click any clip to reveal its glowing <strong>Left & Right Trim Handles</strong>—drag either edge handle to shorten or extend the clip. Click <strong>Split (S)</strong> to cut at the playhead, or adjust <strong>Fade In / Fade Out</strong> sliders.</p>
+              <p class="font-semibold text-violet-300 text-xs sm:text-sm">2. Wide Left & Right Edge Trim Handles</p>
+              <p class="text-xs text-violet-200/80 mt-1">Tap any clip to highlight its wide <strong>Left & Right Trim Handles</strong>—drag either side handle to trim start or end points cleanly without glitching.</p>
             </div>
             <div class="p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300">
-              <p class="font-semibold text-white text-xs sm:text-sm">3. Import Downloaded Music & Beats</p>
-              <p class="text-xs text-zinc-400 mt-1">Tap <strong>Import Audio</strong> to browse your device's Downloads, Music folder, or Files for MP3, WAV, M4A, AAC, OGG, or FLAC tracks.</p>
+              <p class="font-semibold text-white text-xs sm:text-sm">3. Split, Duplicate & Fade</p>
+              <p class="text-xs text-zinc-400 mt-1">Position the cyan playhead inside a clip and tap <strong>Split (S)</strong> to cut it into independent movable regions.</p>
             </div>
           </div>
         </div>
@@ -669,11 +685,10 @@
               <span>Add Track</span>
             </button>
 
-            <!-- Broad audio format filter so Android/iOS/PC file pickers show Downloaded Music & Files directly -->
             <input type="file" id="audio-import-input" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.webm" class="hidden" />
             <button id="btn-import-audio" class="px-2.5 py-1 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 text-xs font-semibold flex items-center gap-1.5 transition">
               <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
-              <span>Import Audio / Beat</span>
+              <span>Import Audio</span>
             </button>
           </div>
 
@@ -713,14 +728,14 @@
         </div>
       </div>
 
-      <!-- Selected Clip Inspector Strip (Shows Position, Trim, Fade In & Fade Out) -->
+      <!-- Selected Clip Inspector Strip -->
       <div id="clip-inspector-bar" class="hidden bg-violet-950/35 border-b border-violet-500/35 px-3 sm:px-5 py-1.5">
         <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
             <span id="inspector-clip-name" class="font-semibold text-white">Selected Clip</span>
             <span id="inspector-clip-duration" class="font-mono text-[11px] text-cyan-300">(0.00s)</span>
-            <span class="hidden lg:inline text-[10px] text-zinc-400 ml-1">• Drag clip body to move, or drag left/right edges to trim</span>
+            <span class="hidden lg:inline text-[10px] text-zinc-400 ml-1">• Drag clip body to slide, or drag 22px left/right edge handles to trim</span>
           </div>
 
           <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
@@ -738,7 +753,7 @@
               <input id="inspector-fade-out" type="range" min="0" max="5" step="0.05" value="0" class="w-14 sm:w-16" />
               <span id="inspector-fade-out-val" class="text-[10px] text-cyan-300 w-8">0.0s</span>
             </label>
-            <button id="btn-inspector-reset" class="text-[11px] text-violet-300 hover:text-white underline">Reset Trim/Fades</button>
+            <button id="btn-inspector-reset" class="text-[11px] text-violet-300 hover:text-white underline">Reset</button>
           </div>
         </div>
       </div>
@@ -750,7 +765,7 @@
         
         <!-- Sticky Timeline Header Row -->
         <div class="flex border-b border-studio-border bg-studio-panel/95 select-none shrink-0">
-          <div class="w-40 sm:w-56 md:w-64 shrink-0 px-3 py-1.5 border-r border-studio-border flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+          <div class="w-36 sm:w-56 md:w-64 shrink-0 px-3 py-1.5 border-r border-studio-border flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-zinc-500">
             <span>Tracks</span>
             <span class="hidden sm:inline">Vol / Pan</span>
           </div>
@@ -762,8 +777,8 @@
           </div>
         </div>
 
-        <!-- Vertically Scrollable Tracks Body (Compact 78px Track Rows) -->
-        <div id="tracks-vertical-scroller" class="flex-1 overflow-y-auto max-h-[calc(100vh-15rem)] divide-y divide-studio-border">
+        <!-- Vertically Scrollable Tracks Body (Compact 76px Track Rows) -->
+        <div id="tracks-vertical-scroller" class="flex-1 overflow-y-auto max-h-[calc(100vh-14.5rem)] divide-y divide-studio-border">
           <!-- Track rows dynamically injected here -->
         </div>
 
@@ -816,7 +831,7 @@
 
         <div class="space-y-3 pt-2">
           <button id="btn-profile-install" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-violet-600/20 to-cyan-500/20 hover:from-violet-600/30 hover:to-cyan-500/30 text-cyan-300 border border-cyan-500/30 text-sm font-semibold flex items-center justify-between transition">
-            <span>Install PulseLab App to Home Screen</span>
+            <span>Install PulseLab App / Export APK Guide</span>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
           </button>
 
@@ -853,9 +868,9 @@
   <!-- CORE APPLICATION SCRIPT -->
   <script>
     /**
-     * 1. Dynamic PWA Manifest Generator
+     * 1. Dynamic PWA Manifest & Inline Service Worker Registration (APK / Play Store Ready)
      */
-    (function setupDynamicPWAManifest() {
+    (function setupPWAAndServiceWorker() {
       const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
         <defs>
           <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
@@ -874,13 +889,17 @@
 
       const iconUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgIcon);
       const manifest = {
+        id: './',
         name: 'PulseLab — Pocket Multi-Track Studio',
         short_name: 'PulseLab',
         description: 'Pocket multi-track audio recorder, waveform editor, and studio mixer.',
-        start_url: window.location.href,
+        start_url: './',
+        scope: './',
         display: 'standalone',
+        orientation: 'any',
         background_color: '#09090b',
         theme_color: '#09090b',
+        categories: ['music', 'multimedia', 'entertainment'],
         icons: [
           { src: iconUrl, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
           { src: iconUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
@@ -891,6 +910,29 @@
       const manifestURL = URL.createObjectURL(blob);
       const linkEl = document.getElementById('pwa-manifest-link');
       if (linkEl) linkEl.setAttribute('href', manifestURL);
+
+      // Register inline Service Worker if supported over HTTPS / localhost
+      if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
+        const swCode = `
+          const CACHE_NAME = 'pulselab-v3-cache';
+          self.addEventListener('install', (e) => {
+            self.skipWaiting();
+          });
+          self.addEventListener('activate', (e) => {
+            e.waitUntil(self.clients.claim());
+          });
+          self.addEventListener('fetch', (e) => {
+            e.respondWith(
+              fetch(e.request).catch(() => caches.match(e.request))
+            );
+          });
+        `;
+        try {
+          const swBlob = new Blob([swCode], { type: 'application/javascript' });
+          const swUrl = URL.createObjectURL(swBlob);
+          navigator.serviceWorker.register(swUrl).catch(() => {});
+        } catch (_) {}
+      }
     })();
 
     /**
@@ -898,7 +940,7 @@
      */
     class ProjectStorage {
       constructor() {
-        this.dbName = 'PulseLabStudioDB_v25';
+        this.dbName = 'PulseLabStudioDB_v30';
         this.storeName = 'projects';
         this.db = null;
       }
@@ -959,35 +1001,43 @@
     }
 
     /**
-     * 3. Animated Splash Screen Controller
+     * 3. Animated Splash Screen Controller (Skippable on Tap)
      */
+    let splashFinished = false;
     function triggerSplashAnimation(onComplete = null) {
       const splash = document.getElementById('splash-screen');
       const progress = document.getElementById('splash-progress');
       if (!splash || !progress) return;
 
+      splashFinished = false;
       splash.classList.remove('hidden', 'opacity-0', 'scale-105', 'pointer-events-none');
       progress.style.transition = 'none';
       progress.style.width = '0%';
 
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          progress.style.transition = 'width 1600ms cubic-bezier(0.22, 1, 0.36, 1)';
-          progress.style.width = '100%';
-        });
-      });
-
-      setTimeout(() => {
+      const finishSplash = () => {
+        if (splashFinished) return;
+        splashFinished = true;
         splash.classList.add('opacity-0', 'scale-105', 'pointer-events-none');
         setTimeout(() => {
           splash.classList.add('hidden');
           if (typeof onComplete === 'function') onComplete();
-        }, 550);
-      }, 1750);
+        }, 420);
+      };
+
+      splash.onclick = finishSplash;
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          progress.style.transition = 'width 1350ms cubic-bezier(0.22, 1, 0.36, 1)';
+          progress.style.width = '100%';
+        });
+      });
+
+      setTimeout(finishSplash, 1450);
     }
 
     /**
-     * 4. PulseLab v2.5 Multi-Track Studio & App Controller
+     * 4. PulseLab v3.0 Multi-Track Studio & GPU-Accelerated Clip Engine
      */
     class PulseLabApp {
       constructor() {
@@ -1018,8 +1068,9 @@
         this.selectedClipRef = null; // { trackId, clipId }
         this.snapEnabled = true;
 
-        // Direct Clip Dragging / Edge Trimming State
-        this.dragState = null; // { mode: 'move' | 'trim-left' | 'trim-right', track, clip, startX, origStartTime, origTrimStart, origTrimEnd }
+        // Zero-Lag Hardware-Accelerated Drag / Trim State
+        this.dragSession = null;
+        this.dragRafId = null;
 
         // Transport State
         this.isPlaying = false;
@@ -1049,9 +1100,9 @@
         this.metronomeTimerId = null;
 
         // Timeline Scroll & Zoom State
-        this.basePixelsPerSecond = 48;
+        this.basePixelsPerSecond = 52;
         this.zoomPercent = 100;
-        this.pixelsPerSecond = 48;
+        this.pixelsPerSecond = 52;
         this.timelineScrollLeft = 0;
         this.minTimelineSeconds = 60;
 
@@ -1085,6 +1136,7 @@
         this.rulerCanvas = document.getElementById('ruler-canvas');
         this.timecodeDisplay = document.getElementById('timecode-display');
         this.masterMeterCanvas = document.getElementById('master-meter');
+        this.dragTooltip = document.getElementById('drag-tooltip');
         this.btnPlay = document.getElementById('btn-play');
         this.iconPlay = document.getElementById('icon-play');
         this.iconPause = document.getElementById('icon-pause');
@@ -1370,6 +1422,7 @@
           this.updateProfileStats();
         } else if (viewName === 'studio') {
           this.updateTimelineDimensions();
+          this.renderAllClipDOMElements();
         }
       }
 
@@ -1378,8 +1431,8 @@
       =========================== */
       async ensureStarterProject() {
         const existing = await this.storage.getAllProjects();
-        if (existing.length === 0 && !localStorage.getItem('pulselab_seeded_v25')) {
-          localStorage.setItem('pulselab_seeded_v25', 'true');
+        if (existing.length === 0 && !localStorage.getItem('pulselab_seeded_v30')) {
+          localStorage.setItem('pulselab_seeded_v30', 'true');
           const demoProject = {
             id: 'proj_demo_1',
             title: 'Midnight Lo-Fi Demo',
@@ -1469,7 +1522,6 @@
         copy.id = 'proj_' + Date.now();
         copy.title = `${proj.title} (Copy)`;
         copy.updatedAt = Date.now();
-        // Restore binary ArrayBuffers if present
         if (proj.tracks && copy.tracks) {
           proj.tracks.forEach((origT, tIdx) => {
             (origT.clips || []).forEach((origC, cIdx) => {
@@ -1558,7 +1610,8 @@
             clips: restoredClips,
             canvasEl: null,
             scrollViewportEl: null,
-            innerTrackEl: null
+            innerTrackEl: null,
+            clipsLayerEl: null
           });
         }
 
@@ -1726,11 +1779,6 @@
           document.getElementById('firebase-config-modal').classList.add('flex');
         };
         document.getElementById('btn-open-fb-config').addEventListener('click', openFbCfg);
-        document.getElementById('btn-modal-open-fb-cfg').addEventListener('click', () => {
-          document.getElementById('oauth-modal').classList.add('hidden');
-          document.getElementById('oauth-modal').classList.remove('flex');
-          openFbCfg();
-        });
         document.getElementById('fb-cfg-close').addEventListener('click', () => {
           document.getElementById('firebase-config-modal').classList.add('hidden');
           document.getElementById('firebase-config-modal').classList.remove('flex');
@@ -1744,7 +1792,7 @@
             this.initFirebaseFromStorage();
             document.getElementById('firebase-config-modal').classList.add('hidden');
             document.getElementById('firebase-config-modal').classList.remove('flex');
-            this.showToast('Firebase OAuth configured! Click Google or Facebook to test.', 'success');
+            this.showToast('Firebase OAuth configured!', 'success');
           } catch (err) {
             this.showToast('Invalid JSON config. Paste the exact firebaseConfig object.', 'error');
           }
@@ -1869,12 +1917,13 @@
         document.getElementById('btn-clip-duplicate').addEventListener('click', () => this.duplicateSelectedClip());
         document.getElementById('btn-clip-delete').addEventListener('click', () => this.deleteSelectedClip());
 
-        // Clip Inspector Inputs (Position, Fade In, Fade Out, Reset)
+        // Clip Inspector Inputs
         document.getElementById('inspector-start-time').addEventListener('change', (e) => {
           const info = this.getSelectedClipObject();
           if (!info) return;
           info.clip.startTime = Math.max(0, parseFloat(e.target.value) || 0);
           this.updateTimelineDimensions();
+          this.renderAllClipDOMElements();
           this.updateClipInspectorUI();
           if (this.isPlaying) this.restartPlaybackFromCurrent();
         });
@@ -1885,6 +1934,7 @@
           const activeDur = this.getClipActiveDuration(info.clip);
           info.clip.fadeIn = Math.min(activeDur, Math.max(0, parseFloat(e.target.value) || 0));
           this.updateClipInspectorUI();
+          this.renderAllClipDOMElements();
         });
 
         document.getElementById('inspector-fade-out').addEventListener('input', (e) => {
@@ -1893,6 +1943,7 @@
           const activeDur = this.getClipActiveDuration(info.clip);
           info.clip.fadeOut = Math.min(activeDur, Math.max(0, parseFloat(e.target.value) || 0));
           this.updateClipInspectorUI();
+          this.renderAllClipDOMElements();
         });
 
         document.getElementById('btn-inspector-reset').addEventListener('click', () => {
@@ -1904,14 +1955,10 @@
           info.clip.fadeOut = 0;
           this.updateClipInspectorUI();
           this.updateTimelineDimensions();
+          this.renderAllClipDOMElements();
           if (this.isPlaying) this.restartPlaybackFromCurrent();
           this.showToast('Reset clip trim & fades to full length', 'info');
         });
-
-        // Global Pointer Move & Release for Direct Clip Dragging / Edge Trimming
-        window.addEventListener('pointermove', (e) => this.handleGlobalPointerMove(e));
-        window.addEventListener('pointerup', () => this.handleGlobalPointerUp());
-        window.addEventListener('pointercancel', () => this.handleGlobalPointerUp());
 
         // Metronome & BPM
         const toggleMetro = () => {
@@ -1951,6 +1998,7 @@
           this.pixelsPerSecond = (this.basePixelsPerSecond * this.zoomPercent) / 100;
           document.getElementById('zoom-label').textContent = `${this.zoomPercent}%`;
           this.updateTimelineDimensions();
+          this.renderAllClipDOMElements();
         });
 
         // Synchronized Horizontal Scrolling on Ruler
@@ -2008,101 +2056,313 @@
         });
       }
 
-      /* ==========================
-         DIRECT CLIP DRAG & EDGE TRIM HANDLERS
-      =========================== */
+      /* =====================================================================
+         ZERO-LAG GPU-ACCELERATED CLIP REGION DOM & POINTER CAPTURE ENGINE
+         - Never re-renders DOM or redraws canvases during pointermove!
+         - Uses setPointerCapture + requestAnimationFrame + translate3d
+      ====================================================================== */
       snapTimeIfEnabled(seconds) {
         if (!this.snapEnabled) return Math.max(0, seconds);
         const beatStep = (60 / this.bpm) / 2; // 8th-note snap resolution
         return Math.max(0, Math.round(seconds / beatStep) * beatStep);
       }
 
-      handleTrackPointerDown(e, track) {
-        if (e.button !== undefined && e.button !== 0) return;
-        const rect = track.innerTrackEl.getBoundingClientRect();
-        const clickX = e.clientX - rect.left;
-        const clickedTime = Math.max(0, clickX / this.pixelsPerSecond);
+      renderAllClipDOMElements() {
+        this.tracks.forEach(track => this.renderTrackClipsDOM(track));
+      }
 
-        // Hit-test clips from top to bottom
-        let hitClip = null;
-        for (let i = track.clips.length - 1; i >= 0; i--) {
-          const c = track.clips[i];
-          const cStartPx = c.startTime * this.pixelsPerSecond;
-          const cWidthPx = Math.max(12, this.getClipActiveDuration(c) * this.pixelsPerSecond);
-          const cEndPx = cStartPx + cWidthPx;
+      renderTrackClipsDOM(track) {
+        if (!track.clipsLayerEl) return;
+        track.clipsLayerEl.innerHTML = '';
 
-          if (clickX >= cStartPx - 10 && clickX <= cEndPx + 10) {
-            hitClip = c;
-            break;
+        const pps = this.pixelsPerSecond;
+        const audible = this.isTrackAudible(track);
+        const h = 76;
+        const clipTop = 4;
+        const clipH = h - 8;
+
+        track.clips.forEach(clip => {
+          const trimStart = clip.trimStart ?? 0;
+          const trimEnd = clip.trimEnd ?? clip.buffer.duration;
+          const activeDur = this.getClipActiveDuration(clip);
+          const totalBufDur = clip.buffer.duration;
+
+          const clipLeftPx = clip.startTime * pps;
+          const clipWidthPx = Math.max(24, activeDur * pps);
+
+          const isSelected = this.selectedClipRef &&
+            this.selectedClipRef.trackId === track.id &&
+            this.selectedClipRef.clipId === clip.id;
+
+          // Hardware-accelerated DOM clip box
+          const clipEl = document.createElement('div');
+          clipEl.className = `clip-region-el absolute rounded-lg overflow-hidden border transition-shadow ${
+            isSelected ? 'ring-2 ring-white border-cyan-300 z-20' : 'border-white/20 z-10'
+          }`;
+          clipEl.style.left = `${clipLeftPx}px`;
+          clipEl.style.top = `${clipTop}px`;
+          clipEl.style.width = `${clipWidthPx}px`;
+          clipEl.style.height = `${clipH}px`;
+          clipEl.style.backgroundColor = audible ? `${track.color}2e` : 'rgba(63, 63, 70, 0.25)';
+          clipEl.style.borderColor = isSelected ? '#ffffff' : (audible ? `${track.color}aa` : '#3f3f4e');
+
+          // Static pre-rendered waveform canvas inside the clip (drawn ONLY once on commit)
+          const waveCanvas = document.createElement('canvas');
+          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+          waveCanvas.width = Math.max(1, Math.floor(clipWidthPx * dpr));
+          waveCanvas.height = Math.max(1, Math.floor(clipH * dpr));
+          waveCanvas.className = 'w-full h-full block pointer-events-none';
+
+          const ctx = waveCanvas.getContext('2d');
+          ctx.scale(dpr, dpr);
+
+          // Draw Waveform Peaks within [trimStart, trimEnd]
+          const peaks = clip.peaks;
+          const startRatio = trimStart / totalBufDur;
+          const endRatio = trimEnd / totalBufDur;
+          const startPeakIdx = Math.floor(startRatio * peaks.length);
+          const endPeakIdx = Math.max(startPeakIdx + 1, Math.floor(endRatio * peaks.length));
+          const sliceLen = endPeakIdx - startPeakIdx;
+
+          const barWidth = 2;
+          const gap = 1;
+          const stepPx = barWidth + gap;
+          const numBars = Math.floor(clipWidthPx / stepPx);
+          const centerY = clipH / 2 + 4;
+          const maxAmp = (clipH - 18) / 2;
+
+          ctx.fillStyle = audible ? track.color : '#71717a';
+          for (let i = 0; i < numBars; i++) {
+            const pIdx = startPeakIdx + Math.floor((i / numBars) * sliceLen);
+            const amp = Math.max(0.05, peaks[pIdx] || 0) * maxAmp;
+            ctx.fillRect(i * stepPx, centerY - amp, barWidth, amp * 2);
           }
-        }
 
-        if (hitClip) {
-          this.selectClip(track.id, hitClip.id);
-          const cStartPx = hitClip.startTime * this.pixelsPerSecond;
-          const cWidthPx = Math.max(12, this.getClipActiveDuration(hitClip) * this.pixelsPerSecond);
-          const cEndPx = cStartPx + cWidthPx;
-          const handleHitRadius = Math.min(16, cWidthPx * 0.28);
-
-          let mode = 'move';
-          if (Math.abs(clickX - cStartPx) <= handleHitRadius) {
-            mode = 'trim-left';
-          } else if (Math.abs(clickX - cEndPx) <= handleHitRadius) {
-            mode = 'trim-right';
+          // Fade-In / Fade-Out visual shading
+          const fadeInPx = Math.min(clipWidthPx, (clip.fadeIn || 0) * pps);
+          const fadeOutPx = Math.min(clipWidthPx, (clip.fadeOut || 0) * pps);
+          if (fadeInPx > 2) {
+            ctx.fillStyle = 'rgba(9, 9, 11, 0.55)';
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(fadeInPx, 0);
+            ctx.lineTo(0, clipH);
+            ctx.closePath();
+            ctx.fill();
+          }
+          if (fadeOutPx > 2) {
+            ctx.fillStyle = 'rgba(9, 9, 11, 0.55)';
+            ctx.beginPath();
+            ctx.moveTo(clipWidthPx, 0);
+            ctx.lineTo(clipWidthPx - fadeOutPx, 0);
+            ctx.lineTo(clipWidthPx, clipH);
+            ctx.closePath();
+            ctx.fill();
           }
 
-          this.dragState = {
+          clipEl.appendChild(waveCanvas);
+
+          // Clip title pill
+          const titleTag = document.createElement('div');
+          titleTag.className = 'absolute top-0.5 left-2 right-2 pointer-events-none truncate font-mono text-[9px] font-semibold text-white/90 drop-shadow';
+          titleTag.textContent = clip.name || 'Audio Clip';
+          clipEl.appendChild(titleTag);
+
+          // Wide 22px Left Trim Handle
+          const leftHandle = document.createElement('div');
+          leftHandle.title = 'Drag to trim start';
+          leftHandle.className = `clip-trim-handle absolute left-0 top-0 bottom-0 flex items-center justify-start pl-0.5 ${
+            isSelected ? 'opacity-100' : 'opacity-0 hover:opacity-100'
+          } transition-opacity`;
+          leftHandle.innerHTML = `<div class="w-1.5 h-7 rounded-full bg-cyan-400 shadow-md shadow-cyan-400/60"></div>`;
+          clipEl.appendChild(leftHandle);
+
+          // Wide 22px Right Trim Handle
+          const rightHandle = document.createElement('div');
+          rightHandle.title = 'Drag to trim end';
+          rightHandle.className = `clip-trim-handle absolute right-0 top-0 bottom-0 flex items-center justify-end pr-0.5 ${
+            isSelected ? 'opacity-100' : 'opacity-0 hover:opacity-100'
+          } transition-opacity`;
+          rightHandle.innerHTML = `<div class="w-1.5 h-7 rounded-full bg-cyan-400 shadow-md shadow-cyan-400/60"></div>`;
+          clipEl.appendChild(rightHandle);
+
+          // Bind GPU-Accelerated Pointer Events
+          this.attachClipPointerHandlers(clipEl, leftHandle, rightHandle, track, clip);
+
+          track.clipsLayerEl.appendChild(clipEl);
+        });
+      }
+
+      attachClipPointerHandlers(clipEl, leftHandle, rightHandle, track, clip) {
+        const startDragSession = (e, mode) => {
+          if (e.button !== undefined && e.button !== 0) return;
+          e.stopPropagation();
+          e.preventDefault();
+
+          // Select clip without tearing down DOM mid-gesture
+          const selectionChanged = !this.selectedClipRef ||
+            this.selectedClipRef.trackId !== track.id ||
+            this.selectedClipRef.clipId !== clip.id;
+
+          this.selectedClipRef = { trackId: track.id, clipId: clip.id };
+          this.updateClipInspectorUI();
+
+          if (selectionChanged) {
+            document.querySelectorAll('.clip-region-el').forEach(el => {
+              el.classList.remove('ring-2', 'ring-white', 'border-cyan-300', 'z-20');
+              el.querySelectorAll('.clip-trim-handle').forEach(h => h.classList.replace('opacity-100', 'opacity-0'));
+            });
+            clipEl.classList.add('ring-2', 'ring-white', 'border-cyan-300', 'z-20');
+            clipEl.querySelectorAll('.clip-trim-handle').forEach(h => h.classList.replace('opacity-0', 'opacity-100'));
+          }
+
+          const targetCaptureEl = mode === 'trim-left' ? leftHandle : (mode === 'trim-right' ? rightHandle : clipEl);
+          try {
+            targetCaptureEl.setPointerCapture(e.pointerId);
+          } catch (_) {}
+
+          clipEl.classList.add('is-dragging');
+
+          const pps = this.pixelsPerSecond;
+          const origStartTime = clip.startTime;
+          const origTrimStart = clip.trimStart ?? 0;
+          const origTrimEnd = clip.trimEnd ?? clip.buffer.duration;
+          const origLeftPx = origStartTime * pps;
+          const origWidthPx = Math.max(24, (origTrimEnd - origTrimStart) * pps);
+
+          this.dragSession = {
             mode,
             track,
-            clip: hitClip,
-            startX: e.clientX,
-            origStartTime: hitClip.startTime,
-            origTrimStart: hitClip.trimStart ?? 0,
-            origTrimEnd: hitClip.trimEnd ?? hitClip.buffer.duration,
+            clip,
+            clipEl,
+            captureEl: targetCaptureEl,
+            pointerId: e.pointerId,
+            startClientX: e.clientX,
+            startClientY: e.clientY,
+            latestClientX: e.clientX,
+            latestClientY: e.clientY,
+            origStartTime,
+            origTrimStart,
+            origTrimEnd,
+            origLeftPx,
+            origWidthPx,
+            finalStartTime: origStartTime,
+            finalTrimStart: origTrimStart,
+            finalTrimEnd: origTrimEnd,
             moved: false
           };
-        } else {
-          // Clicked empty lane area -> move playhead
-          this.seekTo(clickedTime);
-        }
+
+          this.updateDragTooltip(e.clientX, e.clientY, `${origStartTime.toFixed(2)}s`);
+
+          const onPointerMove = (moveEvt) => {
+            if (!this.dragSession || moveEvt.pointerId !== this.dragSession.pointerId) return;
+            moveEvt.stopPropagation();
+            this.dragSession.latestClientX = moveEvt.clientX;
+            this.dragSession.latestClientY = moveEvt.clientY;
+
+            if (!this.dragRafId) {
+              this.dragRafId = requestAnimationFrame(() => this.processDragFrame());
+            }
+          };
+
+          const onPointerUp = (upEvt) => {
+            if (!this.dragSession || upEvt.pointerId !== this.dragSession.pointerId) return;
+            upEvt.stopPropagation();
+
+            targetCaptureEl.removeEventListener('pointermove', onPointerMove);
+            targetCaptureEl.removeEventListener('pointerup', onPointerUp);
+            targetCaptureEl.removeEventListener('pointercancel', onPointerUp);
+
+            if (this.dragRafId) {
+              cancelAnimationFrame(this.dragRafId);
+              this.dragRafId = null;
+            }
+
+            const session = this.dragSession;
+            this.dragSession = null;
+            this.dragTooltip.classList.add('hidden');
+            clipEl.classList.remove('is-dragging');
+
+            if (session.moved) {
+              // Commit final coordinates to state & redraw waveform once
+              session.clip.startTime = session.finalStartTime;
+              session.clip.trimStart = session.finalTrimStart;
+              session.clip.trimEnd = session.finalTrimEnd;
+
+              this.updateTimelineDimensions();
+              this.renderTrackClipsDOM(session.track);
+              this.updateClipInspectorUI();
+
+              if (this.isPlaying) {
+                this.restartPlaybackFromCurrent();
+              }
+            }
+          };
+
+          targetCaptureEl.addEventListener('pointermove', onPointerMove);
+          targetCaptureEl.addEventListener('pointerup', onPointerUp);
+          targetCaptureEl.addEventListener('pointercancel', onPointerUp);
+        };
+
+        clipEl.addEventListener('pointerdown', (e) => startDragSession(e, 'move'));
+        leftHandle.addEventListener('pointerdown', (e) => startDragSession(e, 'trim-left'));
+        rightHandle.addEventListener('pointerdown', (e) => startDragSession(e, 'trim-right'));
       }
 
-      handleGlobalPointerMove(e) {
-        if (!this.dragState) return;
-        const { mode, clip, startX, origStartTime, origTrimStart, origTrimEnd } = this.dragState;
-        const deltaPx = e.clientX - startX;
+      processDragFrame() {
+        this.dragRafId = null;
+        const s = this.dragSession;
+        if (!s) return;
+
+        const deltaPx = s.latestClientX - s.startClientX;
         if (Math.abs(deltaPx) > 2) {
-          this.dragState.moved = true;
+          s.moved = true;
         }
-        const deltaSec = deltaPx / this.pixelsPerSecond;
 
-        if (mode === 'move') {
-          const rawNewStart = Math.max(0, origStartTime + deltaSec);
-          clip.startTime = this.snapTimeIfEnabled(rawNewStart);
-        } else if (mode === 'trim-left') {
-          const maxShiftRight = (origTrimEnd - origTrimStart) - 0.1;
-          const minShiftLeft = -Math.min(origStartTime, origTrimStart);
+        const pps = this.pixelsPerSecond;
+        const deltaSec = deltaPx / pps;
+
+        if (s.mode === 'move') {
+          const rawNewStart = Math.max(0, s.origStartTime + deltaSec);
+          const snappedStart = this.snapTimeIfEnabled(rawNewStart);
+          s.finalStartTime = snappedStart;
+
+          const visualDx = (snappedStart * pps) - s.origLeftPx;
+          // Pure GPU transform — zero layout reflow, zero canvas redraw!
+          s.clipEl.style.transform = `translate3d(${visualDx}px, 0, 0)`;
+          this.updateDragTooltip(s.latestClientX, s.latestClientY, `Pos: ${snappedStart.toFixed(2)}s`);
+        } else if (s.mode === 'trim-left') {
+          const maxShiftRight = (s.origTrimEnd - s.origTrimStart) - 0.1;
+          const minShiftLeft = -Math.min(s.origStartTime, s.origTrimStart);
           const clampedDelta = Math.max(minShiftLeft, Math.min(maxShiftRight, deltaSec));
-          clip.startTime = origStartTime + clampedDelta;
-          clip.trimStart = origTrimStart + clampedDelta;
-        } else if (mode === 'trim-right') {
-          const maxExtend = clip.buffer.duration - origTrimEnd;
-          const minShrink = -(origTrimEnd - origTrimStart) + 0.1;
-          const clampedDelta = Math.max(minShrink, Math.min(maxExtend, deltaSec));
-          clip.trimEnd = origTrimEnd + clampedDelta;
-        }
 
-        this.updateTimelineDimensions();
-        this.updateClipInspectorUI();
+          s.finalStartTime = s.origStartTime + clampedDelta;
+          s.finalTrimStart = s.origTrimStart + clampedDelta;
+
+          const newLeftPx = s.finalStartTime * pps;
+          const newWidthPx = Math.max(24, (s.finalTrimEnd - s.finalTrimStart) * pps);
+          s.clipEl.style.left = `${newLeftPx}px`;
+          s.clipEl.style.width = `${newWidthPx}px`;
+          this.updateDragTooltip(s.latestClientX, s.latestClientY, `Start: ${s.finalStartTime.toFixed(2)}s`);
+        } else if (s.mode === 'trim-right') {
+          const maxExtend = s.clip.buffer.duration - s.origTrimEnd;
+          const minShrink = -(s.origTrimEnd - s.origTrimStart) + 0.1;
+          const clampedDelta = Math.max(minShrink, Math.min(maxExtend, deltaSec));
+
+          s.finalTrimEnd = s.origTrimEnd + clampedDelta;
+          const newWidthPx = Math.max(24, (s.finalTrimEnd - s.finalTrimStart) * pps);
+          s.clipEl.style.width = `${newWidthPx}px`;
+          const activeDur = s.finalTrimEnd - s.finalTrimStart;
+          this.updateDragTooltip(s.latestClientX, s.latestClientY, `Len: ${activeDur.toFixed(2)}s`);
+        }
       }
 
-      handleGlobalPointerUp() {
-        if (!this.dragState) return;
-        const wasMoved = this.dragState.moved;
-        this.dragState = null;
-        if (wasMoved && this.isPlaying) {
-          this.restartPlaybackFromCurrent();
-        }
+      updateDragTooltip(clientX, clientY, text) {
+        if (!this.dragTooltip) return;
+        this.dragTooltip.textContent = text;
+        this.dragTooltip.style.left = `${Math.min(window.innerWidth - 95, Math.max(8, clientX - 32))}px`;
+        this.dragTooltip.style.top = `${Math.max(8, clientY - 40)}px`;
+        this.dragTooltip.classList.remove('hidden');
       }
 
       /* ==========================
@@ -2167,6 +2427,7 @@
       selectClip(trackId, clipId) {
         this.selectedClipRef = { trackId, clipId };
         this.updateClipInspectorUI();
+        this.renderAllClipDOMElements();
       }
 
       getSelectedClipObject() {
@@ -2256,15 +2517,14 @@
 
         track.clips.splice(clipIndex, 1, leftClip, rightClip);
         this.selectClip(track.id, rightClip.id);
-        this.renderTracksDOM();
         if (this.isPlaying) this.restartPlaybackFromCurrent();
-        this.showToast(`Split clip! Drag either part to move it.`, 'success');
+        this.showToast('Split clip! Drag either part smoothly.', 'success');
       }
 
       duplicateSelectedClip() {
         const info = this.getSelectedClipObject();
         if (!info) {
-          this.showToast('Select a waveform clip to duplicate.', 'warning');
+          this.showToast('Select an audio clip to duplicate.', 'warning');
           return;
         }
         const { track, clip } = info;
@@ -2277,7 +2537,6 @@
         };
         track.clips.push(clone);
         this.selectClip(track.id, clone.id);
-        this.renderTracksDOM();
         this.updateTimelineDimensions();
         this.showToast('Duplicated clip right after original', 'success');
       }
@@ -2285,20 +2544,20 @@
       deleteSelectedClip() {
         const info = this.getSelectedClipObject();
         if (!info) {
-          this.showToast('Click a waveform clip first to delete it.', 'warning');
+          this.showToast('Tap an audio clip first to delete it.', 'warning');
           return;
         }
         const { track, clipIndex } = info;
         track.clips.splice(clipIndex, 1);
         this.selectedClipRef = null;
         this.updateClipInspectorUI();
-        this.renderTracksDOM();
+        this.renderTrackClipsDOM(track);
         if (this.isPlaying) this.restartPlaybackFromCurrent();
         this.showToast('Removed audio clip', 'info');
       }
 
       /* ==========================
-         WEB AUDIO ENGINE & COMPACT TRACKS (78px HEIGHT)
+         WEB AUDIO ENGINE & COMPACT TRACKS (76px HEIGHT)
       =========================== */
       ensureAudioContext() {
         if (!this.audioCtx) {
@@ -2335,7 +2594,8 @@
           clips: [],
           canvasEl: null,
           scrollViewportEl: null,
-          innerTrackEl: null
+          innerTrackEl: null,
+          clipsLayerEl: null
         };
 
         this.tracks.push(track);
@@ -2402,12 +2662,12 @@
 
         this.tracks.forEach(track => {
           const row = document.createElement('div');
-          // Compact 78px track height so 4-6 tracks fit cleanly on mobile & desktop without excessive scrolling
-          row.className = `flex h-[78px] bg-studio-panel/40 hover:bg-studio-panel/70 transition-colors ${track.armed ? 'bg-red-950/15' : ''}`;
+          // Compact 76px track height
+          row.className = `flex h-[76px] bg-studio-panel/40 hover:bg-studio-panel/70 transition-colors ${track.armed ? 'bg-red-950/15' : ''}`;
 
           row.innerHTML = `
             <!-- Compact Left Track Controls & Mixer -->
-            <div class="w-40 sm:w-56 md:w-64 shrink-0 px-2.5 py-1.5 border-r border-studio-border flex flex-col justify-between relative select-none bg-studio-panel/95 z-10" style="border-left: 3px solid ${track.color}">
+            <div class="w-36 sm:w-56 md:w-64 shrink-0 px-2 sm:px-2.5 py-1.5 border-r border-studio-border flex flex-col justify-between relative select-none bg-studio-panel/95 z-10" style="border-left: 3px solid ${track.color}">
               <div class="flex items-center justify-between gap-1">
                 <input type="text" value="${track.name}" data-track-name="${track.id}"
                   class="bg-transparent text-xs font-semibold text-zinc-100 focus:outline-none focus:bg-zinc-800 px-1 py-0.5 rounded w-full truncate border border-transparent focus:border-zinc-700" />
@@ -2456,8 +2716,11 @@
 
             <!-- Synchronized Horizontally Scrollable Waveform Timeline -->
             <div class="flex-1 overflow-x-auto overflow-y-hidden bg-zinc-950/95" data-scroll-viewport="${track.id}">
-              <div class="relative h-[78px]" style="width: ${widthPx}px;" data-inner-track="${track.id}">
-                <canvas class="w-full h-full block"></canvas>
+              <div class="relative h-[76px]" style="width: ${widthPx}px;" data-inner-track="${track.id}">
+                <!-- Background grid + playhead canvas -->
+                <canvas class="w-full h-full block pointer-events-none"></canvas>
+                <!-- Hardware-accelerated interactive clips layer -->
+                <div class="absolute inset-0" data-clips-layer="${track.id}"></div>
               </div>
             </div>
           `;
@@ -2466,11 +2729,20 @@
           track.scrollViewportEl = row.querySelector(`[data-scroll-viewport="${track.id}"]`);
           track.innerTrackEl = row.querySelector(`[data-inner-track="${track.id}"]`);
           track.canvasEl = row.querySelector('canvas');
+          track.clipsLayerEl = row.querySelector(`[data-clips-layer="${track.id}"]`);
 
           track.scrollViewportEl.scrollLeft = this.timelineScrollLeft;
 
           track.scrollViewportEl.addEventListener('scroll', () => {
             this.syncHorizontalScroll(track.scrollViewportEl.scrollLeft, track.scrollViewportEl);
+          });
+
+          // Clicking empty track lane seeks playhead
+          track.innerTrackEl.addEventListener('click', (e) => {
+            if (e.target.closest('.clip-region-el')) return;
+            const rect = track.innerTrackEl.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            this.seekTo(Math.max(0, clickX / this.pixelsPerSecond));
           });
 
           // Track mixer listeners
@@ -2496,30 +2768,8 @@
             if (track.livePanNode) track.livePanNode.pan.value = track.pan;
           });
 
-          // Pointer interaction for moving clips, dragging edge trim handles, or moving playhead
-          track.innerTrackEl.addEventListener('pointerdown', (e) => this.handleTrackPointerDown(e, track));
-
-          // Hover cursor feedback on desktop
-          track.innerTrackEl.addEventListener('mousemove', (e) => {
-            if (this.dragState) return;
-            const rect = track.innerTrackEl.getBoundingClientRect();
-            const hoverX = e.clientX - rect.left;
-            let cursor = 'pointer';
-            for (let i = track.clips.length - 1; i >= 0; i--) {
-              const c = track.clips[i];
-              const cStartPx = c.startTime * this.pixelsPerSecond;
-              const cWidthPx = Math.max(12, this.getClipActiveDuration(c) * this.pixelsPerSecond);
-              const cEndPx = cStartPx + cWidthPx;
-              if (hoverX >= cStartPx - 8 && hoverX <= cEndPx + 8) {
-                const edgeR = Math.min(14, cWidthPx * 0.25);
-                cursor = (Math.abs(hoverX - cStartPx) <= edgeR || Math.abs(hoverX - cEndPx) <= edgeR)
-                  ? 'ew-resize'
-                  : 'grab';
-                break;
-              }
-            }
-            track.innerTrackEl.style.cursor = cursor;
-          });
+          // Render interactive clip regions for this track
+          this.renderTrackClipsDOM(track);
         });
 
         this.updateTimelineDimensions();
@@ -2568,8 +2818,7 @@
           };
           targetTrack.clips.push(newClip);
           this.selectClip(targetTrack.id, newClip.id);
-
-          this.renderTracksDOM();
+          this.updateTimelineDimensions();
           this.showToast(`Imported "${file.name}" into ${targetTrack.name}`, 'success');
         } catch (err) {
           console.error(err);
@@ -2674,12 +2923,10 @@
             const source = this.audioCtx.createBufferSource();
             source.buffer = clip.buffer;
 
-            // Clip-level Fade In / Fade Out envelope node
             const clipFadeGain = this.audioCtx.createGain();
             const fadeIn = Math.min(activeDur, clip.fadeIn || 0);
             const fadeOut = Math.min(activeDur, clip.fadeOut || 0);
 
-            // Track-level Volume & Pan nodes
             const gainNode = this.audioCtx.createGain();
             gainNode.gain.value = track.volume;
 
@@ -2786,7 +3033,7 @@
         } catch (err) {
           document.getElementById('mic-status-dot').className = 'w-2 h-2 rounded-full bg-red-500';
           document.getElementById('mic-status-text').textContent = 'Mic Blocked';
-          this.showToast('Microphone access denied. Please allow mic permissions in browser settings.', 'error');
+          this.showToast('Microphone access denied. Please allow mic permissions.', 'error');
           return;
         }
 
@@ -2877,7 +3124,7 @@
               };
               track.clips.push(newClip);
               this.selectClip(track.id, newClip.id);
-              this.renderTracksDOM();
+              this.updateTimelineDimensions();
               this.showToast(`Recorded ${newClip.name} to ${track.name}`, 'success');
             }
           } catch (err) {
@@ -3007,7 +3254,7 @@
       }
 
       /* ==========================
-         CANVAS RENDERING LOOP
+         LIGHTWEIGHT TIMELINE GRID & PLAYHEAD CANVAS RENDERING
       =========================== */
       startRenderLoop() {
         const render = () => {
@@ -3050,7 +3297,7 @@
 
             this.drawRuler(currentTime);
             this.tracks.forEach(track => {
-              if (track.canvasEl) this.drawTrackCanvas(track, currentTime);
+              if (track.canvasEl) this.drawTrackGridCanvas(track, currentTime);
             });
             this.drawMasterMeter();
           }
@@ -3109,7 +3356,7 @@
         ctx.fill();
       }
 
-      drawTrackCanvas(track, currentTime) {
+      drawTrackGridCanvas(track, currentTime) {
         const canvas = track.canvasEl;
         const inner = track.innerTrackEl;
         if (!canvas || !inner) return;
@@ -3124,7 +3371,6 @@
 
         const ctx = canvas.getContext('2d');
         const pps = this.pixelsPerSecond;
-        const audible = this.isTrackAudible(track);
 
         ctx.clearRect(0, 0, w, h);
 
@@ -3147,91 +3393,6 @@
         ctx.lineTo(w, h / 2);
         ctx.stroke();
 
-        // Draw Audio Clips
-        track.clips.forEach(clip => {
-          const trimStart = clip.trimStart ?? 0;
-          const trimEnd = clip.trimEnd ?? clip.buffer.duration;
-          const activeDur = this.getClipActiveDuration(clip);
-          const totalBufDur = clip.buffer.duration;
-
-          const clipX = clip.startTime * pps;
-          const clipW = Math.max(6, activeDur * pps);
-          const clipTop = 5;
-          const clipH = h - 10;
-
-          const isSelected = this.selectedClipRef &&
-            this.selectedClipRef.trackId === track.id &&
-            this.selectedClipRef.clipId === clip.id;
-
-          // Clip container box
-          ctx.fillStyle = audible ? `${track.color}26` : '#27273233';
-          ctx.strokeStyle = isSelected ? '#ffffff' : (audible ? `${track.color}99` : '#3f3f4e');
-          ctx.lineWidth = isSelected ? 2 : 1;
-          ctx.beginPath();
-          ctx.roundRect(clipX, clipTop, clipW, clipH, 5);
-          ctx.fill();
-          ctx.stroke();
-
-          // Clip header label
-          ctx.fillStyle = isSelected ? '#ffffff' : '#d4d4d8';
-          ctx.font = '9px "JetBrains Mono", monospace';
-          if (clipW > 34) {
-            ctx.fillText((clip.name || 'Clip').slice(0, Math.floor(clipW / 6.5)), clipX + 7, clipTop + 11);
-          }
-
-          // Draw Waveform Peaks within [trimStart, trimEnd]
-          const peaks = clip.peaks;
-          const startRatio = trimStart / totalBufDur;
-          const endRatio = trimEnd / totalBufDur;
-          const startPeakIdx = Math.floor(startRatio * peaks.length);
-          const endPeakIdx = Math.max(startPeakIdx + 1, Math.floor(endRatio * peaks.length));
-          const sliceLen = endPeakIdx - startPeakIdx;
-
-          const barWidth = 2;
-          const gap = 1;
-          const stepPx = barWidth + gap;
-          const numBars = Math.floor(clipW / stepPx);
-          const centerY = clipTop + clipH / 2 + 3;
-          const maxAmp = (clipH - 18) / 2;
-
-          ctx.fillStyle = audible ? track.color : '#52525b';
-          for (let i = 0; i < numBars; i++) {
-            const pIdx = startPeakIdx + Math.floor((i / numBars) * sliceLen);
-            const amp = Math.max(0.04, peaks[pIdx] || 0) * maxAmp;
-            const barX = clipX + i * stepPx;
-            ctx.fillRect(barX, centerY - amp, barWidth, amp * 2);
-          }
-
-          // Visual Fade-In / Fade-Out Envelope Overlay Curves
-          const fadeInPx = Math.min(clipW, (clip.fadeIn || 0) * pps);
-          const fadeOutPx = Math.min(clipW, (clip.fadeOut || 0) * pps);
-          if (fadeInPx > 2) {
-            ctx.fillStyle = 'rgba(9, 9, 11, 0.52)';
-            ctx.beginPath();
-            ctx.moveTo(clipX, clipTop);
-            ctx.lineTo(clipX + fadeInPx, clipTop);
-            ctx.lineTo(clipX, clipTop + clipH);
-            ctx.closePath();
-            ctx.fill();
-          }
-          if (fadeOutPx > 2) {
-            ctx.fillStyle = 'rgba(9, 9, 11, 0.52)';
-            ctx.beginPath();
-            ctx.moveTo(clipX + clipW, clipTop);
-            ctx.lineTo(clipX + clipW - fadeOutPx, clipTop);
-            ctx.lineTo(clipX + clipW, clipTop + clipH);
-            ctx.closePath();
-            ctx.fill();
-          }
-
-          // Interactive Left & Right Edge Trim Handles when Selected
-          if (isSelected) {
-            ctx.fillStyle = '#06b6d4';
-            ctx.fillRect(clipX, clipTop, 5, clipH);
-            ctx.fillRect(clipX + clipW - 5, clipTop, 5, clipH);
-          }
-        });
-
         // Live Recording Waveform Preview
         if (this.isRecording && this.recordingTrackId === track.id) {
           const recStartX = this.recordingStartTime * pps;
@@ -3241,7 +3402,7 @@
           ctx.fillStyle = 'rgba(239, 68, 68, 0.16)';
           ctx.strokeStyle = 'rgba(239, 68, 68, 0.85)';
           ctx.beginPath();
-          ctx.roundRect(recStartX, 5, recWidth, h - 10, 5);
+          ctx.roundRect(recStartX, 4, recWidth, h - 8, 6);
           ctx.fill();
           ctx.stroke();
 
@@ -3293,7 +3454,7 @@
       }
 
       /* ==========================
-         STEREO WAV EXPORT (RESPECTS POSITION, TRIMS & FADES)
+         STEREO WAV EXPORT
       =========================== */
       async exportMixWAV() {
         this.ensureAudioContext();
