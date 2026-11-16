@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="PulseLab" />
-  <title>PulseLab v2.0 — Pocket Multi-Track Studio</title>
+  <title>PulseLab v2.5 — Pocket Multi-Track Studio</title>
 
   <!-- Dynamic PWA Manifest Link -->
   <link id="pwa-manifest-link" rel="manifest" href="" />
@@ -50,8 +50,8 @@
 
   <style>
     ::-webkit-scrollbar {
-      width: 7px;
-      height: 7px;
+      width: 6px;
+      height: 6px;
     }
     ::-webkit-scrollbar-track {
       background: #09090b;
@@ -71,18 +71,18 @@
       cursor: pointer;
     }
     input[type="range"]::-webkit-slider-runnable-track {
-      height: 4px;
+      height: 3.5px;
       border-radius: 9999px;
       background: #272732;
     }
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 14px;
-      height: 14px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       background: #f4f4f5;
-      margin-top: -5px;
+      margin-top: -4.25px;
       box-shadow: 0 0 8px rgba(139, 92, 246, 0.7);
       transition: transform 0.1s ease, background-color 0.1s ease;
     }
@@ -132,7 +132,7 @@
 </head>
 <body class="bg-studio-bg text-zinc-100 font-sans antialiased selection:bg-violet-500/30 selection:text-violet-200 min-h-screen flex flex-col">
 
-  <!-- 1. ANIMATED SPLASH SCREEN -->
+  <!-- 1. ANIMATED NEON VINYL & EQUALIZER SPLASH SCREEN -->
   <div id="splash-screen" class="fixed inset-0 z-[100] bg-studio-bg flex flex-col items-center justify-center p-6 transition-all duration-700 ease-out">
     <div class="absolute w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-gradient-to-tr from-violet-600/25 via-fuchsia-500/15 to-cyan-500/25 blur-3xl animate-splash-glow pointer-events-none"></div>
 
@@ -163,7 +163,7 @@
         <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-white via-violet-200 to-cyan-300 bg-clip-text text-transparent">
           PulseLab
         </h1>
-        <span class="px-2 py-0.5 rounded-md bg-violet-500/20 border border-violet-500/40 text-violet-300 font-mono text-xs font-bold">v2.0</span>
+        <span class="px-2 py-0.5 rounded-md bg-violet-500/20 border border-violet-500/40 text-violet-300 font-mono text-xs font-bold">v2.5</span>
       </div>
       <p class="mt-2 text-[11px] sm:text-xs font-mono uppercase tracking-[0.28em] text-cyan-400/90 font-semibold">
         Pocket Multi-Track Studio
@@ -287,7 +287,7 @@
     </div>
   </div>
 
-  <!-- 2. SIGN-IN SCREEN (FIREBASE REAL OAUTH + REALISTIC ACCOUNT CHOOSER) -->
+  <!-- 2. SIGN-IN SCREEN (FIREBASE REAL OAUTH + MULTI-ACCOUNT CHOOSER) -->
   <section id="auth-view" class="hidden flex-1 flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden">
     <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-violet-600/15 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -303,7 +303,7 @@
           </div>
         </div>
         <h2 class="text-2xl font-extrabold tracking-tight text-white">Welcome to PulseLab</h2>
-        <p class="text-xs sm:text-sm text-zinc-400 mt-1.5">Sign in with your account to sync multi-track sessions, vocal layers, and mixes.</p>
+        <p class="text-xs sm:text-sm text-zinc-400 mt-1.5">Sign in to sync multi-track sessions, vocal takes, and mixes.</p>
         
         <!-- OAuth Mode Pill -->
         <div class="mt-3 flex items-center gap-2">
@@ -354,10 +354,9 @@
       </div>
     </div>
 
-    <!-- REALISTIC GOOGLE / FACEBOOK ACCOUNT CHOOSER MODAL -->
+    <!-- MULTI-ACCOUNT CHOOSER MODAL -->
     <div id="oauth-modal" class="fixed inset-0 z-[80] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
       <div class="bg-[#16161d] border border-zinc-800 rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl">
-        <!-- Top Provider Header -->
         <div class="px-6 pt-5 pb-4 border-b border-zinc-800/90 flex items-center justify-between">
           <div class="flex items-center gap-2.5">
             <div id="oauth-provider-icon" class="w-6 h-6 flex items-center justify-center"></div>
@@ -374,12 +373,8 @@
             <p class="text-xs text-zinc-400 mt-0.5">to continue to <span class="text-violet-400 font-semibold">PulseLab Studio</span></p>
           </div>
 
-          <!-- Saved Accounts Picker List -->
-          <div id="saved-accounts-list" class="space-y-2 max-h-56 overflow-y-auto pr-1">
-            <!-- Dynamically populated saved accounts -->
-          </div>
+          <div id="saved-accounts-list" class="space-y-2 max-h-56 overflow-y-auto pr-1"></div>
 
-          <!-- Toggle "Use another account" -->
           <button id="btn-toggle-add-account" type="button" class="mt-3 w-full py-2.5 px-3 rounded-xl hover:bg-zinc-800/80 border border-transparent hover:border-zinc-700 flex items-center gap-3 text-left transition">
             <div class="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-300 shrink-0">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
@@ -390,11 +385,10 @@
             </div>
           </button>
 
-          <!-- Add Account Form (Collapsible) -->
           <form id="oauth-form" class="hidden mt-4 pt-4 border-t border-zinc-800 space-y-3">
             <div>
               <label class="block text-[11px] font-medium text-zinc-400 mb-1">Full Name</label>
-              <input id="oauth-name-input" type="text" required placeholder="e.g. Tressie Mae"
+              <input id="oauth-name-input" type="text" required placeholder="e.g. Alex Rivera"
                 class="w-full bg-zinc-950 border border-zinc-800 focus:border-violet-500 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white focus:outline-none" />
             </div>
             <div>
@@ -416,13 +410,13 @@
   </section>
 
   <!-- 3. AUTHENTICATED APP SHELL -->
-  <div id="app-shell" class="hidden flex-1 flex-col min-h-screen pb-16 sm:pb-0">
+  <div id="app-shell" class="hidden flex-1 flex-col min-h-screen pb-14 sm:pb-0">
     
     <!-- TOP MAIN NAVIGATION BAR -->
-    <nav class="sticky top-0 z-40 bg-studio-panel/95 backdrop-blur-md border-b border-studio-border px-3 sm:px-6 h-14 flex items-center justify-between gap-2">
-      <!-- Logo & Brand -->
+    <nav class="sticky top-0 z-40 bg-studio-panel/95 backdrop-blur-md border-b border-studio-border px-3 sm:px-6 h-12 sm:h-14 flex items-center justify-between gap-2">
+      <!-- Logo & Brand (Replay Splash Button) -->
       <div class="flex items-center gap-2.5">
-        <button id="btn-replay-intro" title="Replay Intro Animation" class="group w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 via-fuchsia-600 to-cyan-500 p-[1.5px] shadow-md shadow-violet-500/20 active:scale-95 transition">
+        <button id="btn-replay-intro" title="Replay Intro Animation" class="group w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-violet-600 via-fuchsia-600 to-cyan-500 p-[1.5px] shadow-md shadow-violet-500/20 active:scale-95 transition">
           <div class="w-full h-full rounded-[10px] bg-zinc-950 flex items-center justify-center gap-0.5 px-1.5 group-hover:bg-zinc-900 transition">
             <span class="w-0.5 h-2.5 rounded-full bg-violet-400"></span>
             <span class="w-0.5 h-4 rounded-full bg-fuchsia-400"></span>
@@ -431,10 +425,10 @@
           </div>
         </button>
         <div>
-          <span class="font-extrabold text-base sm:text-lg tracking-tight bg-gradient-to-r from-white via-violet-200 to-cyan-300 bg-clip-text text-transparent">
+          <span class="font-extrabold text-sm sm:text-lg tracking-tight bg-gradient-to-r from-white via-violet-200 to-cyan-300 bg-clip-text text-transparent">
             PulseLab
           </span>
-          <span class="hidden lg:inline-block ml-1.5 text-[10px] font-mono uppercase tracking-widest text-zinc-500">v2.0 Studio</span>
+          <span class="hidden lg:inline-block ml-1.5 text-[10px] font-mono uppercase tracking-widest text-zinc-500">v2.5 Studio</span>
         </div>
       </div>
 
@@ -456,13 +450,13 @@
 
       <!-- Right Controls: Install App + User Pill -->
       <div class="flex items-center gap-2">
-        <button id="btn-install-top" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95">
+        <button id="btn-install-top" class="px-2.5 sm:px-3 py-1 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
           <span>Install App</span>
         </button>
 
         <button data-nav="profile" class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 pl-1.5 pr-2.5 py-1 rounded-full transition">
-          <div id="nav-avatar" class="w-7 h-7 rounded-full bg-gradient-to-tr from-violet-600 to-cyan-500 flex items-center justify-center text-xs font-bold text-white overflow-hidden">
+          <div id="nav-avatar" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gradient-to-tr from-violet-600 to-cyan-500 flex items-center justify-center text-xs font-bold text-white overflow-hidden">
             P
           </div>
           <span id="nav-username" class="text-xs font-medium text-zinc-200 max-w-[90px] truncate hidden sm:inline">Producer</span>
@@ -474,7 +468,6 @@
          VIEW A: PROJECTS / HOME MENU DASHBOARD
     =========================================== -->
     <section id="view-projects" class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
-      <!-- Hero Welcome Banner -->
       <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-zinc-900 via-studio-panel to-zinc-950 border border-studio-border p-6 sm:p-8 mb-8 shadow-xl">
         <div class="absolute -right-16 -top-16 w-64 h-64 bg-violet-600/15 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute right-20 -bottom-20 w-56 h-56 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none"></div>
@@ -489,7 +482,7 @@
               Welcome back, <span id="home-user-name" class="bg-gradient-to-r from-violet-300 to-cyan-300 bg-clip-text text-transparent">Producer</span>
             </h1>
             <p class="text-xs sm:text-sm text-zinc-400 mt-1.5 max-w-xl">
-              Record multi-track vocals, split & trim audio clips with precision, or open one of your saved studio sessions below.
+              Record multi-track vocals, drag & arrange split clips freely on the timeline, import beats directly from your music storage, and export stereo WAV mixes.
             </p>
           </div>
 
@@ -500,25 +493,21 @@
         </div>
       </div>
 
-      <!-- Projects Section Header -->
       <div class="flex items-center justify-between mb-4">
         <div>
-          <h2 class="text-lg font-bold text-white">Your Recorded Projects</h2>
-          <p class="text-xs text-zinc-400">Saved sessions with trimmed waveforms and mixer settings</p>
+          <h2 class="text-lg font-bold text-white">My Projects</h2>
+          <p class="text-xs text-zinc-400">Saved multi-track recordings with clip positions, trims, fades, and mixer settings</p>
         </div>
         <span id="projects-count-badge" class="px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-300">
           0 Projects
         </span>
       </div>
 
-      <!-- Saved Projects Grid -->
-      <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <!-- Project cards dynamically injected here -->
-      </div>
+      <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
     </section>
 
     <!-- ==========================================
-         VIEW B: MULTI-TRACK RECORDING STUDIO
+         VIEW B: COMPACT MULTI-TRACK RECORDING STUDIO
     =========================================== -->
     <section id="view-studio" class="hidden flex-1 flex-col min-h-[calc(100vh-3.5rem)]">
       
@@ -534,79 +523,79 @@
       <div id="help-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-studio-panel border border-studio-border rounded-2xl max-w-lg w-full p-6 shadow-2xl">
           <div class="flex items-center justify-between border-b border-studio-border pb-4 mb-4">
-            <h2 class="text-lg font-bold text-white">PulseLab v2.0 Studio & Editing Guide</h2>
+            <h2 class="text-lg font-bold text-white">PulseLab v2.5 Quick Editing Guide</h2>
             <button id="close-help-btn" class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
           </div>
-          <div class="space-y-3.5 text-sm text-zinc-300">
+          <div class="space-y-3 text-sm text-zinc-300">
             <div class="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/25 text-cyan-100">
-              <p class="font-semibold text-cyan-300 text-xs sm:text-sm">1. Cut, Split & Trim Audio Clips</p>
-              <p class="text-xs text-cyan-200/80 mt-1">Click any waveform clip on the timeline to select it. Move the playhead where you want to cut and click <strong>Split</strong> (Scissors), or adjust <strong>Trim Start / End</strong> to cut off unwanted silence.</p>
+              <p class="font-semibold text-cyan-300 text-xs sm:text-sm">1. Drag & Move Clips Freely</p>
+              <p class="text-xs text-cyan-200/80 mt-1">Touch or click the middle of any clip and drag left or right across the timeline to reposition it. Use the <strong>Snap</strong> toggle to snap clips cleanly to beat divisions.</p>
             </div>
             <div class="p-3 rounded-xl bg-violet-500/10 border border-violet-500/25 text-violet-100">
-              <p class="font-semibold text-violet-300 text-xs sm:text-sm">2. Slide & Zoom Long Recordings</p>
-              <p class="text-xs text-violet-200/80 mt-1">Swipe or scroll horizontally across the timeline ruler/tracks to view long recordings, and use the <strong>Zoom Slider (50%–300%)</strong> to inspect waveform details.</p>
+              <p class="font-semibold text-violet-300 text-xs sm:text-sm">2. Direct Edge Trimming, Split & Fades</p>
+              <p class="text-xs text-violet-200/80 mt-1">Click any clip to reveal its glowing <strong>Left & Right Trim Handles</strong>—drag either edge handle to shorten or extend the clip. Click <strong>Split (S)</strong> to cut at the playhead, or adjust <strong>Fade In / Fade Out</strong> sliders.</p>
             </div>
             <div class="p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300">
-              <p class="font-semibold text-white text-xs sm:text-sm">3. Clean Vocal Overdubbing</p>
-              <p class="text-xs text-zinc-400 mt-1">Use wired earphones/headphones when recording vocals over an imported beat so speaker audio does not bleed into your microphone.</p>
+              <p class="font-semibold text-white text-xs sm:text-sm">3. Import Downloaded Music & Beats</p>
+              <p class="text-xs text-zinc-400 mt-1">Tap <strong>Import Audio</strong> to browse your device's Downloads, Music folder, or Files for MP3, WAV, M4A, AAC, OGG, or FLAC tracks.</p>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Studio Transport Header -->
-      <div class="bg-studio-panel/95 border-b border-studio-border px-3 sm:px-6 py-2.5">
-        <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-2.5">
+      <div class="bg-studio-panel/95 border-b border-studio-border px-3 sm:px-5 py-2">
+        <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-2">
           
           <!-- Project Title & Save Button -->
-          <div class="flex items-center gap-2">
-            <button data-nav="projects" title="Back to Projects" class="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-800 transition">
+          <div class="flex items-center gap-1.5">
+            <button data-nav="projects" title="Back to Projects" class="p-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-800 transition">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
             </button>
             <input id="project-title" type="text" value="Untitled Session" aria-label="Project Title"
-              class="bg-zinc-900/80 font-bold text-xs sm:text-sm text-white focus:outline-none focus:bg-zinc-800 px-2.5 py-1.5 rounded-lg border border-zinc-800 focus:border-violet-500 w-36 sm:w-48 truncate" />
-            <button id="btn-save-project" class="px-3 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-violet-500/20 transition active:scale-95">
+              class="bg-zinc-900/80 font-bold text-xs sm:text-sm text-white focus:outline-none focus:bg-zinc-800 px-2.5 py-1 rounded-lg border border-zinc-800 focus:border-violet-500 w-32 sm:w-44 truncate" />
+            <button id="btn-save-project" class="px-2.5 py-1 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold flex items-center gap-1 shadow-md shadow-violet-500/20 transition active:scale-95">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
               <span>Save</span>
             </button>
           </div>
 
           <!-- Center Transport Controls + Timecode -->
-          <div class="flex items-center gap-2 sm:gap-3 bg-studio-bg border border-studio-border px-3 py-1.5 rounded-2xl shadow-inner order-3 lg:order-2 w-full lg:w-auto justify-between lg:justify-center">
-            <div class="flex items-center gap-1.5 sm:gap-2">
-              <button id="btn-stop" title="Stop & Rewind (Enter)" class="p-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-800 transition active:scale-95">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>
+          <div class="flex items-center gap-2 bg-studio-bg border border-studio-border px-2.5 py-1 rounded-2xl shadow-inner order-3 lg:order-2 w-full lg:w-auto justify-between lg:justify-center">
+            <div class="flex items-center gap-1.5">
+              <button id="btn-stop" title="Stop & Rewind (Enter)" class="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-800 transition active:scale-95">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>
               </button>
 
-              <button id="btn-play" title="Play / Pause (Space)" class="p-2.5 sm:px-4 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 hover:from-violet-500 hover:to-cyan-400 text-white font-semibold flex items-center gap-1.5 shadow-md shadow-violet-500/25 transition active:scale-95">
-                <svg id="icon-play" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                <svg id="icon-pause" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+              <button id="btn-play" title="Play / Pause (Space)" class="p-2 sm:px-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 hover:from-violet-500 hover:to-cyan-400 text-white font-semibold flex items-center gap-1.5 shadow-md shadow-violet-500/25 transition active:scale-95">
+                <svg id="icon-play" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <svg id="icon-pause" class="w-3.5 h-3.5 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
                 <span id="label-play" class="text-xs hidden sm:inline">Play</span>
               </button>
 
-              <button id="btn-record" title="Record Armed Track (R)" class="p-2.5 sm:px-4 rounded-xl bg-zinc-900 hover:bg-red-950/60 text-red-400 border border-red-500/30 font-semibold flex items-center gap-1.5 transition active:scale-95">
-                <span id="rec-dot" class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
+              <button id="btn-record" title="Record Armed Track (R)" class="p-2 sm:px-3.5 rounded-xl bg-zinc-900 hover:bg-red-950/60 text-red-400 border border-red-500/30 font-semibold flex items-center gap-1.5 transition active:scale-95">
+                <span id="rec-dot" class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
                 <span class="text-xs hidden sm:inline">Rec</span>
               </button>
 
-              <button id="btn-loop" title="Toggle Loop Playback" class="p-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 border border-zinc-800 transition active:scale-95">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              <button id="btn-loop" title="Toggle Loop Playback" class="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 border border-zinc-800 transition active:scale-95">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
               </button>
             </div>
 
             <!-- Digital Timecode Display -->
-            <div class="flex items-center gap-3 bg-zinc-950 border border-zinc-800/90 px-3 py-1.5 rounded-xl">
+            <div class="flex items-center gap-2.5 bg-zinc-950 border border-zinc-800/90 px-2.5 py-1 rounded-xl">
               <div class="text-right">
-                <div id="timecode-display" class="font-mono text-base sm:text-lg font-bold tracking-wider text-cyan-400 leading-none">
+                <div id="timecode-display" class="font-mono text-sm sm:text-base font-bold tracking-wider text-cyan-400 leading-none">
                   00:00.0
                 </div>
-                <div class="text-[9px] font-mono uppercase tracking-widest text-zinc-500 mt-0.5">MIN : SEC . MS</div>
+                <div class="text-[8px] font-mono uppercase tracking-widest text-zinc-500 mt-0.5">MIN : SEC</div>
               </div>
-              <div class="flex flex-col gap-1">
-                <canvas id="master-meter" width="60" height="14" class="rounded bg-zinc-900 border border-zinc-800"></canvas>
-                <div class="flex justify-between text-[8px] font-mono text-zinc-500 leading-none">
+              <div class="flex flex-col gap-0.5">
+                <canvas id="master-meter" width="54" height="12" class="rounded bg-zinc-900 border border-zinc-800"></canvas>
+                <div class="flex justify-between text-[7px] font-mono text-zinc-500 leading-none">
                   <span>-36</span>
                   <span>-12</span>
                   <span>0dB</span>
@@ -616,14 +605,14 @@
           </div>
 
           <!-- Right Controls: Metronome, Export & Help -->
-          <div class="flex items-center gap-2 order-2 lg:order-3">
-            <div class="hidden xl:flex items-center gap-2 bg-studio-bg border border-studio-border px-2.5 py-1.5 rounded-xl">
-              <button id="btn-metronome" title="Toggle Metronome (M)" class="p-1.5 rounded-lg bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 transition flex items-center gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3L6 21h12L12 3zm0 0l4 9"/></svg>
+          <div class="flex items-center gap-1.5 order-2 lg:order-3">
+            <div class="hidden xl:flex items-center gap-2 bg-studio-bg border border-studio-border px-2 py-1 rounded-xl">
+              <button id="btn-metronome" title="Toggle Metronome (M)" class="p-1 rounded-lg bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 transition flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3L6 21h12L12 3zm0 0l4 9"/></svg>
                 <span class="text-xs font-medium">Click</span>
               </button>
               
-              <div id="beat-leds" class="flex items-center gap-1 px-1">
+              <div id="beat-leds" class="flex items-center gap-1 px-0.5">
                 <span class="w-2 h-2 rounded-full bg-zinc-800 transition-colors"></span>
                 <span class="w-2 h-2 rounded-full bg-zinc-800 transition-colors"></span>
                 <span class="w-2 h-2 rounded-full bg-zinc-800 transition-colors"></span>
@@ -632,126 +621,124 @@
 
               <div class="flex items-center gap-1 border-l border-zinc-800 pl-2">
                 <input id="bpm-input" type="number" min="50" max="220" value="110" aria-label="BPM"
-                  class="w-12 bg-zinc-900 border border-zinc-800 rounded-md px-1.5 py-0.5 text-xs font-mono text-center text-zinc-200 focus:outline-none focus:border-violet-500" />
+                  class="w-11 bg-zinc-900 border border-zinc-800 rounded-md px-1 py-0.5 text-xs font-mono text-center text-zinc-200 focus:outline-none focus:border-violet-500" />
                 <span class="text-[10px] font-mono text-zinc-500">BPM</span>
               </div>
 
-              <button id="btn-countin" title="Toggle 4-Beat Count-In" class="px-2 py-1 rounded-lg bg-violet-500/15 text-violet-300 border border-violet-500/30 text-[11px] font-mono font-semibold transition">
+              <button id="btn-countin" title="Toggle 4-Beat Count-In" class="px-2 py-0.5 rounded-lg bg-violet-500/15 text-violet-300 border border-violet-500/30 text-[11px] font-mono font-semibold transition">
                 Count: ON
               </button>
             </div>
 
-            <button id="btn-export" class="px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95">
-              <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            <button id="btn-export" class="px-2.5 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95">
+              <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
               <span>Export .WAV</span>
             </button>
 
-            <button id="btn-help" title="Studio Guide" class="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-800 transition">
+            <button id="btn-help" title="Studio Guide" class="p-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-800 transition">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </button>
           </div>
         </div>
 
         <!-- Compact Metronome Bar for Mobile & Tablet -->
-        <div class="flex xl:hidden items-center justify-between gap-2 mt-2.5 pt-2 border-t border-zinc-800/80">
+        <div class="flex xl:hidden items-center justify-between gap-2 mt-2 pt-1.5 border-t border-zinc-800/80">
           <div class="flex items-center gap-2">
-            <button id="btn-metronome-mobile" class="px-2.5 py-1 rounded-lg bg-zinc-900 text-zinc-400 border border-zinc-800 text-xs font-medium">
+            <button id="btn-metronome-mobile" class="px-2 py-0.5 rounded-lg bg-zinc-900 text-zinc-400 border border-zinc-800 text-[11px] font-medium">
               Click: OFF
             </button>
             <div class="flex items-center gap-1">
               <input id="bpm-input-mobile" type="number" min="50" max="220" value="110"
-                class="w-12 bg-zinc-900 border border-zinc-800 rounded px-1.5 py-0.5 text-xs font-mono text-center text-zinc-200" />
+                class="w-11 bg-zinc-900 border border-zinc-800 rounded px-1 py-0.5 text-[11px] font-mono text-center text-zinc-200" />
               <span class="text-[10px] font-mono text-zinc-500">BPM</span>
             </div>
           </div>
-          <button id="btn-countin-mobile" class="px-2.5 py-1 rounded-lg bg-violet-500/15 text-violet-300 border border-violet-500/30 text-[11px] font-mono font-semibold">
+          <button id="btn-countin-mobile" class="px-2 py-0.5 rounded-lg bg-violet-500/15 text-violet-300 border border-violet-500/30 text-[11px] font-mono font-semibold">
             Count: ON
           </button>
         </div>
       </div>
 
-      <!-- Studio Workspace Toolbar + Audio Editor Controls -->
-      <div class="bg-studio-panel/75 border-b border-studio-border px-3 sm:px-6 py-2">
+      <!-- Studio Workspace Toolbar + Direct Clip Editing Bar -->
+      <div class="bg-studio-panel/75 border-b border-studio-border px-3 sm:px-5 py-1.5">
         <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-2">
-          <!-- Track & Import Actions -->
-          <div class="flex items-center gap-2">
-            <button id="btn-add-track" class="px-3 py-1.5 rounded-xl bg-violet-500/15 hover:bg-violet-500/25 text-violet-300 border border-violet-500/30 text-xs font-semibold flex items-center gap-1.5 transition">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          <!-- Track & Direct Music/Downloads Import Actions -->
+          <div class="flex items-center gap-1.5">
+            <button id="btn-add-track" class="px-2.5 py-1 rounded-xl bg-violet-500/15 hover:bg-violet-500/25 text-violet-300 border border-violet-500/30 text-xs font-semibold flex items-center gap-1 transition">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
               <span>Add Track</span>
             </button>
 
-            <input type="file" id="audio-import-input" accept="audio/*" class="hidden" />
-            <button id="btn-import-audio" class="px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 text-xs font-medium flex items-center gap-1.5 transition">
-              <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
-              <span>Import Beat / Audio</span>
+            <!-- Broad audio format filter so Android/iOS/PC file pickers show Downloaded Music & Files directly -->
+            <input type="file" id="audio-import-input" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.webm" class="hidden" />
+            <button id="btn-import-audio" class="px-2.5 py-1 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 text-xs font-semibold flex items-center gap-1.5 transition">
+              <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
+              <span>Import Audio / Beat</span>
             </button>
           </div>
 
           <!-- Non-Destructive Audio Clip Editor Toolbar -->
-          <div class="flex flex-wrap items-center gap-1.5 bg-zinc-950 border border-zinc-800 px-2.5 py-1 rounded-xl">
-            <span class="text-[10px] font-mono uppercase tracking-wider text-zinc-500 mr-1">Clip Edit:</span>
+          <div class="flex flex-wrap items-center gap-1 bg-zinc-950 border border-zinc-800 px-2 py-1 rounded-xl">
+            <button id="btn-snap-toggle" title="Toggle Beat Grid Snapping when dragging clips" class="px-2 py-0.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[11px] font-mono font-semibold transition">
+              Snap: ON
+            </button>
 
-            <button id="btn-clip-split" title="Split selected clip at Playhead (S)" class="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-violet-600/30 text-zinc-200 hover:text-violet-200 border border-zinc-800 text-xs font-semibold flex items-center gap-1 transition">
-              <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"/></svg>
+            <button id="btn-clip-split" title="Split selected clip at Playhead (S)" class="px-2 py-0.5 rounded-lg bg-zinc-900 hover:bg-violet-600/30 text-zinc-200 hover:text-violet-200 border border-zinc-800 text-[11px] font-semibold flex items-center gap-1 transition">
+              <svg class="w-3 h-3 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"/></svg>
               <span>Split</span>
             </button>
 
-            <button id="btn-clip-trim-left" title="Cut clip start to Playhead" class="px-2 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 text-[11px] font-mono transition">
-              [ Cut Start
-            </button>
-
-            <button id="btn-clip-trim-right" title="Cut clip end to Playhead" class="px-2 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 text-[11px] font-mono transition">
-              Cut End ]
-            </button>
-
-            <button id="btn-clip-duplicate" title="Duplicate selected clip" class="px-2 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 text-[11px] font-medium transition">
+            <button id="btn-clip-duplicate" title="Duplicate selected clip" class="px-2 py-0.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 text-[11px] font-medium transition">
               Duplicate
             </button>
 
-            <button id="btn-clip-delete" title="Delete selected clip (Del)" class="px-2 py-1 rounded-lg bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-500/30 text-[11px] font-medium transition">
+            <button id="btn-clip-delete" title="Delete selected clip (Del)" class="px-2 py-0.5 rounded-lg bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-500/30 text-[11px] font-medium transition">
               Delete
             </button>
           </div>
 
           <!-- Zoom Slider (50% to 300%) + Mic Status -->
-          <div class="flex items-center gap-3 text-xs text-zinc-400">
-            <div class="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-[11px]">
+          <div class="flex items-center gap-2 text-xs text-zinc-400">
+            <div class="hidden md:flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-zinc-900 border border-zinc-800 text-[11px]">
               <span class="w-2 h-2 rounded-full bg-zinc-500" id="mic-status-dot"></span>
               <span id="mic-status-text">Mic Standby</span>
             </div>
 
-            <div class="flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-2.5 py-1 rounded-lg">
-              <span class="text-[11px] text-zinc-500">Zoom</span>
-              <input id="zoom-slider" type="range" min="50" max="300" step="10" value="100" class="w-20 sm:w-24" />
-              <span id="zoom-label" class="font-mono text-[11px] text-cyan-400 w-10 text-right">100%</span>
+            <div class="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded-lg">
+              <span class="text-[10px] text-zinc-500">Zoom</span>
+              <input id="zoom-slider" type="range" min="50" max="300" step="10" value="100" class="w-16 sm:w-20" />
+              <span id="zoom-label" class="font-mono text-[10px] text-cyan-400 w-9 text-right">100%</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Selected Clip Inspector Strip (Shows Numeric Trim Start/End when a clip is clicked) -->
-      <div id="clip-inspector-bar" class="hidden bg-violet-950/30 border-b border-violet-500/30 px-3 sm:px-6 py-1.5">
+      <!-- Selected Clip Inspector Strip (Shows Position, Trim, Fade In & Fade Out) -->
+      <div id="clip-inspector-bar" class="hidden bg-violet-950/35 border-b border-violet-500/35 px-3 sm:px-5 py-1.5">
         <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
             <span id="inspector-clip-name" class="font-semibold text-white">Selected Clip</span>
-            <span id="inspector-clip-duration" class="font-mono text-[11px] text-cyan-300">(0.00s active)</span>
+            <span id="inspector-clip-duration" class="font-mono text-[11px] text-cyan-300">(0.00s)</span>
+            <span class="hidden lg:inline text-[10px] text-zinc-400 ml-1">• Drag clip body to move, or drag left/right edges to trim</span>
           </div>
 
-          <div class="flex flex-wrap items-center gap-3">
-            <label class="flex items-center gap-1.5 text-[11px] font-mono text-zinc-300">
-              <span>Position (s):</span>
-              <input id="inspector-start-time" type="number" step="0.05" min="0" class="w-16 bg-zinc-950 border border-zinc-700 rounded px-1.5 py-0.5 text-xs text-white" />
+          <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
+            <label class="flex items-center gap-1 text-[11px] font-mono text-zinc-300">
+              <span>Pos:</span>
+              <input id="inspector-start-time" type="number" step="0.05" min="0" class="w-14 bg-zinc-950 border border-zinc-700 rounded px-1.5 py-0.5 text-xs text-white" />
             </label>
-            <label class="flex items-center gap-1.5 text-[11px] font-mono text-zinc-300">
-              <span>Trim Start (s):</span>
-              <input id="inspector-trim-start" type="number" step="0.05" min="0" class="w-16 bg-zinc-950 border border-zinc-700 rounded px-1.5 py-0.5 text-xs text-white" />
+            <label class="flex items-center gap-1 text-[11px] font-mono text-zinc-300">
+              <span>Fade In:</span>
+              <input id="inspector-fade-in" type="range" min="0" max="5" step="0.05" value="0" class="w-14 sm:w-16" />
+              <span id="inspector-fade-in-val" class="text-[10px] text-cyan-300 w-8">0.0s</span>
             </label>
-            <label class="flex items-center gap-1.5 text-[11px] font-mono text-zinc-300">
-              <span>Trim End (s):</span>
-              <input id="inspector-trim-end" type="number" step="0.05" min="0.05" class="w-16 bg-zinc-950 border border-zinc-700 rounded px-1.5 py-0.5 text-xs text-white" />
+            <label class="flex items-center gap-1 text-[11px] font-mono text-zinc-300">
+              <span>Fade Out:</span>
+              <input id="inspector-fade-out" type="range" min="0" max="5" step="0.05" value="0" class="w-14 sm:w-16" />
+              <span id="inspector-fade-out-val" class="text-[10px] text-cyan-300 w-8">0.0s</span>
             </label>
-            <button id="btn-inspector-reset" class="text-[11px] text-violet-300 hover:text-white underline">Reset Trim</button>
+            <button id="btn-inspector-reset" class="text-[11px] text-violet-300 hover:text-white underline">Reset Trim/Fades</button>
           </div>
         </div>
       </div>
@@ -761,22 +748,22 @@
       ================================================================= -->
       <div class="flex-1 max-w-[1600px] w-full mx-auto flex flex-col overflow-hidden">
         
-        <!-- Sticky Timeline Header Row (Left Mixer Header + Synchronized Horizontal Ruler) -->
+        <!-- Sticky Timeline Header Row -->
         <div class="flex border-b border-studio-border bg-studio-panel/95 select-none shrink-0">
-          <div class="w-44 sm:w-64 md:w-72 shrink-0 px-3 sm:px-4 py-2 border-r border-studio-border flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-zinc-500">
-            <span>Tracks & Mixer</span>
+          <div class="w-40 sm:w-56 md:w-64 shrink-0 px-3 py-1.5 border-r border-studio-border flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+            <span>Tracks</span>
             <span class="hidden sm:inline">Vol / Pan</span>
           </div>
           <!-- Horizontal Scrollable Ruler Viewport -->
           <div id="ruler-scroll-viewport" class="flex-1 overflow-x-auto overflow-y-hidden bg-zinc-950 cursor-pointer">
-            <div id="ruler-inner-track" class="relative h-8" style="width: 2400px;">
+            <div id="ruler-inner-track" class="relative h-7" style="width: 2400px;">
               <canvas id="ruler-canvas" class="w-full h-full block"></canvas>
             </div>
           </div>
         </div>
 
-        <!-- Vertically Scrollable Tracks Body -->
-        <div id="tracks-vertical-scroller" class="flex-1 overflow-y-auto max-h-[calc(100vh-17.5rem)] divide-y divide-studio-border">
+        <!-- Vertically Scrollable Tracks Body (Compact 78px Track Rows) -->
+        <div id="tracks-vertical-scroller" class="flex-1 overflow-y-auto max-h-[calc(100vh-15rem)] divide-y divide-studio-border">
           <!-- Track rows dynamically injected here -->
         </div>
 
@@ -812,7 +799,6 @@
           </div>
         </div>
 
-        <!-- Studio Stats -->
         <div class="grid grid-cols-3 gap-3 sm:gap-4 my-6">
           <div class="bg-zinc-950 border border-zinc-800/90 rounded-2xl p-4 text-center">
             <div id="stat-projects" class="text-2xl sm:text-3xl font-extrabold font-mono text-violet-400">0</div>
@@ -828,7 +814,6 @@
           </div>
         </div>
 
-        <!-- Account & PWA Actions -->
         <div class="space-y-3 pt-2">
           <button id="btn-profile-install" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-violet-600/20 to-cyan-500/20 hover:from-violet-600/30 hover:to-cyan-500/30 text-cyan-300 border border-cyan-500/30 text-sm font-semibold flex items-center justify-between transition">
             <span>Install PulseLab App to Home Screen</span>
@@ -868,7 +853,7 @@
   <!-- CORE APPLICATION SCRIPT -->
   <script>
     /**
-     * 1. Dynamic PWA Manifest Generator (Data-URI Blob)
+     * 1. Dynamic PWA Manifest Generator
      */
     (function setupDynamicPWAManifest() {
       const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -891,7 +876,7 @@
       const manifest = {
         name: 'PulseLab — Pocket Multi-Track Studio',
         short_name: 'PulseLab',
-        description: 'Pocket multi-track audio recorder, waveform cutter, and studio mixer.',
+        description: 'Pocket multi-track audio recorder, waveform editor, and studio mixer.',
         start_url: window.location.href,
         display: 'standalone',
         background_color: '#09090b',
@@ -913,7 +898,7 @@
      */
     class ProjectStorage {
       constructor() {
-        this.dbName = 'PulseLabStudioDB_v2';
+        this.dbName = 'PulseLabStudioDB_v25';
         this.storeName = 'projects';
         this.db = null;
       }
@@ -987,7 +972,7 @@
 
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          progress.style.transition = 'width 1800ms cubic-bezier(0.22, 1, 0.36, 1)';
+          progress.style.transition = 'width 1600ms cubic-bezier(0.22, 1, 0.36, 1)';
           progress.style.width = '100%';
         });
       });
@@ -997,12 +982,12 @@
         setTimeout(() => {
           splash.classList.add('hidden');
           if (typeof onComplete === 'function') onComplete();
-        }, 600);
-      }, 2000);
+        }, 550);
+      }, 1750);
     }
 
     /**
-     * 4. PulseLab v2.0 Multi-Track Studio & App Controller
+     * 4. PulseLab v2.5 Multi-Track Studio & App Controller
      */
     class PulseLabApp {
       constructor() {
@@ -1031,6 +1016,10 @@
         this.nextTrackId = 1;
         this.nextClipId = 1;
         this.selectedClipRef = null; // { trackId, clipId }
+        this.snapEnabled = true;
+
+        // Direct Clip Dragging / Edge Trimming State
+        this.dragState = null; // { mode: 'move' | 'trim-left' | 'trim-right', track, clip, startX, origStartTime, origTrimStart, origTrimEnd }
 
         // Transport State
         this.isPlaying = false;
@@ -1060,9 +1049,9 @@
         this.metronomeTimerId = null;
 
         // Timeline Scroll & Zoom State
-        this.basePixelsPerSecond = 45;
+        this.basePixelsPerSecond = 48;
         this.zoomPercent = 100;
-        this.pixelsPerSecond = 45;
+        this.pixelsPerSecond = 48;
         this.timelineScrollLeft = 0;
         this.minTimelineSeconds = 60;
 
@@ -1155,7 +1144,6 @@
             document.getElementById('firebase-config-textarea').value = JSON.stringify(config, null, 2);
           }
         } catch (err) {
-          console.warn('Firebase config error:', err);
           this.firebaseReady = false;
           this.updateOAuthModeBadge(false);
         }
@@ -1181,18 +1169,8 @@
             this.savedAccounts = JSON.parse(raw);
           } else {
             this.savedAccounts = [
-              {
-                name: 'Alex Rivera (Producer)',
-                email: 'alex.rivera.beats@gmail.com',
-                provider: 'Google',
-                verified: true
-              },
-              {
-                name: 'Maya Lin Studio',
-                email: 'maya.lin@facebook.com',
-                provider: 'Facebook',
-                verified: true
-              }
+              { name: 'Alex Rivera (Producer)', email: 'alex.rivera.beats@gmail.com', provider: 'Google', verified: true },
+              { name: 'Maya Lin Studio', email: 'maya.lin@facebook.com', provider: 'Facebook', verified: true }
             ];
             localStorage.setItem('pulselab_saved_accounts', JSON.stringify(this.savedAccounts));
           }
@@ -1216,7 +1194,6 @@
       async handleSocialSignInClick(providerName) {
         this.pendingOAuthProvider = providerName;
 
-        // 1. If Firebase Config is active, trigger REAL Google/Facebook Popup Picker
         if (this.firebaseReady && window.firebase && firebase.auth) {
           try {
             const provider = providerName === 'Google'
@@ -1242,13 +1219,11 @@
             this.showToast(`Signed in via ${providerName} (${userProfile.email})`, 'success');
             return;
           } catch (err) {
-            console.error('Firebase OAuth Error:', err);
-            this.showToast(`OAuth popup message: ${err.message}`, 'error');
+            this.showToast(`OAuth message: ${err.message}`, 'error');
             return;
           }
         }
 
-        // 2. Otherwise open the realistic Account Chooser Modal
         this.openRealisticAccountChooser(providerName);
       }
 
@@ -1270,7 +1245,6 @@
           emailInput.placeholder = 'yourname@email.com';
         }
 
-        // Render saved accounts matching provider or all saved accounts
         const listEl = document.getElementById('saved-accounts-list');
         listEl.innerHTML = '';
         const matchingAccounts = this.savedAccounts.filter(a => a.provider === providerName);
@@ -1297,12 +1271,7 @@
           btn.addEventListener('click', () => {
             modal.classList.add('hidden');
             modal.classList.remove('flex');
-            const selectedUser = {
-              name: acc.name,
-              email: acc.email,
-              provider: providerName
-            };
-            this.saveUserSession(selectedUser);
+            this.saveUserSession({ name: acc.name, email: acc.email, provider: providerName });
             this.enterAppShell();
             this.showToast(`Signed in as ${acc.name}`, 'success');
           });
@@ -1409,8 +1378,8 @@
       =========================== */
       async ensureStarterProject() {
         const existing = await this.storage.getAllProjects();
-        if (existing.length === 0 && !localStorage.getItem('pulselab_seeded_v2')) {
-          localStorage.setItem('pulselab_seeded_v2', 'true');
+        if (existing.length === 0 && !localStorage.getItem('pulselab_seeded_v25')) {
+          localStorage.setItem('pulselab_seeded_v25', 'true');
           const demoProject = {
             id: 'proj_demo_1',
             title: 'Midnight Lo-Fi Demo',
@@ -1419,7 +1388,7 @@
             updatedAt: Date.now(),
             tracks: [
               { id: 1, name: 'Lead Vocals', color: '#8b5cf6', armed: true, muted: false, solo: false, volume: 1.0, pan: 0.0, clips: [] },
-              { id: 2, name: 'Instrumental Beat', color: '#06b6d4', armed: false, muted: false, solo: false, volume: 0.9, pan: 0.0, clips: [] }
+              { id: 2, name: 'Backing Beat', color: '#06b6d4', armed: false, muted: false, solo: false, volume: 0.9, pan: 0.0, clips: [] }
             ]
           };
           await this.storage.saveProject(demoProject);
@@ -1458,6 +1427,9 @@
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
                 </div>
                 <div class="flex items-center gap-1">
+                  <button data-duplicate-proj="${proj.id}" title="Duplicate Project" class="p-1.5 rounded-lg text-zinc-500 hover:text-cyan-300 hover:bg-zinc-800 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  </button>
                   <button data-rename-proj="${proj.id}" title="Rename Project" class="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-zinc-800 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                   </button>
@@ -1486,9 +1458,30 @@
           grid.appendChild(card);
 
           card.querySelector(`[data-open-proj="${proj.id}"]`).addEventListener('click', () => this.openProjectInStudio(proj));
+          card.querySelector(`[data-duplicate-proj="${proj.id}"]`).addEventListener('click', () => this.duplicateProject(proj));
           card.querySelector(`[data-rename-proj="${proj.id}"]`).addEventListener('click', () => this.promptRenameProject(proj));
           card.querySelector(`[data-delete-proj="${proj.id}"]`).addEventListener('click', () => this.promptDeleteProject(proj));
         });
+      }
+
+      async duplicateProject(proj) {
+        const copy = JSON.parse(JSON.stringify(proj));
+        copy.id = 'proj_' + Date.now();
+        copy.title = `${proj.title} (Copy)`;
+        copy.updatedAt = Date.now();
+        // Restore binary ArrayBuffers if present
+        if (proj.tracks && copy.tracks) {
+          proj.tracks.forEach((origT, tIdx) => {
+            (origT.clips || []).forEach((origC, cIdx) => {
+              if (origC.wavArrayBuffer) {
+                copy.tracks[tIdx].clips[cIdx].wavArrayBuffer = origC.wavArrayBuffer.slice(0);
+              }
+            });
+          });
+        }
+        await this.storage.saveProject(copy);
+        await this.refreshProjectsDashboard();
+        this.showToast(`Duplicated "${proj.title}"`, 'success');
       }
 
       createNewStudioSession() {
@@ -1503,8 +1496,9 @@
 
         this.tracks = [];
         this.nextTrackId = 1;
-        this.addTrack('Track 1 - Vocals', true);
-        this.addTrack('Track 2 - Beat / Guitar', false);
+        this.addTrack('Vocals 1', true);
+        this.addTrack('Backing Beat', false);
+        this.addTrack('Harmony / Adlibs', false);
         this.switchView('studio');
       }
 
@@ -1542,6 +1536,8 @@
                   startTime: clip.startTime || 0,
                   trimStart,
                   trimEnd,
+                  fadeIn: clip.fadeIn || 0,
+                  fadeOut: clip.fadeOut || 0,
                   peaks
                 });
               }
@@ -1568,7 +1564,7 @@
 
         this.nextTrackId = maxId + 1;
         if (this.tracks.length === 0) {
-          this.addTrack('Track 1 - Vocals', true);
+          this.addTrack('Vocals 1', true);
         }
 
         this.renderTracksDOM();
@@ -1590,6 +1586,8 @@
               startTime: clip.startTime,
               trimStart: clip.trimStart ?? 0,
               trimEnd: clip.trimEnd ?? clip.buffer.duration,
+              fadeIn: clip.fadeIn || 0,
+              fadeOut: clip.fadeOut || 0,
               wavBlob
             };
           });
@@ -1785,12 +1783,7 @@
           document.getElementById('oauth-modal').classList.add('hidden');
           document.getElementById('oauth-modal').classList.remove('flex');
 
-          const newAccount = {
-            name,
-            email,
-            provider: this.pendingOAuthProvider,
-            verified: true
-          };
+          const newAccount = { name, email, provider: this.pendingOAuthProvider, verified: true };
           this.persistAccountToChooser(newAccount);
           this.saveUserSession(newAccount);
           this.enterAppShell();
@@ -1798,11 +1791,7 @@
         });
 
         document.getElementById('btn-auth-guest').addEventListener('click', () => {
-          this.saveUserSession({
-            name: 'Guest Producer',
-            email: 'guest@pulselab.studio',
-            provider: 'Guest'
-          });
+          this.saveUserSession({ name: 'Guest Producer', email: 'guest@pulselab.studio', provider: 'Guest' });
           this.enterAppShell();
           this.showToast('Signed in as Guest Producer', 'info');
         });
@@ -1847,10 +1836,10 @@
         this.btnLoop.addEventListener('click', () => {
           this.loopEnabled = !this.loopEnabled;
           if (this.loopEnabled) {
-            this.btnLoop.className = 'p-2.5 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition active:scale-95';
+            this.btnLoop.className = 'p-2 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition active:scale-95';
             this.showToast('Loop playback enabled', 'info');
           } else {
-            this.btnLoop.className = 'p-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 border border-zinc-800 transition active:scale-95';
+            this.btnLoop.className = 'p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 border border-zinc-800 transition active:scale-95';
           }
         });
 
@@ -1865,47 +1854,64 @@
           }
         });
 
-        // Non-Destructive Audio Clip Editor Toolbar Buttons
+        // Snap Toggle Button
+        const snapBtn = document.getElementById('btn-snap-toggle');
+        snapBtn.addEventListener('click', () => {
+          this.snapEnabled = !this.snapEnabled;
+          snapBtn.textContent = `Snap: ${this.snapEnabled ? 'ON' : 'OFF'}`;
+          snapBtn.className = this.snapEnabled
+            ? 'px-2 py-0.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[11px] font-mono font-semibold transition'
+            : 'px-2 py-0.5 rounded-lg bg-zinc-900 text-zinc-400 border border-zinc-800 text-[11px] font-mono font-semibold transition';
+        });
+
+        // Clip Editor Toolbar Buttons
         document.getElementById('btn-clip-split').addEventListener('click', () => this.splitSelectedClipAtPlayhead());
-        document.getElementById('btn-clip-trim-left').addEventListener('click', () => this.trimSelectedClipStartToPlayhead());
-        document.getElementById('btn-clip-trim-right').addEventListener('click', () => this.trimSelectedClipEndToPlayhead());
         document.getElementById('btn-clip-duplicate').addEventListener('click', () => this.duplicateSelectedClip());
         document.getElementById('btn-clip-delete').addEventListener('click', () => this.deleteSelectedClip());
 
-        // Clip Inspector Numeric Inputs
+        // Clip Inspector Inputs (Position, Fade In, Fade Out, Reset)
         document.getElementById('inspector-start-time').addEventListener('change', (e) => {
           const info = this.getSelectedClipObject();
           if (!info) return;
           info.clip.startTime = Math.max(0, parseFloat(e.target.value) || 0);
           this.updateTimelineDimensions();
           this.updateClipInspectorUI();
-        });
-        document.getElementById('inspector-trim-start').addEventListener('change', (e) => {
-          const info = this.getSelectedClipObject();
-          if (!info) return;
-          const val = Math.max(0, Math.min(info.clip.trimEnd - 0.05, parseFloat(e.target.value) || 0));
-          info.clip.trimStart = val;
-          this.updateClipInspectorUI();
           if (this.isPlaying) this.restartPlaybackFromCurrent();
         });
-        document.getElementById('inspector-trim-end').addEventListener('change', (e) => {
+
+        document.getElementById('inspector-fade-in').addEventListener('input', (e) => {
           const info = this.getSelectedClipObject();
           if (!info) return;
-          const maxDur = info.clip.buffer.duration;
-          const val = Math.min(maxDur, Math.max(info.clip.trimStart + 0.05, parseFloat(e.target.value) || maxDur));
-          info.clip.trimEnd = val;
+          const activeDur = this.getClipActiveDuration(info.clip);
+          info.clip.fadeIn = Math.min(activeDur, Math.max(0, parseFloat(e.target.value) || 0));
           this.updateClipInspectorUI();
-          if (this.isPlaying) this.restartPlaybackFromCurrent();
         });
+
+        document.getElementById('inspector-fade-out').addEventListener('input', (e) => {
+          const info = this.getSelectedClipObject();
+          if (!info) return;
+          const activeDur = this.getClipActiveDuration(info.clip);
+          info.clip.fadeOut = Math.min(activeDur, Math.max(0, parseFloat(e.target.value) || 0));
+          this.updateClipInspectorUI();
+        });
+
         document.getElementById('btn-inspector-reset').addEventListener('click', () => {
           const info = this.getSelectedClipObject();
           if (!info) return;
           info.clip.trimStart = 0;
           info.clip.trimEnd = info.clip.buffer.duration;
+          info.clip.fadeIn = 0;
+          info.clip.fadeOut = 0;
           this.updateClipInspectorUI();
+          this.updateTimelineDimensions();
           if (this.isPlaying) this.restartPlaybackFromCurrent();
-          this.showToast('Clip trim reset to full length', 'info');
+          this.showToast('Reset clip trim & fades to full length', 'info');
         });
+
+        // Global Pointer Move & Release for Direct Clip Dragging / Edge Trimming
+        window.addEventListener('pointermove', (e) => this.handleGlobalPointerMove(e));
+        window.addEventListener('pointerup', () => this.handleGlobalPointerUp());
+        window.addEventListener('pointercancel', () => this.handleGlobalPointerUp());
 
         // Metronome & BPM
         const toggleMetro = () => {
@@ -2003,6 +2009,103 @@
       }
 
       /* ==========================
+         DIRECT CLIP DRAG & EDGE TRIM HANDLERS
+      =========================== */
+      snapTimeIfEnabled(seconds) {
+        if (!this.snapEnabled) return Math.max(0, seconds);
+        const beatStep = (60 / this.bpm) / 2; // 8th-note snap resolution
+        return Math.max(0, Math.round(seconds / beatStep) * beatStep);
+      }
+
+      handleTrackPointerDown(e, track) {
+        if (e.button !== undefined && e.button !== 0) return;
+        const rect = track.innerTrackEl.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickedTime = Math.max(0, clickX / this.pixelsPerSecond);
+
+        // Hit-test clips from top to bottom
+        let hitClip = null;
+        for (let i = track.clips.length - 1; i >= 0; i--) {
+          const c = track.clips[i];
+          const cStartPx = c.startTime * this.pixelsPerSecond;
+          const cWidthPx = Math.max(12, this.getClipActiveDuration(c) * this.pixelsPerSecond);
+          const cEndPx = cStartPx + cWidthPx;
+
+          if (clickX >= cStartPx - 10 && clickX <= cEndPx + 10) {
+            hitClip = c;
+            break;
+          }
+        }
+
+        if (hitClip) {
+          this.selectClip(track.id, hitClip.id);
+          const cStartPx = hitClip.startTime * this.pixelsPerSecond;
+          const cWidthPx = Math.max(12, this.getClipActiveDuration(hitClip) * this.pixelsPerSecond);
+          const cEndPx = cStartPx + cWidthPx;
+          const handleHitRadius = Math.min(16, cWidthPx * 0.28);
+
+          let mode = 'move';
+          if (Math.abs(clickX - cStartPx) <= handleHitRadius) {
+            mode = 'trim-left';
+          } else if (Math.abs(clickX - cEndPx) <= handleHitRadius) {
+            mode = 'trim-right';
+          }
+
+          this.dragState = {
+            mode,
+            track,
+            clip: hitClip,
+            startX: e.clientX,
+            origStartTime: hitClip.startTime,
+            origTrimStart: hitClip.trimStart ?? 0,
+            origTrimEnd: hitClip.trimEnd ?? hitClip.buffer.duration,
+            moved: false
+          };
+        } else {
+          // Clicked empty lane area -> move playhead
+          this.seekTo(clickedTime);
+        }
+      }
+
+      handleGlobalPointerMove(e) {
+        if (!this.dragState) return;
+        const { mode, clip, startX, origStartTime, origTrimStart, origTrimEnd } = this.dragState;
+        const deltaPx = e.clientX - startX;
+        if (Math.abs(deltaPx) > 2) {
+          this.dragState.moved = true;
+        }
+        const deltaSec = deltaPx / this.pixelsPerSecond;
+
+        if (mode === 'move') {
+          const rawNewStart = Math.max(0, origStartTime + deltaSec);
+          clip.startTime = this.snapTimeIfEnabled(rawNewStart);
+        } else if (mode === 'trim-left') {
+          const maxShiftRight = (origTrimEnd - origTrimStart) - 0.1;
+          const minShiftLeft = -Math.min(origStartTime, origTrimStart);
+          const clampedDelta = Math.max(minShiftLeft, Math.min(maxShiftRight, deltaSec));
+          clip.startTime = origStartTime + clampedDelta;
+          clip.trimStart = origTrimStart + clampedDelta;
+        } else if (mode === 'trim-right') {
+          const maxExtend = clip.buffer.duration - origTrimEnd;
+          const minShrink = -(origTrimEnd - origTrimStart) + 0.1;
+          const clampedDelta = Math.max(minShrink, Math.min(maxExtend, deltaSec));
+          clip.trimEnd = origTrimEnd + clampedDelta;
+        }
+
+        this.updateTimelineDimensions();
+        this.updateClipInspectorUI();
+      }
+
+      handleGlobalPointerUp() {
+        if (!this.dragState) return;
+        const wasMoved = this.dragState.moved;
+        this.dragState = null;
+        if (wasMoved && this.isPlaying) {
+          this.restartPlaybackFromCurrent();
+        }
+      }
+
+      /* ==========================
          SYNCHRONIZED HORIZONTAL SCROLLING
       =========================== */
       syncHorizontalScroll(scrollLeft, sourceEl) {
@@ -2049,7 +2152,7 @@
           toast.style.opacity = '0';
           toast.style.transform = 'translateY(8px)';
           setTimeout(() => toast.remove(), 300);
-        }, 3500);
+        }, 3200);
       }
 
       /* ==========================
@@ -2086,14 +2189,18 @@
         const { track, clip } = info;
         const activeDur = this.getClipActiveDuration(clip);
         document.getElementById('inspector-clip-name').textContent = `${track.name} • ${clip.name || 'Clip'}`;
-        document.getElementById('inspector-clip-duration').textContent = `(${activeDur.toFixed(2)}s active)`;
+        document.getElementById('inspector-clip-duration').textContent = `(${activeDur.toFixed(2)}s)`;
         document.getElementById('inspector-start-time').value = clip.startTime.toFixed(2);
-        document.getElementById('inspector-trim-start').value = (clip.trimStart ?? 0).toFixed(2);
-        document.getElementById('inspector-trim-end').value = (clip.trimEnd ?? clip.buffer.duration).toFixed(2);
+
+        const fIn = clip.fadeIn || 0;
+        const fOut = clip.fadeOut || 0;
+        document.getElementById('inspector-fade-in').value = fIn;
+        document.getElementById('inspector-fade-in-val').textContent = `${fIn.toFixed(1)}s`;
+        document.getElementById('inspector-fade-out').value = fOut;
+        document.getElementById('inspector-fade-out-val').textContent = `${fOut.toFixed(1)}s`;
       }
 
       splitSelectedClipAtPlayhead() {
-        // Find selected clip, or auto-detect clip under playhead
         let info = this.getSelectedClipObject();
         if (!info) {
           for (const t of this.tracks) {
@@ -2128,79 +2235,30 @@
         const offsetIntoActive = this.playheadTime - clip.startTime;
         const splitSourcePoint = trimStart + offsetIntoActive;
 
-        // Left half stays at original startTime, ends at splitSourcePoint
         const leftClip = {
           ...clip,
           id: this.nextClipId++,
-          name: `${clip.name || 'Clip'} (Part 1)`,
+          name: `${clip.name || 'Clip'} (1)`,
           trimStart,
-          trimEnd: splitSourcePoint
+          trimEnd: splitSourcePoint,
+          fadeOut: 0
         };
 
-        // Right half starts at playheadTime, begins from splitSourcePoint
         const rightClip = {
           ...clip,
           id: this.nextClipId++,
-          name: `${clip.name || 'Clip'} (Part 2)`,
+          name: `${clip.name || 'Clip'} (2)`,
           startTime: this.playheadTime,
           trimStart: splitSourcePoint,
-          trimEnd
+          trimEnd,
+          fadeIn: 0
         };
 
         track.clips.splice(clipIndex, 1, leftClip, rightClip);
         this.selectClip(track.id, rightClip.id);
         this.renderTracksDOM();
         if (this.isPlaying) this.restartPlaybackFromCurrent();
-        this.showToast(`Split clip at ${this.formatTimecode(this.playheadTime)}`, 'success');
-      }
-
-      trimSelectedClipStartToPlayhead() {
-        const info = this.getSelectedClipObject();
-        if (!info) {
-          this.showToast('Click a waveform clip first to cut its start.', 'warning');
-          return;
-        }
-        const { clip } = info;
-        const trimStart = clip.trimStart ?? 0;
-        const trimEnd = clip.trimEnd ?? clip.buffer.duration;
-        const clipEnd = clip.startTime + (trimEnd - trimStart);
-
-        if (this.playheadTime <= clip.startTime || this.playheadTime >= clipEnd - 0.05) {
-          this.showToast('Place the playhead inside the clip to cut the start.', 'warning');
-          return;
-        }
-
-        const cutAmount = this.playheadTime - clip.startTime;
-        clip.trimStart = trimStart + cutAmount;
-        clip.startTime = this.playheadTime;
-
-        this.updateClipInspectorUI();
-        if (this.isPlaying) this.restartPlaybackFromCurrent();
-        this.showToast('Cut beginning of clip to playhead', 'success');
-      }
-
-      trimSelectedClipEndToPlayhead() {
-        const info = this.getSelectedClipObject();
-        if (!info) {
-          this.showToast('Click a waveform clip first to cut its end.', 'warning');
-          return;
-        }
-        const { clip } = info;
-        const trimStart = clip.trimStart ?? 0;
-        const trimEnd = clip.trimEnd ?? clip.buffer.duration;
-        const clipEnd = clip.startTime + (trimEnd - trimStart);
-
-        if (this.playheadTime <= clip.startTime + 0.05 || this.playheadTime >= clipEnd) {
-          this.showToast('Place the playhead inside the clip to cut the end.', 'warning');
-          return;
-        }
-
-        const newActiveDuration = this.playheadTime - clip.startTime;
-        clip.trimEnd = trimStart + newActiveDuration;
-
-        this.updateClipInspectorUI();
-        if (this.isPlaying) this.restartPlaybackFromCurrent();
-        this.showToast('Cut end of clip to playhead', 'success');
+        this.showToast(`Split clip! Drag either part to move it.`, 'success');
       }
 
       duplicateSelectedClip() {
@@ -2240,7 +2298,7 @@
       }
 
       /* ==========================
-         WEB AUDIO ENGINE & TRACKS
+         WEB AUDIO ENGINE & COMPACT TRACKS (78px HEIGHT)
       =========================== */
       ensureAudioContext() {
         if (!this.audioCtx) {
@@ -2344,66 +2402,61 @@
 
         this.tracks.forEach(track => {
           const row = document.createElement('div');
-          row.className = `flex min-h-[116px] bg-studio-panel/40 hover:bg-studio-panel/70 transition-colors ${track.armed ? 'bg-red-950/10' : ''}`;
-          const audible = this.isTrackAudible(track);
+          // Compact 78px track height so 4-6 tracks fit cleanly on mobile & desktop without excessive scrolling
+          row.className = `flex h-[78px] bg-studio-panel/40 hover:bg-studio-panel/70 transition-colors ${track.armed ? 'bg-red-950/15' : ''}`;
 
           row.innerHTML = `
-            <!-- Fixed Left Track Controls & Mixer -->
-            <div class="w-44 sm:w-64 md:w-72 shrink-0 p-2.5 sm:p-3 border-r border-studio-border flex flex-col justify-between gap-2 relative select-none bg-studio-panel/95 z-10" style="border-left: 4px solid ${track.color}">
+            <!-- Compact Left Track Controls & Mixer -->
+            <div class="w-40 sm:w-56 md:w-64 shrink-0 px-2.5 py-1.5 border-r border-studio-border flex flex-col justify-between relative select-none bg-studio-panel/95 z-10" style="border-left: 3px solid ${track.color}">
               <div class="flex items-center justify-between gap-1">
                 <input type="text" value="${track.name}" data-track-name="${track.id}"
-                  class="bg-transparent text-xs sm:text-sm font-semibold text-zinc-100 focus:outline-none focus:bg-zinc-800 px-1.5 py-0.5 rounded w-full truncate border border-transparent focus:border-zinc-700" />
+                  class="bg-transparent text-xs font-semibold text-zinc-100 focus:outline-none focus:bg-zinc-800 px-1 py-0.5 rounded w-full truncate border border-transparent focus:border-zinc-700" />
                 
-                <div class="flex items-center gap-1 shrink-0">
+                <div class="flex items-center gap-0.5 shrink-0">
                   <button data-arm="${track.id}" title="Arm Track"
-                    class="w-6 h-6 rounded-md text-[11px] font-mono font-bold border transition flex items-center justify-center ${
+                    class="w-5 h-5 rounded text-[10px] font-mono font-bold border transition flex items-center justify-center ${
                       track.armed ? 'bg-red-500 text-white border-red-400' : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-red-400'
                     }">R</button>
 
                   <button data-mute="${track.id}" title="Mute Track"
-                    class="w-6 h-6 rounded-md text-[11px] font-mono font-bold border transition flex items-center justify-center ${
+                    class="w-5 h-5 rounded text-[10px] font-mono font-bold border transition flex items-center justify-center ${
                       track.muted ? 'bg-amber-500 text-zinc-950 border-amber-400' : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-zinc-200'
                     }">M</button>
 
                   <button data-solo="${track.id}" title="Solo Track"
-                    class="w-6 h-6 rounded-md text-[11px] font-mono font-bold border transition flex items-center justify-center ${
+                    class="w-5 h-5 rounded text-[10px] font-mono font-bold border transition flex items-center justify-center ${
                       track.solo ? 'bg-cyan-400 text-zinc-950 border-cyan-300' : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-zinc-200'
                     }">S</button>
 
                   <button data-delete="${track.id}" title="Delete Track"
-                    class="w-6 h-6 rounded-md text-zinc-500 hover:text-red-400 hover:bg-zinc-800/80 transition flex items-center justify-center">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    class="w-5 h-5 rounded text-zinc-500 hover:text-red-400 hover:bg-zinc-800/80 transition flex items-center justify-center">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                   </button>
                 </div>
               </div>
 
-              <div class="grid grid-cols-2 gap-2 pt-1">
-                <div class="flex flex-col gap-1">
-                  <div class="flex justify-between text-[10px] font-mono text-zinc-400">
+              <div class="grid grid-cols-2 gap-1.5">
+                <div class="flex flex-col gap-0.5">
+                  <div class="flex justify-between text-[9px] font-mono text-zinc-400 leading-none">
                     <span>VOL</span>
                     <span id="vol-label-${track.id}">${Math.round(track.volume * 100)}%</span>
                   </div>
                   <input type="range" min="0" max="1.5" step="0.01" value="${track.volume}" data-vol="${track.id}" class="w-full" />
                 </div>
 
-                <div class="flex flex-col gap-1">
-                  <div class="flex justify-between text-[10px] font-mono text-zinc-400">
+                <div class="flex flex-col gap-0.5">
+                  <div class="flex justify-between text-[9px] font-mono text-zinc-400 leading-none">
                     <span>PAN</span>
                     <span id="pan-label-${track.id}">${track.pan === 0 ? 'C' : (track.pan < 0 ? `L${Math.round(Math.abs(track.pan)*100)}` : `R${Math.round(track.pan*100)}`)}</span>
                   </div>
                   <input type="range" min="-1" max="1" step="0.05" value="${track.pan}" data-pan="${track.id}" class="w-full" />
                 </div>
               </div>
-
-              <div class="flex items-center justify-between text-[10px] text-zinc-500 font-mono">
-                <span>${track.clips.length > 0 ? `${track.clips.length} clip(s)` : 'Empty'}</span>
-                <span class="${audible ? 'text-cyan-400/80' : 'text-zinc-600'}">${audible ? 'ACTIVE' : 'MUTED'}</span>
-              </div>
             </div>
 
             <!-- Synchronized Horizontally Scrollable Waveform Timeline -->
-            <div class="flex-1 overflow-x-auto overflow-y-hidden bg-zinc-950/95 cursor-pointer" data-scroll-viewport="${track.id}">
-              <div class="relative h-full min-h-[116px]" style="width: ${widthPx}px;" data-inner-track="${track.id}">
+            <div class="flex-1 overflow-x-auto overflow-y-hidden bg-zinc-950/95" data-scroll-viewport="${track.id}">
+              <div class="relative h-[78px]" style="width: ${widthPx}px;" data-inner-track="${track.id}">
                 <canvas class="w-full h-full block"></canvas>
               </div>
             </div>
@@ -2414,10 +2467,8 @@
           track.innerTrackEl = row.querySelector(`[data-inner-track="${track.id}"]`);
           track.canvasEl = row.querySelector('canvas');
 
-          // Restore current horizontal scroll offset
           track.scrollViewportEl.scrollLeft = this.timelineScrollLeft;
 
-          // Synchronize horizontal scrolling across ruler and all tracks
           track.scrollViewportEl.addEventListener('scroll', () => {
             this.syncHorizontalScroll(track.scrollViewportEl.scrollLeft, track.scrollViewportEl);
           });
@@ -2445,22 +2496,29 @@
             if (track.livePanNode) track.livePanNode.pan.value = track.pan;
           });
 
-          // Click timeline to select clip (if clicked inside clip) & move playhead
-          track.innerTrackEl.addEventListener('click', (e) => {
+          // Pointer interaction for moving clips, dragging edge trim handles, or moving playhead
+          track.innerTrackEl.addEventListener('pointerdown', (e) => this.handleTrackPointerDown(e, track));
+
+          // Hover cursor feedback on desktop
+          track.innerTrackEl.addEventListener('mousemove', (e) => {
+            if (this.dragState) return;
             const rect = track.innerTrackEl.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const clickedTime = Math.max(0, clickX / this.pixelsPerSecond);
-
-            // Check if user clicked on an existing clip
-            const hitClip = track.clips.find(c => {
-              const cEnd = c.startTime + this.getClipActiveDuration(c);
-              return clickedTime >= c.startTime && clickedTime <= cEnd;
-            });
-
-            if (hitClip) {
-              this.selectClip(track.id, hitClip.id);
+            const hoverX = e.clientX - rect.left;
+            let cursor = 'pointer';
+            for (let i = track.clips.length - 1; i >= 0; i--) {
+              const c = track.clips[i];
+              const cStartPx = c.startTime * this.pixelsPerSecond;
+              const cWidthPx = Math.max(12, this.getClipActiveDuration(c) * this.pixelsPerSecond);
+              const cEndPx = cStartPx + cWidthPx;
+              if (hoverX >= cStartPx - 8 && hoverX <= cEndPx + 8) {
+                const edgeR = Math.min(14, cWidthPx * 0.25);
+                cursor = (Math.abs(hoverX - cStartPx) <= edgeR || Math.abs(hoverX - cEndPx) <= edgeR)
+                  ? 'ew-resize'
+                  : 'grab';
+                break;
+              }
             }
-            this.seekTo(clickedTime);
+            track.innerTrackEl.style.cursor = cursor;
           });
         });
 
@@ -2487,7 +2545,7 @@
       async importAudioFile(file) {
         this.ensureAudioContext();
         try {
-          this.showToast(`Importing "${file.name}"...`, 'info');
+          this.showToast(`Loading "${file.name}"...`, 'info');
           const arrayBuffer = await file.arrayBuffer();
           const audioBuffer = await this.audioCtx.decodeAudioData(arrayBuffer);
 
@@ -2504,16 +2562,18 @@
             startTime: this.playheadTime,
             trimStart: 0,
             trimEnd: audioBuffer.duration,
+            fadeIn: 0,
+            fadeOut: 0,
             peaks
           };
           targetTrack.clips.push(newClip);
           this.selectClip(targetTrack.id, newClip.id);
 
           this.renderTracksDOM();
-          this.showToast(`Loaded "${file.name}" into ${targetTrack.name}`, 'success');
+          this.showToast(`Imported "${file.name}" into ${targetTrack.name}`, 'success');
         } catch (err) {
           console.error(err);
-          this.showToast('Unable to decode audio file. Please try .WAV or .MP3.', 'error');
+          this.showToast('Unable to decode audio file. Please select MP3, WAV, M4A, or OGG.', 'error');
         }
       }
 
@@ -2614,13 +2674,20 @@
             const source = this.audioCtx.createBufferSource();
             source.buffer = clip.buffer;
 
+            // Clip-level Fade In / Fade Out envelope node
+            const clipFadeGain = this.audioCtx.createGain();
+            const fadeIn = Math.min(activeDur, clip.fadeIn || 0);
+            const fadeOut = Math.min(activeDur, clip.fadeOut || 0);
+
+            // Track-level Volume & Pan nodes
             const gainNode = this.audioCtx.createGain();
             gainNode.gain.value = track.volume;
 
             const panNode = this.audioCtx.createStereoPanner();
             panNode.pan.value = track.pan;
 
-            source.connect(gainNode);
+            source.connect(clipFadeGain);
+            clipFadeGain.connect(gainNode);
             gainNode.connect(panNode);
             panNode.connect(this.masterGain);
 
@@ -2628,12 +2695,41 @@
             track.livePanNode = panNode;
 
             if (clip.startTime >= offset) {
-              const delay = clip.startTime - offset;
-              source.start(now + delay, trimStart, activeDur);
+              const startAt = now + (clip.startTime - offset);
+              const endAt = startAt + activeDur;
+
+              if (fadeIn > 0.01) {
+                clipFadeGain.gain.setValueAtTime(0.001, startAt);
+                clipFadeGain.gain.linearRampToValueAtTime(1.0, startAt + fadeIn);
+              } else {
+                clipFadeGain.gain.setValueAtTime(1.0, startAt);
+              }
+
+              if (fadeOut > 0.01) {
+                clipFadeGain.gain.setValueAtTime(1.0, Math.max(startAt + fadeIn, endAt - fadeOut));
+                clipFadeGain.gain.linearRampToValueAtTime(0.001, endAt);
+              }
+
+              source.start(startAt, trimStart, activeDur);
             } else {
               const alreadyElapsed = offset - clip.startTime;
               const remainingDur = activeDur - alreadyElapsed;
               if (remainingDur > 0) {
+                const endAt = now + remainingDur;
+                if (fadeIn > 0.01 && alreadyElapsed < fadeIn) {
+                  const currentFadeRatio = Math.max(0.001, alreadyElapsed / fadeIn);
+                  clipFadeGain.gain.setValueAtTime(currentFadeRatio, now);
+                  clipFadeGain.gain.linearRampToValueAtTime(1.0, now + (fadeIn - alreadyElapsed));
+                } else {
+                  clipFadeGain.gain.setValueAtTime(1.0, now);
+                }
+
+                if (fadeOut > 0.01) {
+                  const fadeOutStartFromNow = Math.max(0, remainingDur - fadeOut);
+                  clipFadeGain.gain.setValueAtTime(1.0, now + fadeOutStartFromNow);
+                  clipFadeGain.gain.linearRampToValueAtTime(0.001, endAt);
+                }
+
                 source.start(now, trimStart + alreadyElapsed, remainingDur);
               }
             }
@@ -2668,7 +2764,7 @@
         let armedTrack = this.tracks.find(t => t.armed);
         if (!armedTrack) {
           if (this.tracks.length === 0) {
-            armedTrack = this.addTrack('Track 1 - Vocals', true);
+            armedTrack = this.addTrack('Vocals 1', true);
           } else {
             armedTrack = this.tracks[0];
             this.toggleArm(armedTrack.id);
@@ -2688,7 +2784,6 @@
             document.getElementById('mic-status-text').textContent = 'Mic Active';
           }
         } catch (err) {
-          console.error('Microphone error:', err);
           document.getElementById('mic-status-dot').className = 'w-2 h-2 rounded-full bg-red-500';
           document.getElementById('mic-status-text').textContent = 'Mic Blocked';
           this.showToast('Microphone access denied. Please allow mic permissions in browser settings.', 'error');
@@ -2776,15 +2871,16 @@
                 startTime: this.recordingStartTime,
                 trimStart: 0,
                 trimEnd: decodedBuffer.duration,
+                fadeIn: 0,
+                fadeOut: 0,
                 peaks
               };
               track.clips.push(newClip);
               this.selectClip(track.id, newClip.id);
               this.renderTracksDOM();
-              this.showToast(`Saved ${newClip.name} to ${track.name}`, 'success');
+              this.showToast(`Recorded ${newClip.name} to ${track.name}`, 'success');
             }
           } catch (err) {
-            console.error('Failed to decode recorded audio:', err);
             this.showToast('Error decoding recorded audio.', 'error');
           }
           this.recordingTrackId = null;
@@ -2871,13 +2967,13 @@
         const btnDesktop = document.getElementById('btn-metronome');
         const btnMobile = document.getElementById('btn-metronome-mobile');
         if (this.metronomeEnabled) {
-          btnDesktop.className = 'p-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition flex items-center gap-1.5';
+          btnDesktop.className = 'p-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition flex items-center gap-1';
           btnMobile.textContent = 'Click: ON';
-          btnMobile.className = 'px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-xs font-medium';
+          btnMobile.className = 'px-2 py-0.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[11px] font-medium';
         } else {
-          btnDesktop.className = 'p-1.5 rounded-lg bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 transition flex items-center gap-1.5';
+          btnDesktop.className = 'p-1 rounded-lg bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 transition flex items-center gap-1';
           btnMobile.textContent = 'Click: OFF';
-          btnMobile.className = 'px-2.5 py-1 rounded-lg bg-zinc-900 text-zinc-400 border border-zinc-800 text-xs font-medium';
+          btnMobile.className = 'px-2 py-0.5 rounded-lg bg-zinc-900 text-zinc-400 border border-zinc-800 text-[11px] font-medium';
         }
       }
 
@@ -2930,7 +3026,6 @@
               this.playheadTime = currentTime;
               this.updateTimelineDimensions();
 
-              // Auto-scroll timeline horizontally to keep playhead in view during playback/recording
               if (this.rulerScrollViewport) {
                 const viewportW = this.rulerScrollViewport.clientWidth;
                 const playheadPx = currentTime * this.pixelsPerSecond;
@@ -2993,23 +3088,23 @@
           const x = Math.floor(s * pps) + 0.5;
           const isMajor = s % 5 === 0;
           ctx.beginPath();
-          ctx.moveTo(x, isMajor ? 8 : 18);
+          ctx.moveTo(x, isMajor ? 7 : 16);
           ctx.lineTo(x, h);
           ctx.stroke();
 
           if (isMajor) {
             const mins = Math.floor(s / 60);
             const secs = s % 60;
-            ctx.fillText(`${mins}:${String(secs).padStart(2, '0')}`, x + 4, 14);
+            ctx.fillText(`${mins}:${String(secs).padStart(2, '0')}`, x + 4, 13);
           }
         }
 
         const playheadX = currentTime * pps;
         ctx.fillStyle = this.isRecording ? '#ef4444' : '#06b6d4';
         ctx.beginPath();
-        ctx.moveTo(playheadX - 6, 0);
-        ctx.lineTo(playheadX + 6, 0);
-        ctx.lineTo(playheadX, 10);
+        ctx.moveTo(playheadX - 5, 0);
+        ctx.lineTo(playheadX + 5, 0);
+        ctx.lineTo(playheadX, 9);
         ctx.closePath();
         ctx.fill();
       }
@@ -3052,7 +3147,7 @@
         ctx.lineTo(w, h / 2);
         ctx.stroke();
 
-        // Draw Audio Clips (Trimmed Active Windows)
+        // Draw Audio Clips
         track.clips.forEach(clip => {
           const trimStart = clip.trimStart ?? 0;
           const trimEnd = clip.trimEnd ?? clip.buffer.duration;
@@ -3060,28 +3155,31 @@
           const totalBufDur = clip.buffer.duration;
 
           const clipX = clip.startTime * pps;
-          const clipW = activeDur * pps;
+          const clipW = Math.max(6, activeDur * pps);
+          const clipTop = 5;
+          const clipH = h - 10;
+
           const isSelected = this.selectedClipRef &&
             this.selectedClipRef.trackId === track.id &&
             this.selectedClipRef.clipId === clip.id;
 
           // Clip container box
-          ctx.fillStyle = audible ? `${track.color}22` : '#27273233';
-          ctx.strokeStyle = isSelected ? '#06b6d4' : (audible ? `${track.color}88` : '#3f3f4e');
+          ctx.fillStyle = audible ? `${track.color}26` : '#27273233';
+          ctx.strokeStyle = isSelected ? '#ffffff' : (audible ? `${track.color}99` : '#3f3f4e');
           ctx.lineWidth = isSelected ? 2 : 1;
           ctx.beginPath();
-          ctx.roundRect(clipX, 8, Math.max(4, clipW), h - 16, 6);
+          ctx.roundRect(clipX, clipTop, clipW, clipH, 5);
           ctx.fill();
           ctx.stroke();
 
-          // Clip label badge
-          ctx.fillStyle = isSelected ? '#22d3ee' : '#a1a1aa';
-          ctx.font = '10px "JetBrains Mono", monospace';
-          if (clipW > 42) {
-            ctx.fillText((clip.name || 'Clip').slice(0, Math.floor(clipW / 7)), clipX + 6, 20);
+          // Clip header label
+          ctx.fillStyle = isSelected ? '#ffffff' : '#d4d4d8';
+          ctx.font = '9px "JetBrains Mono", monospace';
+          if (clipW > 34) {
+            ctx.fillText((clip.name || 'Clip').slice(0, Math.floor(clipW / 6.5)), clipX + 7, clipTop + 11);
           }
 
-          // Draw Waveform Peaks strictly within [trimStart, trimEnd]
+          // Draw Waveform Peaks within [trimStart, trimEnd]
           const peaks = clip.peaks;
           const startRatio = trimStart / totalBufDur;
           const endRatio = trimEnd / totalBufDur;
@@ -3093,22 +3191,44 @@
           const gap = 1;
           const stepPx = barWidth + gap;
           const numBars = Math.floor(clipW / stepPx);
-          const centerY = h / 2 + 4;
-          const maxAmp = (h - 32) / 2;
+          const centerY = clipTop + clipH / 2 + 3;
+          const maxAmp = (clipH - 18) / 2;
 
           ctx.fillStyle = audible ? track.color : '#52525b';
           for (let i = 0; i < numBars; i++) {
             const pIdx = startPeakIdx + Math.floor((i / numBars) * sliceLen);
-            const amp = Math.max(0.03, peaks[pIdx] || 0) * maxAmp;
+            const amp = Math.max(0.04, peaks[pIdx] || 0) * maxAmp;
             const barX = clipX + i * stepPx;
             ctx.fillRect(barX, centerY - amp, barWidth, amp * 2);
           }
 
-          // Trim Bracket Handles on Selected Clip
+          // Visual Fade-In / Fade-Out Envelope Overlay Curves
+          const fadeInPx = Math.min(clipW, (clip.fadeIn || 0) * pps);
+          const fadeOutPx = Math.min(clipW, (clip.fadeOut || 0) * pps);
+          if (fadeInPx > 2) {
+            ctx.fillStyle = 'rgba(9, 9, 11, 0.52)';
+            ctx.beginPath();
+            ctx.moveTo(clipX, clipTop);
+            ctx.lineTo(clipX + fadeInPx, clipTop);
+            ctx.lineTo(clipX, clipTop + clipH);
+            ctx.closePath();
+            ctx.fill();
+          }
+          if (fadeOutPx > 2) {
+            ctx.fillStyle = 'rgba(9, 9, 11, 0.52)';
+            ctx.beginPath();
+            ctx.moveTo(clipX + clipW, clipTop);
+            ctx.lineTo(clipX + clipW - fadeOutPx, clipTop);
+            ctx.lineTo(clipX + clipW, clipTop + clipH);
+            ctx.closePath();
+            ctx.fill();
+          }
+
+          // Interactive Left & Right Edge Trim Handles when Selected
           if (isSelected) {
             ctx.fillStyle = '#06b6d4';
-            ctx.fillRect(clipX, 8, 3, h - 16);
-            ctx.fillRect(clipX + Math.max(4, clipW) - 3, 8, 3, h - 16);
+            ctx.fillRect(clipX, clipTop, 5, clipH);
+            ctx.fillRect(clipX + clipW - 5, clipTop, 5, clipH);
           }
         });
 
@@ -3121,13 +3241,13 @@
           ctx.fillStyle = 'rgba(239, 68, 68, 0.16)';
           ctx.strokeStyle = 'rgba(239, 68, 68, 0.85)';
           ctx.beginPath();
-          ctx.roundRect(recStartX, 8, recWidth, h - 16, 6);
+          ctx.roundRect(recStartX, 5, recWidth, h - 10, 5);
           ctx.fill();
           ctx.stroke();
 
           ctx.fillStyle = '#ef4444';
           const centerY = h / 2;
-          const maxAmp = (h - 24) / 2;
+          const maxAmp = (h - 16) / 2;
           this.liveWaveformPeaks.forEach(pt => {
             const x = pt.time * pps;
             const amp = Math.max(0.05, pt.peak) * maxAmp;
@@ -3173,7 +3293,7 @@
       }
 
       /* ==========================
-         STEREO WAV EXPORT (RESPECTS TRIMS & SPLITS)
+         STEREO WAV EXPORT (RESPECTS POSITION, TRIMS & FADES)
       =========================== */
       async exportMixWAV() {
         this.ensureAudioContext();
@@ -3202,9 +3322,27 @@
             track.clips.forEach(clip => {
               const trimStart = clip.trimStart ?? 0;
               const activeDur = this.getClipActiveDuration(clip);
+              const fadeIn = Math.min(activeDur, clip.fadeIn || 0);
+              const fadeOut = Math.min(activeDur, clip.fadeOut || 0);
 
               const source = offlineCtx.createBufferSource();
               source.buffer = clip.buffer;
+
+              const clipFadeGain = offlineCtx.createGain();
+              const startAt = clip.startTime;
+              const endAt = startAt + activeDur;
+
+              if (fadeIn > 0.01) {
+                clipFadeGain.gain.setValueAtTime(0.001, startAt);
+                clipFadeGain.gain.linearRampToValueAtTime(1.0, startAt + fadeIn);
+              } else {
+                clipFadeGain.gain.setValueAtTime(1.0, startAt);
+              }
+
+              if (fadeOut > 0.01) {
+                clipFadeGain.gain.setValueAtTime(1.0, Math.max(startAt + fadeIn, endAt - fadeOut));
+                clipFadeGain.gain.linearRampToValueAtTime(0.001, endAt);
+              }
 
               const gainNode = offlineCtx.createGain();
               gainNode.gain.value = track.volume;
@@ -3212,10 +3350,11 @@
               const panNode = offlineCtx.createStereoPanner();
               panNode.pan.value = track.pan;
 
-              source.connect(gainNode);
+              source.connect(clipFadeGain);
+              clipFadeGain.connect(gainNode);
               gainNode.connect(panNode);
               panNode.connect(offlineCtx.destination);
-              source.start(clip.startTime, trimStart, activeDur);
+              source.start(startAt, trimStart, activeDur);
             });
           });
 
